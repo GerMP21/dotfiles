@@ -1,10 +1,11 @@
 * {
-    text-color:  #C5C8C6;
+    text-color:  #D6D6D6;
     background-color: rgba(0,0,0,0);
 
-	background: #282A2E;
-	background-alt: #373B41;
-	primary: #e0af68;
+	background: #1E1E2E;
+	background-alt: #151520;
+	background-selected: #C678DD;
+	primary: #E5C07B;
 }
 window {
     height:   80%;
@@ -26,5 +27,6 @@ listview {
     lines: 0;
 }
 element-text selected  normal {
-	text-color: @primary;
+	background-color: @background-selected;
+	text-color: @background-alt;
 }
