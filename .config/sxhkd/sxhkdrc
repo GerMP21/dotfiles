@@ -136,7 +136,7 @@ super + g
 	gimp
 
 super + n
-	nemo
+	spacefm
 
 super + m
 	pluma
