@@ -13,4 +13,4 @@ wireplumber &
 
 sleep 5
 
-exec openbox-session
+exec bspwm

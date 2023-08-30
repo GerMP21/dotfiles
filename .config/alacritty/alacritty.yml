@@ -1,5 +1,5 @@
 import:
-  - ~/.config/alacritty/colors-tokio.yml
+  - ~/.config/alacritty/colors/tokionight.yml
   - ~/.config/alacritty/fonts.yml
 
 env:
