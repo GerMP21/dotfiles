@@ -1,0 +1,32 @@
+* {
+    text-color:  #D6D6D6;
+    background-color: rgba(0,0,0,0);
+
+	background: #1E1E2E;
+	background-alt: #151520;
+	background-selected: #C678DD;
+	primary: #E5C07B;
+}
+window {
+    height:   80%;
+    width: 20em;
+    location: west;
+    anchor:   west;
+}
+inputbar {
+    background-color: @background-alt;
+    padding: 4px;
+}
+mainbox {
+    background-color: @background;
+    spacing: 1em;
+}
+listview {
+    padding: 0em 0.4em 0em 1em;
+    dynamic: false;
+    lines: 0;
+}
+element-text selected  normal {
+	background-color: @background-selected;
+	text-color: @background-alt;
+}

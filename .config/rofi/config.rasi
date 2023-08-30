@@ -1,0 +1,11 @@
+configuration {
+  display-drun: "Applications:";
+  display-window: "Windows:";
+  display-ssh: "Ssh:";
+  drun-display-format: "{name}";
+  font: "mono 10";
+  modi: "drun,window,ssh";
+}
+
+@theme "theme.rasi"
+

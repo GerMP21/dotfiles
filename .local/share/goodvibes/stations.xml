@@ -1,0 +1,46 @@
+<Stations>
+  <Station>
+    <uri>https://stream.radioani.me/listen/japanisu/radio.mp3</uri>
+    <name>Japanisu</name>
+  </Station>
+  <Station>
+    <uri>http://ice55.securenetsystems.net/DASH27</uri>
+    <name>Imperio Corridos</name>
+  </Station>
+  <Station>
+    <uri>https://icecast.walmradio.com:8443/jazz</uri>
+    <name>Adroit Jazz</name>
+  </Station>
+  <Station>
+    <uri>http://62.109.3.230/stalingrad.mp3</uri>
+    <name>Radios Stalingrad </name>
+  </Station>
+  <Station>
+    <uri>http://nr11.newradio.it:9180/stream</uri>
+    <name>Tango Pasion Radio</name>
+  </Station>
+  <Station>
+    <uri>http://stream.dancewave.online:8080/dance.mp3</uri>
+    <name>Dance Wave!</name>
+  </Station>
+  <Station>
+    <uri>https://hirschmilch.de:7001/prog-house.mp3</uri>
+    <name>Hirschmilch Radio Prog-House</name>
+  </Station>
+  <Station>
+    <uri>http://listen.radiogora.ru:8000/etc128</uri>
+    <name>Radio Gora Etcetera</name>
+  </Station>
+  <Station>
+    <uri>http://ice10.outlaw.fm/KIEV2</uri>
+    <name>Outlaw Country Radio</name>
+  </Station>
+  <Station>
+    <uri>http://185.80.220.12:8046/stream</uri>
+    <name>Bollywood Radio and Beyond</name>
+  </Station>
+  <Station>
+    <uri>http://yumicoradio.net:8000/stream</uri>
+    <name>Yumi Co. Radio</name>
+  </Station>
+</Stations>
