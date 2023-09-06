@@ -119,6 +119,9 @@ ctrl + alt + p
 # Shortcuts:
 #
 
+super + e
+    emacs
+
 super + w
 	waterfox-g
 
