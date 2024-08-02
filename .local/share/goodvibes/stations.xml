@@ -40,7 +40,7 @@
     <name>Bollywood Radio and Beyond</name>
   </Station>
   <Station>
-    <uri>http://yumicoradio.net:8000/stream</uri>
+    <uri>http://s1.yumicoradio.net:8000/stream</uri>
     <name>Yumi Co. Radio</name>
   </Station>
 </Stations>
