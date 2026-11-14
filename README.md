@@ -98,6 +98,36 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | `Mod+Shift+P` | Monitors off |
 | `Mod+Alt+Q` | Quit niri |
 
+### Neovim
+Leader is `Space`.
+
+| Key | Action |
+|---|---|
+| `<leader>pd` | File explorer (netrw) |
+| `<leader>ff` / `<leader>fg` | Telescope: find files / git files |
+| `<leader>ps` | Telescope: grep for a string |
+| `<leader>fz` | Telescope: zoxide directories (`C-f` find files, `C-b` browse) |
+| `<leader>a` / `C-e` | Harpoon: mark file / toggle menu |
+| `C-h` `C-t` `C-o` `C-p` | Harpoon: jump to file 1–4 |
+| `<leader>gs` | Fugitive git status |
+| `<leader>p` / `<leader>P` / `<leader>t` | In fugitive: push / pull --rebase / `push -u origin` |
+| `<leader>u` | Undotree |
+| `gd` | Go to definition |
+| `gn` / `gp` | Next / previous diagnostic |
+| `<leader>ca` | Code action |
+| `<leader>rr` / `<leader>rn` | References / rename |
+| `C-n` / `C-p` / `C-y` / `C-Space` | Completion: next / previous / confirm / open |
+| `C-j` `C-k` `C-l` | Move between splits (`C-h` is taken by Harpoon) |
+| `C-Arrows` | Resize splits |
+| `<` / `>` (visual) | Indent and keep selection |
+
+### Alacritty
+| Key | Action |
+|---|---|
+| `Ctrl+Shift+C` / `Ctrl+Shift+V` | Copy / paste |
+| `Ctrl+=` / `Ctrl+-` / `Ctrl+0` | Font bigger / smaller / reset |
+| Middle click | Paste selection |
+
 ## Installation
 
 ```sh
