@@ -21,3 +21,23 @@ ttf-jetbrains-mono-nerd
 zsh
 starship
 neovim
+
+# Shell tools used by .zshrc
+eza
+bat
+zoxide
+zsh-autosuggestions
+zsh-syntax-highlighting
+yt-dlp
+# Neovim build/runtime deps (treesitter, telescope, Mason)
+tree-sitter-cli
+ripgrep
+fd
+make
+gcc
+unzip
+nodejs
+npm
+# Emacs
+emacs-wayland
+nwg-look

@@ -43,7 +43,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
   - An `extract` function for archives.
   - Starship prompt.
 - **Neovim:**
-  - LSP through lsp-zero + Mason, with nvim-cmp and LuaSnip.
+  - Native LSP (`vim.lsp.config`, Neovim 0.11+), with servers installed through Mason, plus nvim-cmp and LuaSnip.
   - Treesitter.
   - Telescope with fzf and zoxide.
   - Harpoon, fugitive and undotree.
@@ -106,9 +106,9 @@ Leader is `Space`.
 | `<leader>pd` | File explorer (netrw) |
 | `<leader>ff` / `<leader>fg` | Telescope: find files / git files |
 | `<leader>ps` | Telescope: grep for a string |
-| `<leader>fz` | Telescope: zoxide directories (`C-f` find files, `C-b` browse) |
+| `<leader>fz` | Telescope: zoxide directories (`C-f` find files inside) |
 | `<leader>a` / `C-e` | Harpoon: mark file / toggle menu |
-| `C-h` `C-t` `C-o` `C-p` | Harpoon: jump to file 1–4 |
+| `<leader>1`…`<leader>4` | Harpoon: jump to file 1–4 |
 | `<leader>gs` | Fugitive git status |
 | `<leader>p` / `<leader>P` / `<leader>t` | In fugitive: push / pull --rebase / `push -u origin` |
 | `<leader>u` | Undotree |
@@ -116,8 +116,8 @@ Leader is `Space`.
 | `gn` / `gp` | Next / previous diagnostic |
 | `<leader>ca` | Code action |
 | `<leader>rr` / `<leader>rn` | References / rename |
-| `C-n` / `C-p` / `C-y` / `C-Space` | Completion: next / previous / confirm / open |
-| `C-j` `C-k` `C-l` | Move between splits (`C-h` is taken by Harpoon) |
+| `C-n` / `C-p` / `C-y` / `C-Space` / `C-e` | Completion: next / previous / confirm / open / close |
+| `C-h` `C-j` `C-k` `C-l` | Move between splits |
 | `C-Arrows` | Resize splits |
 | `<` / `>` (visual) | Indent and keep selection |
 
@@ -145,4 +145,5 @@ Then log in on tty1 and niri starts.
 - Set your wallpaper path in the `swaybg` line of `~/.config/niri/config.kdl`.
 - Run `niri msg outputs` and add `output` blocks for your monitors.
 - Check the config with `niri validate`.
-- Install Doom Emacs separately, then run `doom sync`.
+- Install Doom Emacs separately, then run `doom sync` and `doom doctor`.
+- Open Neovim once so lazy.nvim installs plugins, then run `:checkhealth`.

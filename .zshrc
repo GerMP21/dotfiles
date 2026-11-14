@@ -2,6 +2,7 @@
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
+setopt HIST_IGNORE_ALL_DUPS SHARE_HISTORY
 
 export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"
 export EDITOR="nvim"
@@ -56,8 +57,6 @@ if [ -z "$XDG_CACHE_HOME" ] ; then
 fi
 
 ### Function extract for common file formats ###
-SAVEIFS=$IFS
-IFS=$(echo -en "\n\b")
 
 function extract {
  if [ -z "$1" ]; then
@@ -96,21 +95,18 @@ function extract {
 fi
 }
 
-IFS=$SAVEIFS
 
 ### ALIASES ###
 
-# Changing "ls" to "exa"
-alias ls='exa -al --color=always --group-directories-first' # my preferred listing
-alias la='exa -a --color=always --group-directories-first'  # all files and dirs
-alias ll='exa -l --color=always --group-directories-first'  # long format
-alias lt='exa -aT --color=always --group-directories-first' # tree listing
+# Changing "ls" to "eza" (exa is unmaintained)
+alias ls='eza -al --color=always --group-directories-first' # my preferred listing
+alias la='eza -a --color=always --group-directories-first'  # all files and dirs
+alias ll='eza -l --color=always --group-directories-first'  # long format
+alias lt='eza -aT --color=always --group-directories-first' # tree listing
 
 # Changing "cat" with "bat"
 alias cat='bat'
 
-# Zoxide
-alias z='zoxide'
 
 # Clear
 alias cl='clear'
@@ -163,8 +159,11 @@ eval "$(starship init zsh)"
 source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
-## Pyenv
+### ZOXIDE (z / zi) ###
+command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
+
+### PYENV ###
 export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
+[ -d "$PYENV_ROOT/bin" ] && PATH="$PYENV_ROOT/bin:$PATH"
+command -v pyenv >/dev/null && eval "$(pyenv init - zsh)"
 

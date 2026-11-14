@@ -35,6 +35,11 @@ spawn-at-startup "swayidle" "-w" "timeout" "600" "swaylock -f" "timeout" "900" "
 spawn-at-startup "emacs" "--daemon"
 
 prefer-no-csd
+
+cursor {
+    xcursor-theme "Sunity-cursors"
+    xcursor-size 24
+}
 screenshot-path "~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png"
 
 environment {

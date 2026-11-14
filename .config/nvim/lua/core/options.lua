@@ -31,13 +31,10 @@ vim.opt.ruler = false                           -- hide the line and column numb
 vim.opt.numberwidth = 2                         -- minimal number of columns to use for the line number {default 4}
 vim.opt.signcolumn = 'yes'                      -- always show the sign column, otherwise it would shift the text each time
 vim.opt.wrap = false                            -- display lines as one long line
-vim.opt.fillchars.eob=' '                       -- show empty lines at the end of a buffer as ` ` {default `~`}
+vim.opt.fillchars = { eob = ' ' }                       -- show empty lines at the end of a buffer as ` ` {default `~`}
 vim.opt.shortmess:append 'c'                    -- hide all the completion messages, e.g. '-- XXX completion (YYY)', 'match 1 of 2', 'The only match', 'Pattern not found'
 vim.opt.whichwrap:append('<,>,[,],h,l')         -- keys allowed to move to the previous/next line when the beginning/end of line is reached
 vim.opt.iskeyword:append('-')                   -- treats words with `-` as single words
 vim.opt.formatoptions:remove({ 'c', 'r', 'o' }) -- This is a sequence of letters which describes how automatic formatting is to be done
 vim.opt.linebreak = true
 
-vim.g.gui_font_default_size = 1
-vim.g.gui_font_size = vim.g.gui_font_default_size
-vim.g.gui_font_face = 'Fira Code'
