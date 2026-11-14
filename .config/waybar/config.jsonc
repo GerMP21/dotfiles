@@ -1,0 +1,17 @@
+{
+  "layer": "top",
+  "position": "top",
+  "height": 26,
+  "modules-left": ["battery", "cpu", "memory", "disk"],
+  "modules-center": ["niri/workspaces"],
+  "modules-right": ["network", "wireplumber", "clock", "tray"],
+  "niri/workspaces": { "format": "{index}" },
+  "battery": { "format": "BAT {capacity}%", "states": { "warning": 25, "critical": 10 } },
+  "cpu": { "format": "CPU {usage}%", "interval": 2 },
+  "memory": { "format": "RAM {percentage}%" },
+  "disk": { "format": "/ {percentage_used}%", "path": "/" },
+  "network": { "format-wifi": "{essid} {signalStrength}%", "format-ethernet": "ETH", "format-disconnected": "offline", "on-click": "alacritty -e nmtui" },
+  "wireplumber": { "format": "VOL {volume}%", "format-muted": "muted", "on-click": "pavucontrol" },
+  "clock": { "format": "{:%a %d %b  %H:%M}", "tooltip-format": "<tt>{calendar}</tt>" },
+  "tray": { "spacing": 8 }
+}

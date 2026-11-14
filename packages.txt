@@ -1,0 +1,23 @@
+# Install: sudo pacman -S --needed - < <(grep -v '^#' packages.txt)
+niri
+xdg-desktop-portal-gnome
+xdg-desktop-portal-gtk
+xwayland-satellite
+waybar
+fuzzel
+mako
+swaylock
+swayidle
+swaybg
+alacritty
+brightnessctl
+pipewire
+pipewire-pulse
+wireplumber
+pavucontrol
+networkmanager
+polkit-gnome
+ttf-jetbrains-mono-nerd
+zsh
+starship
+neovim

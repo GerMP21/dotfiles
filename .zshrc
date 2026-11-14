@@ -2,10 +2,10 @@
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
-export TERM="xterm-256color"                      # getting proper colors
+
 export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"
-export EDITOR="nvim ''"
-export VISUAL="geany"
+export EDITOR="nvim"
+export VISUAL="nvim"
 
 ### SET MANPAGER
 ### "nvim" as manpager

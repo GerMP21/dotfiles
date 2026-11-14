@@ -1,9 +1,5 @@
-[ -f $HOME/.bashrc ] && . $HOME/.bashrc
+[ -f "$HOME/.zshrc" ] && . "$HOME/.zshrc"
 
-rfkill unblock wifi &
-setxkbmap es &
-xsetroot -cursor_name left_ptr &
-
-if [[ -z $DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
-    exec startx
-fi 
+if [[ -z $WAYLAND_DISPLAY ]] && [[ $(tty) = /dev/tty1 ]]; then
+    exec niri-session
+fi
