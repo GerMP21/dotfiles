@@ -1,0 +1,11 @@
+# AUR packages. Install with an AUR helper, e.g.:
+#   paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
+# Checked against the AUR in Nov 2026. spacefm upstream is unmaintained;
+# if `spacefm` fails to build, use `spacefm-bin` instead.
+
+waterfox-bin
+spacefm
+goodvibes
+# Vets AUR package updates before you install them
+trustsight
+sunity-cursors-git

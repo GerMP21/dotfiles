@@ -1,0 +1,93 @@
+# Official Arch repos. Install with:
+#   sudo pacman -S --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
+
+# --- Wayland desktop (niri) ---
+niri
+xwayland-satellite
+xdg-desktop-portal-gnome
+xdg-desktop-portal-gtk
+polkit-gnome
+waybar
+fuzzel
+mako
+swaylock
+swayidle
+swaybg
+wl-clipboard
+brightnessctl
+xdg-user-dirs
+
+# --- Audio / network ---
+pipewire
+pipewire-pulse
+wireplumber
+pavucontrol
+networkmanager
+
+# --- Fonts & theming ---
+ttf-jetbrains-mono-nerd
+ttf-iosevka-nerd
+cantarell-fonts
+noto-fonts
+noto-fonts-emoji
+nwg-look
+# build deps for the Rose Pine GTK theme
+sassc
+gtk-engine-murrine
+gnome-themes-extra
+
+# --- Terminal & shell ---
+alacritty
+zsh
+starship
+zsh-autosuggestions
+zsh-syntax-highlighting
+eza
+bat
+zoxide
+fzf
+pyenv
+yt-dlp
+# used by the `extract` function
+unzip
+unrar
+7zip
+cabextract
+cpio
+
+# --- Neovim ---
+neovim
+git
+base-devel
+tree-sitter-cli
+ripgrep
+fd
+nodejs
+npm
+python
+python-pip
+luarocks
+
+# --- LaTeX (vimtex) ---
+texlive-basic
+texlive-latex
+texlive-latexrecommended
+texlive-latexextra
+texlive-binextra
+zathura
+zathura-pdf-mupdf
+
+# --- Doom Emacs ---
+emacs-wayland
+aspell
+aspell-en
+aspell-es
+languagetool
+shellcheck
+
+# --- Apps bound to keys in niri ---
+thunderbird
+libreoffice-fresh
+gimp
+inkscape
+keepassxc
