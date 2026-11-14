@@ -1,43 +1,89 @@
-# Install: sudo pacman -S --needed - < <(grep -v '^#' packages.txt)
+# Official Arch repos. Install with:
+#   sudo pacman -S --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
+
+# --- Wayland desktop (niri) ---
 niri
+xwayland-satellite
 xdg-desktop-portal-gnome
 xdg-desktop-portal-gtk
-xwayland-satellite
+polkit-gnome
 waybar
 fuzzel
 mako
 swaylock
 swayidle
 swaybg
-alacritty
+wl-clipboard
 brightnessctl
+xdg-user-dirs
+
+# --- Audio / network ---
 pipewire
 pipewire-pulse
 wireplumber
 pavucontrol
 networkmanager
-polkit-gnome
+
+# --- Fonts & theming ---
 ttf-jetbrains-mono-nerd
+ttf-iosevka-nerd
+cantarell-fonts
+noto-fonts
+noto-fonts-emoji
+nwg-look
+
+# --- Terminal & shell ---
+alacritty
 zsh
 starship
-neovim
-
-# Shell tools used by .zshrc
+zsh-autosuggestions
+zsh-syntax-highlighting
 eza
 bat
 zoxide
-zsh-autosuggestions
-zsh-syntax-highlighting
+fzf
+pyenv
 yt-dlp
-# Neovim build/runtime deps (treesitter, telescope, Mason)
+# used by the `extract` function
+unzip
+unrar
+7zip
+cabextract
+cpio
+
+# --- Neovim ---
+neovim
+git
+base-devel
 tree-sitter-cli
 ripgrep
 fd
-make
-gcc
-unzip
 nodejs
 npm
-# Emacs
+python
+python-pip
+luarocks
+
+# --- LaTeX (vimtex) ---
+texlive-basic
+texlive-latex
+texlive-latexrecommended
+texlive-latexextra
+texlive-binextra
+zathura
+zathura-pdf-mupdf
+
+# --- Doom Emacs ---
 emacs-wayland
-nwg-look
+aspell
+aspell-en
+aspell-es
+languagetool
+shellcheck
+
+# --- Apps bound to keys in niri ---
+thunderbird
+libreoffice-fresh
+gimp
+inkscape
+keepassxc

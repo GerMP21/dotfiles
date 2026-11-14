@@ -28,9 +28,10 @@ layout {
     border { off; }
 }
 
+spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "waybar"
 spawn-at-startup "mako"
-spawn-at-startup "swaybg" "-m" "fill" "-i" "/home/user/Pictures/wallpaper.png"
+spawn-at-startup "swaybg" "-m" "fill" "-i" "/home/USERNAME/Pictures/wallpaper.png"
 spawn-at-startup "swayidle" "-w" "timeout" "600" "swaylock -f" "timeout" "900" "niri msg action power-off-monitors" "before-sleep" "swaylock -f"
 spawn-at-startup "emacs" "--daemon"
 
