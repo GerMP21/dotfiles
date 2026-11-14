@@ -25,8 +25,8 @@ for f in .zshrc .zprofile .gtkrc-2.0 .icons/default/index.theme; do link "$f"; d
 for d in "$DOTS"/.config/*/ ; do
   name="$(basename "$d")"
   case "$name" in
-    gtk-2.0|gtk-3.0|gtk-4.0)
-      # Linked per file: the GTK theme installer adds its own files to these folders
+    gtk-2.0|gtk-3.0|gtk-4.0|Kvantum)
+      # Linked per file: theme installers add their own files to these folders
       for f in "$d"*; do link ".config/$name/$(basename "$f")"; done ;;
     *) link ".config/$name" ;;
   esac
@@ -53,6 +53,14 @@ if systemctl is-enabled connman >/dev/null 2>&1; then
   sudo systemctl disable --now connman
 fi
 sudo systemctl enable --now NetworkManager
+sudo systemctl enable --now bluetooth power-profiles-daemon
+systemctl --user enable gnome-keyring-daemon.socket
+
+# Unlock the keyring with your login password (tty login, then niri)
+if ! grep -q pam_gnome_keyring /etc/pam.d/login; then
+  echo "Adding gnome-keyring to /etc/pam.d/login"
+  printf 'auth       optional     pam_gnome_keyring.so\nsession    optional     pam_gnome_keyring.so auto_start\n' | sudo tee -a /etc/pam.d/login >/dev/null
+fi
 
 # Login shell
 if [ "$(basename "$SHELL")" != "zsh" ]; then
