@@ -128,6 +128,95 @@ Leader is `Space`.
 | `Ctrl+=` / `Ctrl+-` / `Ctrl+0` | Font bigger / smaller / reset |
 | Middle click | Paste selection |
 
+## Customizing keybindings
+
+### niri (window manager)
+Bindings live in the `binds { }` block of `~/.config/niri/config.kdl`. niri reloads the file as soon as you save it, so there's nothing to restart. Run `niri validate` if a change doesn't take effect; a broken file keeps the last working config and shows an error.
+
+Each line is `<keys> { <action>; }`:
+```kdl
+binds {
+    // Launch an app
+    Mod+B { spawn "firefox"; }
+
+    // Arguments are separate strings
+    Mod+Shift+Return { spawn "alacritty" "-e" "btop"; }
+
+    // Shell syntax (pipes, $VARS, ~) needs sh -c
+    Mod+Shift+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
+
+    // Built-in actions
+    Mod+C { center-column; }
+
+    // Media keys, still working on the lock screen
+    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+
+    // Repeat-limited (good for mouse wheel binds)
+    Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+}
+```
+
+- **Modifiers:** `Mod` is Super. You can also use `Super`, `Ctrl`, `Alt` and `Shift`, combined with `+`.
+- **Key names** follow xkb. Run `wev` (`sudo pacman -S wev`) and press a key to see its name, e.g. `Return`, `Print`, `XF86AudioMute`, `Comma`.
+- **Changing a key:** edit the key on the left. A key can only be bound once; if two lines use the same key, `niri validate` reports it.
+- **Removing a bind:** delete the line.
+- **All actions:** `niri msg action --help` lists them, and the [niri wiki](https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings) documents them.
+- **Using Alt as Mod:** add `mod-key "Alt"` to the `input { }` block. That's useful when running niri nested inside another session.
+- **Hotkey overlay:** `Mod+Shift+/` shows the bindings. Add `hotkey-overlay-title="My title"` after the key to give a bind a readable name in it.
+
+After changing binds, update the keybinding tables in this README too.
+
+### Waybar click actions
+Clicks on bar modules are set in `~/.config/waybar/config.jsonc` with `on-click`, `on-click-right` and `on-scroll-up` / `on-scroll-down`:
+```jsonc
+"clock": { "format": "{:%H:%M}", "on-click": "gnome-calendar" }
+```
+Restart the bar to apply: `pkill waybar; waybar &`.
+
+### Neovim
+Global maps are in `~/.config/nvim/lua/core/remaps.lua`. Plugin maps sit next to each plugin's config in `~/.config/nvim/lua/plugins/config/` (e.g. `telescope.lua`, `harpoon.lua`). LSP maps are in the `LspAttach` block of `lsp.lua`, and completion keys are in `cmp.lua`.
+```lua
+-- mode, keys, action, options
+vim.keymap.set("n", "<leader>w", "<cmd>write<CR>", { desc = "Save file" })
+vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank to clipboard" })
+vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers)
+```
+- Modes: `n` normal, `i` insert, `v` visual, `t` terminal.
+- The leader is `Space`, set at the top of `remaps.lua`. Change `vim.g.mapleader` to use another key.
+- Check whether a key is free with `:verbose nmap <key>`.
+- List everything with `:Telescope keymaps`.
+- Restart Neovim after editing.
+
+### Alacritty
+Add a `[keyboard]` section to `~/.config/alacritty/alacritty.toml`. Alacritty reloads it live.
+```toml
+[keyboard]
+bindings = [
+  { key = "N", mods = "Control|Shift", action = "SpawnNewInstance" },
+  { key = "K", mods = "Control|Shift", action = "ClearHistory" },
+  { key = "Return", mods = "Control|Shift", command = { program = "alacritty", args = ["--working-directory", "."] } },
+]
+```
+`man 5 alacritty` lists every action and key name.
+
+### Doom Emacs
+Doom uses Evil (vim keys), and `SPC` is the leader. Add bindings with `map!` in `~/.config/doom/config.el`, then run `SPC h r r` (or restart Emacs):
+```elisp
+(map! :leader
+      :desc "Save file" "w" #'save-buffer)
+(map! :n "C-h" #'evil-window-left
+      :n "C-l" #'evil-window-right)
+```
+`SPC h k` then a key shows what it's bound to.
+
+### zsh
+The shell uses vi mode (`bindkey -v` in `~/.zshrc`). Add your own bindings after that line:
+```zsh
+bindkey '^R' history-incremental-search-backward   # Ctrl+R
+bindkey -M viins '^E' autosuggest-accept          # Ctrl+E accepts the suggestion
+```
+Run `bindkey` with no arguments to list the current ones. To find a key's code, run `cat`, press the key, then `Ctrl+C`. Open a new terminal or run `source ~/.zshrc` to apply.
+
 ## Dependencies
 
 The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`packages-aur.txt`](packages-aur.txt) (AUR). Here's what each group is for:
