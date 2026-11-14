@@ -65,7 +65,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | `Mod+O` | LibreOffice |
 | `Mod+G` | GIMP |
 | `Mod+I` | Inkscape |
-| `Mod+N` | SpaceFM |
+| `Mod+N` | Double Commander |
 | `Mod+K` | KeePassXC |
 | `Mod+R` | Goodvibes (radio) |
 | `Super+Alt+L` | Lock screen |
@@ -235,7 +235,7 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | LaTeX | `texlive-basic`, `texlive-latex`, `texlive-latexrecommended`, `texlive-latexextra`, `texlive-binextra` (latexmk), `zathura`, `zathura-pdf-mupdf` | VimTeX compile and PDF viewer |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | AUR safety | AUR: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`; AUR: `waterfox-bin`, `spacefm` (or `spacefm-bin`), `goodvibes` | `Mod+` app shortcuts |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `waterfox-bin`, `goodvibes` | `Mod+` app shortcuts |
 
 Not packaged, so install these by hand:
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 5 below).

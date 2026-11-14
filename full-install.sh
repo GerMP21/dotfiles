@@ -41,13 +41,9 @@ fi
 step "3/9 AUR packages"
 mapfile -t AUR < <(pkglist "$DOTS/packages-aur.txt")
 if ! paru -S --needed "${AUR[@]}"; then
-  warn "Some AUR packages failed. Trying spacefm-bin in place of spacefm, then the rest one by one."
+  warn "Some AUR packages failed. Retrying them one by one."
   for p in "${AUR[@]}"; do
-    if [ "$p" = spacefm ]; then
-      paru -S --needed spacefm || paru -S --needed spacefm-bin || warn "spacefm failed"
-    else
-      paru -S --needed "$p" || warn "$p failed; install it later with: paru -S $p"
-    fi
+    paru -S --needed "$p" || warn "$p failed; install it later with: paru -S $p"
   done
 fi
 

@@ -1,11 +1,8 @@
 # AUR packages. Install with an AUR helper, e.g.:
 #   paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
-# Names confirmed via AUR search results (Nov 2026); plain `spacefm` is unconfirmed.
-# spacefm upstream is unmaintained;
-# if `spacefm` fails to build, use `spacefm-bin` instead.
+# Names confirmed via AUR search results (Nov 2026).
 
 waterfox-bin
-spacefm
 goodvibes
 # Vets AUR package updates before you install them
 trustsight

@@ -69,7 +69,7 @@ binds {
     Mod+O      { spawn "libreoffice"; }
     Mod+G      { spawn "gimp"; }
     Mod+I      { spawn "inkscape"; }
-    Mod+N      { spawn "spacefm"; }
+    Mod+N      { spawn "doublecmd"; }
     Mod+K      { spawn "keepassxc"; }
     Mod+R      { spawn "goodvibes"; }
     Super+Alt+L { spawn "swaylock"; }

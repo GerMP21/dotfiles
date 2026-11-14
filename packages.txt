@@ -91,3 +91,4 @@ libreoffice-fresh
 gimp
 inkscape
 keepassxc
+doublecmd-qt5
