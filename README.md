@@ -243,6 +243,16 @@ Not packaged, so install these by hand:
 
 ## Installation
 
+### Quick install
+On a working Arch install with a regular user and `sudo`:
+```sh
+git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
+~/dotfiles/full-install.sh
+```
+It runs every step below in order and asks for your password when needed (sudo, `chsh`, package confirmations). If an AUR package fails, the script warns you and keeps going. You can run it again safely. When it finishes, add a wallpaper and log in on tty1.
+
+### Manual install
+
 Start from a working Arch install with a regular user, `sudo` and an internet connection.
 
 **1. Install an AUR helper** (skip this if you already have `paru` or `yay`):
