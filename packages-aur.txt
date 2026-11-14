@@ -7,3 +7,5 @@ goodvibes
 # Vets AUR package updates before you install them
 trustsight
 sunity-cursors-git
+# GTK 2 theme engine for Rose Pine (moved from the official repos to the AUR in 2025)
+gtk-engine-murrine
