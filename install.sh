@@ -25,8 +25,8 @@ for f in .zshrc .zprofile .gtkrc-2.0 .icons/default/index.theme; do link "$f"; d
 for d in "$DOTS"/.config/*/ ; do
   name="$(basename "$d")"
   case "$name" in
-    gtk-2.0|gtk-3.0|gtk-4.0)
-      # Linked per file: the GTK theme installer adds its own files to these folders
+    gtk-2.0|gtk-3.0|gtk-4.0|Kvantum)
+      # Linked per file: theme installers add their own files to these folders
       for f in "$d"*; do link ".config/$name/$(basename "$f")"; done ;;
     *) link ".config/$name" ;;
   esac

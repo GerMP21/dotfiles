@@ -50,7 +50,7 @@ fi
 step "4/9 Link dotfiles"
 "$DOTS/install.sh"
 
-step "5/9 GTK theme, icons and cursor"
+step "5/9 GTK and Qt themes, icons and cursor"
 git clone --depth 1 https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme.git "$TMP/rose-pine-gtk"
 (cd "$TMP/rose-pine-gtk/themes" && ./install.sh -c dark -l)
 mkdir -p "$HOME/.local/share/icons"
@@ -64,6 +64,12 @@ if ! ls /usr/share/icons/Sunity-cursors "$HOME/.icons/Sunity-cursors" >/dev/null
   mkdir -p "$HOME/.icons"
   tar -xzf "$TMP/sunity/archives/Sunity-cursors.tar.gz" -C "$HOME/.icons/"
 fi
+
+# Qt: Rose Pine theme for Kvantum (official rose-pine/kvantum)
+git clone --depth 1 https://github.com/rose-pine/kvantum.git "$TMP/rose-pine-kvantum"
+mkdir -p "$HOME/.config/Kvantum"
+rm -rf "$HOME/.config/Kvantum/rose-pine-foam"
+tar -xzf "$TMP/rose-pine-kvantum/dist/rose-pine-foam.tar.gz" -C "$HOME/.config/Kvantum/"
 
 if gsettings list-schemas 2>/dev/null | grep -q org.gnome.desktop.interface; then
   gsettings set org.gnome.desktop.interface gtk-theme 'Rosepine-Dark'

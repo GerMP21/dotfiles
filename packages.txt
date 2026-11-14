@@ -35,6 +35,13 @@ nwg-look
 sassc
 gtk-engine-murrine
 gnome-themes-extra
+# Qt theming (Kvantum + qt5ct/qt6ct)
+kvantum
+kvantum-qt5
+qt5ct
+qt6ct
+qt5-wayland
+qt6-wayland
 
 # --- Terminal & shell ---
 alacritty

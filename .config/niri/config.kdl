@@ -46,6 +46,8 @@ screenshot-path "~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png"
 environment {
     ELECTRON_OZONE_PLATFORM_HINT "auto"
     QT_QPA_PLATFORM "wayland"
+    // qt5ct for Qt 5 apps, qt6ct for Qt 6; both use the Kvantum Rose Pine theme
+    QT_QPA_PLATFORMTHEME "qt5ct:qt6ct"
 }
 
 window-rule {

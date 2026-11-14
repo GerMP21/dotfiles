@@ -15,7 +15,8 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | Terminal | alacritty | `.config/alacritty/` |
 | Shell | zsh + starship | `.zshrc`, `.zprofile`, `.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `.config/nvim/`, `.config/doom/` |
-| GTK theme | GTK 2/3 settings | `.config/gtk-3.0/`, `.gtkrc-2.0`, `.icons/` |
+| GTK theme | GTK 2/3/4 settings | `.config/gtk-3.0/`, `.config/gtk-4.0/`, `.gtkrc-2.0`, `.icons/` |
+| Qt theme | Kvantum + qt5ct/qt6ct | `.config/Kvantum/`, `.config/qt5ct/`, `.config/qt6ct/` |
 | Fonts | JetBrains Mono / Iosevka Nerd Font, CatV, Feather, Grape Nuts | `.local/share/fonts/` |
 
 ## Features
@@ -228,6 +229,7 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | Audio | `pipewire`, `pipewire-pulse`, `wireplumber`, `pavucontrol` | Volume keys (`wpctl`), waybar volume click |
 | Network | `networkmanager` | waybar network click (`nmtui`) |
 | Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | Alacritty, waybar, fuzzel, mako, GTK |
+| Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gtk-engine-murrine`, `gnome-themes-extra`; AUR: `sunity-cursors-git` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
 | Shell | `zsh`, `starship`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `eza`, `bat`, `zoxide`, `fzf`, `pyenv`, `yt-dlp` | `.zshrc` aliases and plugins |
 | Archives | `unzip`, `unrar`, `7zip`, `cabextract`, `cpio` | The `extract` function |
@@ -305,6 +307,14 @@ mkdir -p ~/.icons
 tar -xzf /tmp/sunity/archives/Sunity-cursors.tar.gz -C ~/.icons/
 ```
 
+Install the matching Qt theme from [rose-pine/kvantum](https://github.com/rose-pine/kvantum). The configs already select it (`rose-pine-foam`, with `Rose-Pine-Moon` icons via qt5ct/qt6ct, and niri sets `QT_QPA_PLATFORMTHEME`):
+```sh
+git clone --depth 1 https://github.com/rose-pine/kvantum.git /tmp/rose-pine-kvantum
+mkdir -p ~/.config/Kvantum
+tar -xzf /tmp/rose-pine-kvantum/dist/rose-pine-foam.tar.gz -C ~/.config/Kvantum/
+```
+To try another accent (`rose-pine-iris`, `rose-pine-moon-rose` …), extract it the same way and pick it in `kvantummanager`.
+
 Then apply everything for GTK 4 / libadwaita apps, which ignore `settings.ini` on Wayland:
 ```sh
 gsettings set org.gnome.desktop.interface gtk-theme 'Rosepine-Dark'
@@ -359,6 +369,7 @@ pyenv global 3.13
 - **niri doesn't start from tty1:** run `niri-session` by hand and read the errors. `niri validate` also checks the config.
 - **No sound:** run `systemctl --user status wireplumber`.
 - **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 4 again, or pick the theme in `nwg-look`.
+- **Qt apps look unthemed:** check `echo $QT_QPA_PLATFORMTHEME` shows `qt5ct:qt6ct` inside niri, and that `ls ~/.config/Kvantum` lists `rose-pine-foam`. Open `qt6ct` (or `qt5ct` for Double Commander) and check that Style is `kvantum`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
 - **Waterfox doesn't open:** the AUR binary may be named differently. Check with `which waterfox` and update the `Mod+W` bind.
