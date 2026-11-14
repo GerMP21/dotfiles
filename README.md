@@ -17,7 +17,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | Editors | Neovim (lazy.nvim), Doom Emacs | `.config/nvim/`, `.config/doom/` |
 | GTK theme | GTK 2/3/4 settings | `.config/gtk-3.0/`, `.config/gtk-4.0/`, `.gtkrc-2.0`, `.icons/` |
 | Qt theme | Kvantum + qt5ct/qt6ct | `.config/Kvantum/`, `.config/qt5ct/`, `.config/qt6ct/` |
-| Fonts | JetBrains Mono / Iosevka Nerd Font, CatV, Feather, Grape Nuts | `.local/share/fonts/` |
+| Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled) | `.local/share/fonts/` |
 
 ## Features
 
@@ -28,14 +28,15 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
   - 8px gaps and a 2px Tokyo Night focus ring.
   - Rounded corners and a translucent alacritty.
   - Preset column widths (1/3, 1/2, 2/3).
-- **Autostart:** waybar, mako, swaybg, swayidle and the Emacs daemon.
+- **Autostart:** waybar, mako, swaybg, swayidle, the Emacs daemon, the network and Bluetooth tray applets, and the clipboard history watcher.
 - **Idle:** locks after 10 minutes, turns monitors off after 15, and locks before sleep.
 - **Screenshots:** built into niri, saved to `~/Pictures/Screenshots`.
 - **Waybar:**
   - Left: battery, CPU, memory, disk.
   - Center: niri workspaces.
-  - Right: network (click opens `nmtui`), volume (click opens pavucontrol), clock with a calendar tooltip, tray.
-- **Login:** niri starts automatically when you log in on tty1 (`.zprofile`).
+  - Right: network (click opens `nmtui`), volume (click opens pavucontrol), power profile (click cycles power-saver / balanced / performance), clock with a calendar tooltip, tray.
+  - Tray: Wi-Fi menu (`nm-applet`) and Bluetooth (`blueman`).
+- **Login:** niri starts automatically when you log in on tty1 (`.zprofile`), which also unblocks Wi-Fi. Your login password unlocks the GNOME keyring, so apps can save passwords.
 - **Wayland-native apps:** Electron and Qt apps run natively on Wayland.
 - **Zsh:**
   - Vi mode.
@@ -67,7 +68,8 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | `Mod+G` | GIMP |
 | `Mod+I` | Inkscape |
 | `Mod+N` | Double Commander |
-| `Mod+K` | KeePassXC |
+| `Mod+P` | KeePassXC |
+| `Mod+V` | Clipboard history (fuzzel) |
 | `Mod+R` | Goodvibes (radio) |
 | `Super+Alt+L` | Lock screen |
 
@@ -75,11 +77,12 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | Key | Action |
 |---|---|
 | `Mod+Q` | Close window |
+| `Mod+Shift+Q` | Force-kill the window's process (frozen apps) |
 | `Mod+F` / `Mod+Shift+F` | Maximize column / fullscreen |
 | `Mod+T` | Toggle floating |
 | `Mod+Tab` | Overview |
 | `Mod+H` / `Mod+L` (or arrows) | Focus column left / right |
-| `Mod+J` / `Mod+Down`, `Mod+Up` | Focus window or workspace down / up |
+| `Mod+J` / `Mod+K` (or `Down` / `Up`) | Focus window or workspace down / up |
 | `Mod+Alt+H/J/K/L` | Move window or column |
 | `Mod+Shift+H/L` | Column width −/+ 10% |
 | `Mod+Shift+J/K` | Window height +/− 10% |
@@ -90,8 +93,8 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 ### Workspaces and system
 | Key | Action |
 |---|---|
-| `Mod+1…9` | Go to workspace |
-| `Mod+Shift+1…9` | Move column to workspace |
+| `Mod+1…9`, `Mod+º` | Go to workspace 1–9, 10 |
+| `Mod+Shift+1…9`, `Mod+Shift+º` | Move column to workspace 1–9, 10 |
 | `Mod+Scroll` | Previous / next workspace |
 | `Ctrl+Alt+P` | Screenshot (select area) |
 | `Print` / `Alt+Print` | Screenshot screen / window |
@@ -227,8 +230,12 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | Compositor | `niri`, `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `polkit-gnome` | niri; X11 apps; screen sharing and file pickers; password prompts |
 | Desktop | `waybar`, `fuzzel`, `mako`, `swaylock`, `swayidle`, `swaybg`, `wl-clipboard`, `brightnessctl`, `xdg-user-dirs` | Bar, launcher, notifications, lock/idle, wallpaper, clipboard (Neovim `unnamedplus`), brightness keys |
 | Audio | `pipewire`, `pipewire-pulse`, `wireplumber`, `pavucontrol` | Volume keys (`wpctl`), waybar volume click |
-| Network | `networkmanager` | waybar network click (`nmtui`) |
-| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | Alacritty, waybar, fuzzel, mako, GTK |
+| Network | `networkmanager`, `network-manager-applet` | waybar network click (`nmtui`), Wi-Fi tray menu |
+| Bluetooth | `bluez`, `bluez-utils`, `blueman` | Bluetooth service and tray applet |
+| Keyring | `gnome-keyring`, `libsecret`, `seahorse` | Saved passwords for Thunderbird, browsers, git; `seahorse` to manage them |
+| Power | `power-profiles-daemon` | waybar power-profile button |
+| Clipboard / scripts | `cliphist`, `jq` | `Mod+V` history; `Mod+Shift+Q` force-kill |
+| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | Alacritty, waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gtk-engine-murrine`, `gnome-themes-extra`; AUR: `sunity-cursors-git` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
 | Shell | `zsh`, `starship`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `eza`, `bat`, `zoxide`, `fzf`, `pyenv`, `yt-dlp` | `.zshrc` aliases and plugins |
@@ -287,7 +294,8 @@ This script:
 - installs the bundled fonts;
 - creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
 - sets your home path in the niri wallpaper line;
-- enables PipeWire and NetworkManager, and disables connman if it's running;
+- enables PipeWire, NetworkManager, Bluetooth, power profiles and the GNOME keyring, and disables connman if it's running;
+- adds `pam_gnome_keyring` to `/etc/pam.d/login` so your login password unlocks the keyring;
 - makes zsh your login shell.
 
 **5. Install the GTK and icon themes.** Both come from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme). It isn't in the AUR; `rose-pine-gtk-theme-full` there is a different theme.

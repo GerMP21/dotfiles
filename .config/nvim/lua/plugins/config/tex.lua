@@ -23,7 +23,7 @@ vim.g['vimtex_log_ignore'] = ({
   'Token not allowed in a PDF string',
 })
 
-vim.g['vimtex_context_pdf_viewer'] = 'okular'
+vim.g['vimtex_context_pdf_viewer'] = 'zathura'
 
 -- vim.g['vimtex_complete_enabled'] = 1
 -- vim.g['vimtex_compiler_progname'] = 'nvr'

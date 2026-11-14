@@ -16,6 +16,16 @@ swaybg
 wl-clipboard
 brightnessctl
 xdg-user-dirs
+jq
+cliphist
+network-manager-applet
+bluez
+bluez-utils
+blueman
+gnome-keyring
+libsecret
+seahorse
+power-profiles-daemon
 
 # --- Audio / network ---
 pipewire
