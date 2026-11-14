@@ -15,6 +15,7 @@ swayidle
 swaybg
 wl-clipboard
 brightnessctl
+playerctl
 xdg-user-dirs
 jq
 cliphist
@@ -38,6 +39,8 @@ networkmanager
 ttf-jetbrains-mono-nerd
 ttf-iosevka-nerd
 cantarell-fonts
+# icons in Doom's modeline, dashboard and treemacs
+ttf-nerd-fonts-symbols-mono
 noto-fonts
 noto-fonts-emoji
 nwg-look

@@ -1,56 +1,22 @@
-### EXPORT
+# Interactive shells only. Environment variables live in ~/.zshenv.
+[[ $- != *i* ]] && return
+
+### HISTORY
 HISTFILE=~/.histfile
 HISTSIZE=10000
 SAVEHIST=10000
+HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"
 setopt HIST_IGNORE_ALL_DUPS SHARE_HISTORY
 
-export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"
-export EDITOR="nvim"
-export VISUAL="nvim"
+### COMPLETION
+autoload -Uz compinit && compinit
+zstyle ':completion:*' menu select
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Za-z}'   # case-insensitive
 
-### SET MANPAGER
-### "nvim" as manpager
-export MANPAGER="nvim -c 'set ft=man' -"
-
-### SET VI MODE ###
-# Comment this line out to enable default emacs-like bindings
+### VI MODE
+# Comment this out to use emacs-like bindings
 bindkey -v
-
-# If not running interactively, don't do anything
-[[ $- != *i* ]] && return
-
-### PATH
-if [ -d "$HOME/.bin" ] ;
-  then PATH="$HOME/.bin:$PATH"
-fi
-
-
-if [ -d "$HOME/.local/bin" ] ;
-  then PATH="$HOME/.local/bin:$PATH"
-fi
-
-if [ -d "$HOME/Applications" ] ;
-  then PATH="$HOME/Applications:$PATH"
-fi
-
-if [ -d "/var/lib/flatpak/exports/bin/" ] ;
-  then PATH="/var/lib/flatpak/exports/bin/:$PATH"
-fi
-
-if [ -d "$HOME/.config/emacs/bin/" ] ;
-  then PATH="$HOME/.config/emacs/bin/:$PATH"
-fi
-
-### SETTING OTHER ENVIRONMENT VARIABLES
-if [ -z "$XDG_CONFIG_HOME" ] ; then
-    export XDG_CONFIG_HOME="$HOME/.config"
-fi
-if [ -z "$XDG_DATA_HOME" ] ; then
-    export XDG_DATA_HOME="$HOME/.local/share"
-fi
-if [ -z "$XDG_CACHE_HOME" ] ; then
-    export XDG_CACHE_HOME="$HOME/.cache"
-fi
+KEYTIMEOUT=1   # switch to normal mode with Esc without a delay
 
 ### Function extract for common file formats ###
 
@@ -152,14 +118,14 @@ alias ytv-best="yt-dlp -f bestvideo+bestaudio "
 ### SETTING THE STARSHIP PROMPT ###
 eval "$(starship init zsh)"
 
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 ### ZOXIDE (z / zi) ###
 command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 
 ### PYENV ###
-export PYENV_ROOT="$HOME/.pyenv"
-[ -d "$PYENV_ROOT/bin" ] && PATH="$PYENV_ROOT/bin:$PATH"
 command -v pyenv >/dev/null && eval "$(pyenv init - zsh)"
+
+### PLUGINS (syntax highlighting must be sourced last)
+source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 

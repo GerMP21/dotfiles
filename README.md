@@ -13,7 +13,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | Lock / idle | swaylock + swayidle | `.config/swaylock/config` |
 | Wallpaper | swaybg | set in niri config |
 | Terminal | alacritty | `.config/alacritty/` |
-| Shell | zsh + starship | `.zshrc`, `.zprofile`, `.config/starship.toml` |
+| Shell | zsh + starship | `.zshenv` (environment, PATH), `.zprofile` (login), `.zshrc` (interactive), `.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `.config/nvim/`, `.config/doom/` |
 | GTK theme | GTK 2/3/4 settings | `.config/gtk-3.0/`, `.config/gtk-4.0/`, `.gtkrc-2.0`, `.icons/` |
 | Qt theme | Kvantum + qt5ct/qt6ct | `.config/Kvantum/`, `.config/qt5ct/`, `.config/qt6ct/` |
@@ -41,11 +41,13 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 - **Zsh:**
   - Vi mode.
   - Neovim as editor and man pager.
+  - Tab completion with a menu, case-insensitive.
+  - Environment and `PATH` set in `.zshenv`, so apps launched from niri see them too.
   - XDG directories.
   - An `extract` function for archives.
   - Starship prompt.
 - **Neovim:**
-  - Native LSP (`vim.lsp.config`, Neovim 0.11+), with servers installed through Mason, plus nvim-cmp and LuaSnip.
+  - Native LSP (`vim.lsp.config`, Neovim 0.12+), with servers installed through Mason, plus nvim-cmp and LuaSnip.
   - Treesitter.
   - Telescope with fzf and zoxide.
   - Harpoon, fugitive and undotree.
@@ -71,7 +73,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | `Mod+P` | KeePassXC |
 | `Mod+V` | Clipboard history (fuzzel) |
 | `Mod+R` | Goodvibes (radio) |
-| `Super+Alt+L` | Lock screen |
+| `Mod+Escape` | Lock screen |
 
 ### Windows
 | Key | Action |
@@ -98,7 +100,8 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | `Mod+Scroll` | Previous / next workspace |
 | `Ctrl+Alt+P` | Screenshot (select area) |
 | `Print` / `Alt+Print` | Screenshot screen / window |
-| Volume / brightness keys | `wpctl` / `brightnessctl` |
+| Volume, mic-mute, brightness keys | `wpctl` / `brightnessctl` |
+| Play / pause / next / previous keys | `playerctl` (any media player) |
 | `Mod+Shift+P` | Monitors off |
 | `Mod+Alt+Q` | Quit niri |
 
@@ -228,19 +231,19 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | Group | Packages | Used by |
 |---|---|---|
 | Compositor | `niri`, `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `polkit-gnome` | niri; X11 apps; screen sharing and file pickers; password prompts |
-| Desktop | `waybar`, `fuzzel`, `mako`, `swaylock`, `swayidle`, `swaybg`, `wl-clipboard`, `brightnessctl`, `xdg-user-dirs` | Bar, launcher, notifications, lock/idle, wallpaper, clipboard (Neovim `unnamedplus`), brightness keys |
+| Desktop | `waybar`, `fuzzel`, `mako`, `swaylock`, `swayidle`, `swaybg`, `wl-clipboard`, `brightnessctl`, `playerctl`, `xdg-user-dirs` | Bar, launcher, notifications, lock/idle, wallpaper, clipboard (Neovim `unnamedplus`), brightness keys |
 | Audio | `pipewire`, `pipewire-pulse`, `wireplumber`, `pavucontrol` | Volume keys (`wpctl`), waybar volume click |
 | Network | `networkmanager`, `network-manager-applet` | waybar network click (`nmtui`), Wi-Fi tray menu |
 | Bluetooth | `bluez`, `bluez-utils`, `blueman` | Bluetooth service and tray applet |
 | Keyring | `gnome-keyring`, `libsecret`, `seahorse` | Saved passwords for Thunderbird, browsers, git; `seahorse` to manage them |
 | Power | `power-profiles-daemon` | waybar power-profile button |
 | Clipboard / scripts | `cliphist`, `jq` | `Mod+V` history; `Mod+Shift+Q` force-kill |
-| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | Alacritty, waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
+| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons), `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | Alacritty, waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gtk-engine-murrine`, `gnome-themes-extra`; AUR: `sunity-cursors-git` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
 | Shell | `zsh`, `starship`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `eza`, `bat`, `zoxide`, `fzf`, `pyenv`, `yt-dlp` | `.zshrc` aliases and plugins |
 | Archives | `unzip`, `unrar`, `7zip`, `cabextract`, `cpio` | The `extract` function |
-| Neovim | `neovim` (0.11+), `git`, `base-devel`, `tree-sitter-cli`, `ripgrep`, `fd`, `nodejs`, `npm`, `python`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
+| Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `git`, `base-devel`, `tree-sitter-cli`, `ripgrep`, `fd`, `nodejs`, `npm`, `python`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
 | LaTeX | `texlive-basic`, `texlive-latex`, `texlive-latexrecommended`, `texlive-latexextra`, `texlive-binextra` (latexmk), `zathura`, `zathura-pdf-mupdf` | VimTeX compile and PDF viewer |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | AUR safety | AUR: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
@@ -293,7 +296,6 @@ This script:
 - symlinks every config into `~` (anything already there is moved to `~/.dotfiles-backup/<date>/`);
 - installs the bundled fonts;
 - creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
-- sets your home path in the niri wallpaper line;
 - enables PipeWire, NetworkManager, Bluetooth, power profiles and the GNOME keyring, and disables connman if it's running;
 - adds `pam_gnome_keyring` to `/etc/pam.d/login` so your login password unlocks the keyring;
 - makes zsh your login shell.
@@ -335,11 +337,11 @@ gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 **6. Install Doom Emacs:**
 ```sh
 git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
-~/.config/emacs/bin/doom install
+~/.config/emacs/bin/doom install --env
 doom sync
 doom doctor
 ```
-When `doom install` asks to generate an envvar file, say yes. Your Doom config is already linked at `~/.config/doom`.
+`--env` generates Doom's envvar file, so Emacs sees the `PATH` from `.zshenv`. Your Doom config is already linked at `~/.config/doom`.
 
 **7. Add a wallpaper** at `~/Pictures/wallpaper.png`, or change the `swaybg` line in `~/.config/niri/config.kdl`.
 
@@ -367,7 +369,7 @@ pyenv global 3.13
 - [ ] The workspace and battery modules show up in waybar.
 - [ ] The volume and brightness keys work.
 - [ ] `notify-send hi` shows a mako notification.
-- [ ] `Super+Alt+L` locks the screen.
+- [ ] `Mod+Escape` locks the screen.
 - [ ] `Ctrl+Alt+P` saves a screenshot to `~/Pictures/Screenshots`.
 - [ ] `z <dir>` jumps to a directory, and `ls` shows eza output.
 - [ ] In Neovim, `:LspInfo` lists a server on a `.lua`, `.py` or `.ts` file.
@@ -378,6 +380,10 @@ pyenv global 3.13
 - **No sound:** run `systemctl --user status wireplumber`.
 - **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 4 again, or pick the theme in `nwg-look`.
 - **Qt apps look unthemed:** check `echo $QT_QPA_PLATFORMTHEME` shows `qt5ct:qt6ct` inside niri, and that `ls ~/.config/Kvantum` lists `rose-pine-foam`. Open `qt6ct` (or `qt5ct` for Double Commander) and check that Style is `kvantum`.
+- **niri ignores your config and uses its defaults:** a duplicate keybinding or a typo stops niri loading `config.kdl`. Run `niri validate` to see the line.
+- **`Mod+º` does nothing:** run `wev`, press the º key and check the keysym it prints. If it isn't `masculine`, use that name in the two workspace-10 binds.
+- **Apps keep asking for a keyring password:** the login unlock isn't working. Check that `grep pam_gnome_keyring /etc/pam.d/login` shows two lines. If the keyring was created with a different password, delete `~/.local/share/keyrings/login.keyring` and log in again.
+- **Neovim says nvim-treesitter needs a newer version:** the `main` branch needs Neovim 0.12+. Check with `nvim --version`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
 - **Waterfox doesn't open:** the AUR binary may be named differently. Check with `which waterfox` and update the `Mod+W` bind.

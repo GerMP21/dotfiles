@@ -1,6 +1,7 @@
 -- PDF Viewer:
 -- http://manpages.ubuntu.com/manpages/trusty/man5/zathurarc.5.html
-vim.g['vimtex_view_method'] = 'zathura'
+-- zathura_simple: plain zathura needs xdotool, which only works on X11
+vim.g['vimtex_view_method'] = 'zathura_simple'
 vim.g['vimtex_quickfix_mode'] =0
 
 -- Ignore mappings

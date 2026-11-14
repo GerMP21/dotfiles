@@ -86,14 +86,18 @@ if [ -x "$HOME/.config/emacs/bin/doom" ]; then
   "$HOME/.config/emacs/bin/doom" sync
 else
   git clone --depth 1 https://github.com/doomemacs/doomemacs "$HOME/.config/emacs"
-  # --force answers yes to the prompts (envvar file, fonts)
-  "$HOME/.config/emacs/bin/doom" install --force
+  # --env generates the envvar file; --force answers yes to any other prompt
+  "$HOME/.config/emacs/bin/doom" install --env --force
 fi
 "$HOME/.config/emacs/bin/doom" doctor || warn "doom doctor reported issues; review them above"
 
 step "7/9 Neovim plugins, parsers and language servers"
 nvim --headless "+Lazy! sync" +qa || warn "lazy.nvim sync failed; open nvim to retry"
-echo "Mason installs the language servers the first time you open nvim."
+# Both of these block until done when nvim runs headless
+nvim --headless --cmd "let g:bootstrap=1" -c "lua require('nvim-treesitter').install(require('plugins.config.ts_parsers')):wait(600000)" -c qa \
+  || warn "Treesitter parsers failed; run :TSUpdate in nvim"
+nvim --headless --cmd "let g:bootstrap=1" -c "MasonInstall bash-language-server python-lsp-server typescript-language-server rust-analyzer lua-language-server" -c qa \
+  || warn "Some language servers failed; run :Mason in nvim"
 
 step "8/9 Wallpaper"
 if [ ! -f "$HOME/Pictures/wallpaper.png" ]; then
