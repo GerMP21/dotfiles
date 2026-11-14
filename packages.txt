@@ -66,7 +66,6 @@ nodejs
 npm
 python
 python-pip
-python-pipx
 luarocks
 
 # --- LaTeX (vimtex) ---

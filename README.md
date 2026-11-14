@@ -145,7 +145,7 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | Neovim | `neovim` (0.11+), `git`, `base-devel`, `tree-sitter-cli`, `ripgrep`, `fd`, `nodejs`, `npm`, `python`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
 | LaTeX | `texlive-basic`, `texlive-latex`, `texlive-latexrecommended`, `texlive-latexextra`, `texlive-binextra` (latexmk), `zathura`, `zathura-pdf-mupdf` | VimTeX compile and PDF viewer |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
-| AUR safety | `python-pipx`; `trustsight` (via pipx, not in the AUR) | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
+| AUR safety | AUR: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`; AUR: `waterfox-bin`, `spacefm` (or `spacefm-bin`), `goodvibes` | `Mod+` app shortcuts |
 
 Not packaged, so install these by hand:
@@ -175,12 +175,7 @@ sudo pacman -Syu --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
 paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
 ```
 
-Then install TrustSight, which checks AUR updates for risky changes. It isn't in the AUR, so use pipx (Python 3.12+):
-```sh
-pipx ensurepath
-pipx install trustsight
-```
-From then on, run `trustsight` before `paru -Syu` to review pending AUR updates.
+This installs TrustSight from the AUR. From then on, run `trustsight` before `paru -Syu` to review pending AUR updates for risky changes.
 
 **4. Link the dotfiles:**
 ```sh

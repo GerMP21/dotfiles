@@ -6,7 +6,6 @@
 waterfox-bin
 spacefm
 goodvibes
+# Vets AUR package updates before you install them
+trustsight
 sunity-cursors-git
-
-# Not in the AUR: TrustSight (vets AUR package updates) is installed with pipx.
-#   pipx install trustsight
