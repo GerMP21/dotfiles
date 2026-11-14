@@ -31,6 +31,10 @@ cantarell-fonts
 noto-fonts
 noto-fonts-emoji
 nwg-look
+# build deps for the Rose Pine GTK theme
+sassc
+gtk-engine-murrine
+gnome-themes-extra
 
 # --- Terminal & shell ---
 alacritty

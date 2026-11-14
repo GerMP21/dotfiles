@@ -1,9 +1,9 @@
 # AUR packages. Install with an AUR helper, e.g.:
 #   paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
-# Names could not be verified when this was written; if one is missing,
-# search for it with `paru -Ss <name>`.
+# Checked against the AUR in Nov 2026. spacefm upstream is unmaintained;
+# if `spacefm` fails to build, use `spacefm-bin` instead.
 
 waterfox-bin
 spacefm
 goodvibes
-rose-pine-gtk-theme-full
+sunity-cursors-git

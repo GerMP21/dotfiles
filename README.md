@@ -139,16 +139,16 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | Audio | `pipewire`, `pipewire-pulse`, `wireplumber`, `pavucontrol` | Volume keys (`wpctl`), waybar volume click |
 | Network | `networkmanager` | waybar network click (`nmtui`) |
 | Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | Alacritty, waybar, fuzzel, mako, GTK |
-| Theming | `nwg-look`, `rose-pine-gtk-theme-full` (AUR) | GTK theme `RosePine-Main-BL` |
+| Theming | `nwg-look`, `sassc`, `gtk-engine-murrine`, `gnome-themes-extra`; AUR: `sunity-cursors-git` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
 | Shell | `zsh`, `starship`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `eza`, `bat`, `zoxide`, `fzf`, `pyenv`, `yt-dlp` | `.zshrc` aliases and plugins |
 | Archives | `unzip`, `unrar`, `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.11+), `git`, `base-devel`, `tree-sitter-cli`, `ripgrep`, `fd`, `nodejs`, `npm`, `python`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
 | LaTeX | `texlive-basic`, `texlive-latex`, `texlive-latexrecommended`, `texlive-latexextra`, `texlive-binextra` (latexmk), `zathura`, `zathura-pdf-mupdf` | VimTeX compile and PDF viewer |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`; AUR: `waterfox-bin`, `spacefm`, `goodvibes` | `Mod+` app shortcuts |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`; AUR: `waterfox-bin`, `spacefm` (or `spacefm-bin`), `goodvibes` | `Mod+` app shortcuts |
 
 Not packaged, so install these by hand:
-- **Icon theme `Rose-Pine-Moon`** and **cursor theme `Sunity-cursors`**. Extract them into `~/.local/share/icons/`, or pick other themes in `nwg-look` and update `.config/gtk-*/settings.ini` and the `cursor` block in the niri config.
+- **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 5 below).
 - **Doom Emacs** (step 6 below).
 
 ## Installation
@@ -174,9 +174,7 @@ sudo pacman -Syu --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
 paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
 ```
 
-**4. Install the icon and cursor themes** listed above.
-
-**5. Link the dotfiles:**
+**4. Link the dotfiles:**
 ```sh
 ./install.sh
 ```
@@ -187,6 +185,32 @@ This script:
 - sets your home path in the niri wallpaper line;
 - enables PipeWire and NetworkManager, and disables connman if it's running;
 - makes zsh your login shell.
+
+**5. Install the GTK and icon themes.** Both come from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme). It isn't in the AUR; `rose-pine-gtk-theme-full` there is a different theme.
+```sh
+git clone --depth 1 https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme.git /tmp/rose-pine-gtk
+cd /tmp/rose-pine-gtk/themes
+./install.sh -c dark -l      # builds ~/.themes/Rosepine-Dark; -l also sets it for GTK 4 / libadwaita apps
+mkdir -p ~/.local/share/icons
+cp -r /tmp/rose-pine-gtk/icons/Rose-Pine-Moon ~/.local/share/icons/
+gtk-update-icon-cache -f ~/.local/share/icons/Rose-Pine-Moon
+cd ~/dotfiles
+```
+The cursor theme `Sunity-cursors` comes from the AUR package `sunity-cursors-git` (installed in step 3). To install it by hand instead:
+```sh
+git clone --depth 1 https://github.com/alvatip/Sunity-cursors.git /tmp/sunity
+mkdir -p ~/.icons
+tar -xzf /tmp/sunity/archives/Sunity-cursors.tar.gz -C ~/.icons/
+```
+
+Then apply everything for GTK 4 / libadwaita apps, which ignore `settings.ini` on Wayland:
+```sh
+gsettings set org.gnome.desktop.interface gtk-theme 'Rosepine-Dark'
+gsettings set org.gnome.desktop.interface icon-theme 'Rose-Pine-Moon'
+gsettings set org.gnome.desktop.interface cursor-theme 'Sunity-cursors'
+gsettings set org.gnome.desktop.interface cursor-size 24
+gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+```
 
 **6. Install Doom Emacs:**
 ```sh
@@ -232,6 +256,7 @@ pyenv global 3.13
 ## Troubleshooting
 - **niri doesn't start from tty1:** run `niri-session` by hand and read the errors. `niri validate` also checks the config.
 - **No sound:** run `systemctl --user status wireplumber`.
-- **GTK theme isn't applied:** open `nwg-look` and pick `RosePine-Main-BL`. That also updates gsettings for GTK 4 apps.
+- **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 4 again, or pick the theme in `nwg-look`.
+- **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
 - **Waterfox doesn't open:** the AUR binary may be named differently. Check with `which waterfox` and update the `Mod+W` bind.

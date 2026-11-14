@@ -1,6 +1,6 @@
 
 include "~/.gtkrc-2.0.mine"
-gtk-theme-name="RosePine-Main-BL"
+gtk-theme-name="Rosepine-Dark"
 gtk-icon-theme-name="Rose-Pine-Moon"
 gtk-font-name="Cantarell 11"
 gtk-cursor-theme-name="Sunity-cursors"

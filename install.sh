@@ -22,7 +22,15 @@ link() {
 }
 
 for f in .zshrc .zprofile .gtkrc-2.0 .icons/default/index.theme; do link "$f"; done
-for d in "$DOTS"/.config/*/ ; do link ".config/$(basename "$d")"; done
+for d in "$DOTS"/.config/*/ ; do
+  name="$(basename "$d")"
+  case "$name" in
+    gtk-2.0|gtk-3.0|gtk-4.0)
+      # Linked per file: the GTK theme installer adds its own files to these folders
+      for f in "$d"*; do link ".config/$name/$(basename "$f")"; done ;;
+    *) link ".config/$name" ;;
+  esac
+done
 link .config/starship.toml
 link .local/share/goodvibes/stations.xml
 
