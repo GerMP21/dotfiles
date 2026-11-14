@@ -46,7 +46,6 @@ noto-fonts-emoji
 nwg-look
 # build deps for the Rose Pine GTK theme
 sassc
-gtk-engine-murrine
 gnome-themes-extra
 # Qt theming (Kvantum + qt5ct/qt6ct)
 kvantum

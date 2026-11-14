@@ -240,7 +240,7 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | Clipboard / scripts | `cliphist`, `jq` | `Mod+V` history; `Mod+Shift+Q` force-kill |
 | Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons), `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | Alacritty, waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
-| Theming | `nwg-look`, `sassc`, `gtk-engine-murrine`, `gnome-themes-extra`; AUR: `sunity-cursors-git` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
+| Theming | `nwg-look`, `sassc`, `gnome-themes-extra`; AUR: `sunity-cursors-git`, `gtk-engine-murrine` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
 | Shell | `zsh`, `starship`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `eza`, `bat`, `zoxide`, `fzf`, `pyenv`, `yt-dlp` | `.zshrc` aliases and plugins |
 | Archives | `unzip`, `unrar`, `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `git`, `base-devel`, `tree-sitter-cli`, `ripgrep`, `fd`, `nodejs`, `npm`, `python`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |

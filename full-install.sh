@@ -27,7 +27,15 @@ while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done 2>
 
 step "1/9 Official packages"
 sudo pacman -Syu --needed --noconfirm git base-devel
-mapfile -t PKGS < <(pkglist "$DOTS/packages.txt")
+# Skip names that aren't in the official repos (e.g. moved to the AUR) instead
+# of letting one unknown name make pacman refuse the whole list
+mapfile -t WANTED < <(pkglist "$DOTS/packages.txt" | sort -u)
+mapfile -t MISSING < <(comm -23 <(printf '%s\n' "${WANTED[@]}") <(pacman -Slq | sort -u))
+mapfile -t PKGS < <(comm -12 <(printf '%s\n' "${WANTED[@]}") <(pacman -Slq | sort -u))
+if [ "${#MISSING[@]}" -gt 0 ]; then
+  warn "Not in the official repos, skipped: ${MISSING[*]}"
+  warn "They may have moved to the AUR; try: paru -S ${MISSING[*]}"
+fi
 sudo pacman -S --needed "${PKGS[@]}"
 
 step "2/9 AUR helper (paru)"
