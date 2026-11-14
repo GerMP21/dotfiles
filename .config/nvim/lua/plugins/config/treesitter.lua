@@ -1,7 +1,8 @@
-local parsers = { "latex", "bash", "lua", "python", "javascript", "typescript", "rust", "c",
-  "markdown", "markdown_inline", "vim", "vimdoc", "query" }
-
-require("nvim-treesitter").install(parsers)
+-- Parser list is shared with full-install.sh, which sets g:bootstrap and
+-- installs them itself (synchronously) instead
+if not vim.g.bootstrap then
+  require("nvim-treesitter").install(require("plugins.config.ts_parsers"))
+end
 
 -- The main branch no longer enables highlighting by itself
 vim.api.nvim_create_autocmd("FileType", {

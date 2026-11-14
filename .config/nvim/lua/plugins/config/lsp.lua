@@ -9,9 +9,10 @@ vim.lsp.config("lua_ls", {
   },
 })
 
--- Installs these and enables every Mason-installed server automatically
+-- Installs these and enables every Mason-installed server automatically.
+-- full-install.sh sets g:bootstrap and installs them with :MasonInstall instead.
 require("mason-lspconfig").setup({
-  ensure_installed = { "bashls", "pylsp", "ts_ls", "rust_analyzer", "lua_ls" },
+  ensure_installed = vim.g.bootstrap and {} or { "bashls", "pylsp", "ts_ls", "rust_analyzer", "lua_ls" },
 })
 
 vim.api.nvim_create_autocmd("LspAttach", {

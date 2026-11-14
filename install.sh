@@ -21,7 +21,7 @@ link() {
   echo "linked ~/$1"
 }
 
-for f in .zshrc .zprofile .gtkrc-2.0 .icons/default/index.theme; do link "$f"; done
+for f in .zshenv .zshrc .zprofile .gtkrc-2.0 .icons/default/index.theme; do link "$f"; done
 for d in "$DOTS"/.config/*/ ; do
   name="$(basename "$d")"
   case "$name" in
@@ -36,18 +36,15 @@ link .local/share/goodvibes/stations.xml
 
 # Fonts are copied, not linked, so fontconfig picks them up reliably
 mkdir -p "$HOME/.local/share/fonts"
-cp -n "$DOTS"/.local/share/fonts/* "$HOME/.local/share/fonts/"
+cp --update=none "$DOTS"/.local/share/fonts/* "$HOME/.local/share/fonts/"
 fc-cache -f
 
 # Folders the configs expect
 xdg-user-dirs-update
 mkdir -p "$HOME/Pictures/Screenshots" "$HOME/Projects" "$HOME/org"
 
-# Put the real home path in the wallpaper line
-sed -i "s|/home/USERNAME/|$HOME/|" "$DOTS/.config/niri/config.kdl"
-
 # Services
-systemctl --user enable --now pipewire pipewire-pulse wireplumber
+systemctl --user enable --now pipewire.socket pipewire-pulse.socket wireplumber.service
 if systemctl is-enabled connman >/dev/null 2>&1; then
   echo "connman is enabled; disabling it in favour of NetworkManager"
   sudo systemctl disable --now connman

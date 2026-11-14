@@ -1,4 +1,4 @@
--- Requires Neovim 0.11+
+-- Requires Neovim 0.12+ (nvim-treesitter main branch)
 require("lazy").setup({
   {
     "rebelot/kanagawa.nvim",
