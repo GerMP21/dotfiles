@@ -1,7 +1,8 @@
 // niri config — https://github.com/YaLTeR/niri/wiki/Configuration:-Introduction
 input {
     keyboard {
-        xkb { layout "es"; }
+        // Spanish first (the default), English second. Mod+Ctrl+Space switches.
+        xkb { layout "es,us"; }
         numlock
     }
     touchpad { tap; natural-scroll; dwt; }
@@ -124,6 +125,10 @@ binds {
     Mod+BracketLeft  { consume-or-expel-window-left; }
     Mod+BracketRight { consume-or-expel-window-right; }
     Mod+Space        { switch-preset-column-width; }
+
+    // Keyboard layout: toggle Spanish (es) <-> English (us)
+    Mod+Ctrl+Space   { switch-layout "next"; }
+
     Mod+C            { center-column; }
     Mod+Shift+H { set-column-width "-10%"; }
     Mod+Shift+L { set-column-width "+10%"; }
@@ -140,8 +145,10 @@ binds {
     Mod+7 { focus-workspace 7; }
     Mod+8 { focus-workspace 8; }
     Mod+9 { focus-workspace 9; }
-    // º is the key left of 1 on a Spanish keyboard
+    // Workspace 10 is the key left of 1: º on the Spanish layout, ` on English.
+    // niri tries the current layout's key first, so both binds are needed.
     Mod+masculine { focus-workspace 10; }
+    Mod+grave     { focus-workspace 10; }
     Mod+Shift+1 { move-column-to-workspace 1; }
     Mod+Shift+2 { move-column-to-workspace 2; }
     Mod+Shift+3 { move-column-to-workspace 3; }
@@ -152,6 +159,7 @@ binds {
     Mod+Shift+8 { move-column-to-workspace 8; }
     Mod+Shift+9 { move-column-to-workspace 9; }
     Mod+Shift+masculine { move-column-to-workspace 10; }
+    Mod+Shift+grave     { move-column-to-workspace 10; }
     Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
     Mod+WheelScrollUp   cooldown-ms=150 { focus-workspace-up; }
 
