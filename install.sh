@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Links these dotfiles into $HOME. Existing files are moved to ~/.dotfiles-backup/<date>/.
 # Run from the repo root after installing packages.txt and packages-aur.txt.
+# Meant for CachyOS with the niri desktop: the installer already enabled
+# NetworkManager, Bluetooth, PipeWire and SDDM (whose login unlocks the keyring).
 set -euo pipefail
 
 DOTS="$(cd "$(dirname "$0")" && pwd)"
@@ -44,27 +46,15 @@ fc-cache -f
 xdg-user-dirs-update
 mkdir -p "$HOME/Pictures/Screenshots" "$HOME/Projects" "$HOME/org"
 
-# Services
-systemctl --user enable --now pipewire.socket pipewire-pulse.socket wireplumber.service
-if systemctl is-enabled connman >/dev/null 2>&1; then
-  echo "connman is enabled; disabling it in favour of NetworkManager"
-  sudo systemctl disable --now connman
-fi
-sudo systemctl enable --now NetworkManager
-sudo systemctl enable --now bluetooth power-profiles-daemon
+# Services the CachyOS installer doesn't enable
+sudo systemctl enable --now power-profiles-daemon
 systemctl --user enable gnome-keyring-daemon.socket
 
-# Unlock the keyring with your login password (tty login, then niri)
-if ! grep -q pam_gnome_keyring /etc/pam.d/login; then
-  echo "Adding gnome-keyring to /etc/pam.d/login"
-  printf 'auth       optional     pam_gnome_keyring.so\nsession    optional     pam_gnome_keyring.so auto_start\n' | sudo tee -a /etc/pam.d/login >/dev/null
-fi
-
-# Login shell
+# Login shell: CachyOS makes fish the default
 if [ "$(basename "$SHELL")" != "zsh" ]; then
   chsh -s /usr/bin/zsh
 fi
 
 echo
 echo "Done. Backups (if any) are in $BACKUP"
-echo "Next: log out and log in on tty1."
+echo "Next: log out, then log back in from the login screen with the niri session."

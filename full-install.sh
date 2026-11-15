@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-shot setup for these dotfiles on Arch Linux.
+# One-shot setup for these dotfiles on CachyOS, installed with the niri desktop.
 # Run as your normal user from anywhere:  ~/dotfiles/full-install.sh
 # It asks for your sudo password when needed. It's safe to run again: finished steps are skipped or redone harmlessly.
 set -euo pipefail
@@ -17,7 +17,7 @@ if [ "$EUID" -eq 0 ]; then
   exit 1
 fi
 if ! command -v pacman >/dev/null; then
-  echo "This script is for Arch Linux (pacman not found)." >&2
+  echo "This script is for CachyOS / Arch Linux (pacman not found)." >&2
   exit 1
 fi
 
@@ -25,26 +25,39 @@ fi
 sudo -v
 while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done 2>/dev/null &
 
-step "1/9 Official packages"
-sudo pacman -Syu --needed --noconfirm git base-devel
-# Skip names that aren't in the official repos (e.g. moved to the AUR) instead
+step "1/9 Remove the Noctalia shell (replaced by waybar, fuzzel, mako and swaylock)"
+mapfile -t NOCTALIA < <(pacman -Qq cachyos-niri-noctalia noctalia 2>/dev/null || true)
+if [ "${#NOCTALIA[@]}" -gt 0 ]; then
+  # These came in as dependencies of cachyos-niri-noctalia, but this setup
+  # needs them too. Marking them as explicitly installed stops pacman -Rs
+  # (and the `cleanup` alias) from removing them along with it.
+  mapfile -t KEEP < <(pacman -Qq niri xwayland-satellite xdg-desktop-portal-gnome \
+    xdg-desktop-portal-gtk gnome-keyring wl-clipboard noto-fonts noto-fonts-emoji sddm 2>/dev/null || true)
+  if [ "${#KEEP[@]}" -gt 0 ]; then
+    sudo pacman -D --asexplicit "${KEEP[@]}"
+  fi
+  sudo pacman -Rs "${NOCTALIA[@]}"
+  if [ -d "$HOME/.config/noctalia" ]; then
+    mkdir -p "$HOME/.dotfiles-backup"
+    mv "$HOME/.config/noctalia" "$HOME/.dotfiles-backup/noctalia-$(date +%Y%m%d-%H%M%S)"
+    echo "moved ~/.config/noctalia to ~/.dotfiles-backup/"
+  fi
+else
+  echo "Noctalia isn't installed"
+fi
+
+step "2/9 Repo packages (including paru)"
+sudo pacman -Syu
+# Skip names that aren't in the repos (e.g. moved to the AUR) instead
 # of letting one unknown name make pacman refuse the whole list
 mapfile -t WANTED < <(pkglist "$DOTS/packages.txt" | sort -u)
 mapfile -t MISSING < <(comm -23 <(printf '%s\n' "${WANTED[@]}") <(pacman -Slq | sort -u))
 mapfile -t PKGS < <(comm -12 <(printf '%s\n' "${WANTED[@]}") <(pacman -Slq | sort -u))
 if [ "${#MISSING[@]}" -gt 0 ]; then
-  warn "Not in the official repos, skipped: ${MISSING[*]}"
+  warn "Not in the repos, skipped: ${MISSING[*]}"
   warn "They may have moved to the AUR; try: paru -S ${MISSING[*]}"
 fi
 sudo pacman -S --needed "${PKGS[@]}"
-
-step "2/9 AUR helper (paru)"
-if command -v paru >/dev/null; then
-  echo "paru already installed"
-else
-  git clone --depth 1 https://aur.archlinux.org/paru-bin.git "$TMP/paru-bin"
-  (cd "$TMP/paru-bin" && makepkg -si --noconfirm)
-fi
 
 step "3/9 AUR packages"
 mapfile -t AUR < <(pkglist "$DOTS/packages-aur.txt")
@@ -121,5 +134,5 @@ fi
 step "9/9 Check the niri config"
 niri validate || warn "niri validate failed; fix ~/.config/niri/config.kdl before logging in"
 
-printf '\n\033[1;32mDone.\033[0m Log out and log in on tty1 to start niri.\n'
+printf '\n\033[1;32mDone.\033[0m Log out, then log back in from the login screen with the niri session.\n'
 echo "Then run :checkhealth in nvim, and 'niri msg outputs' to set up monitors."

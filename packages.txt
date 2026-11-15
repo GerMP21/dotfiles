@@ -1,11 +1,18 @@
-# Official Arch repos. Install with:
+# Packages from the CachyOS and Arch repos that a CachyOS install with the
+# niri desktop doesn't already have. Install with:
 #   sudo pacman -S --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
+#
+# Already installed by CachyOS, so not listed here: niri, xwayland-satellite,
+# xdg-desktop-portal-gnome/-gtk, wl-clipboard, gnome-keyring, sddm,
+# networkmanager, bluez, bluez-utils, pipewire-pulse, wireplumber, pavucontrol,
+# power-profiles-daemon, xdg-user-dirs, noto-fonts, noto-fonts-emoji,
+# cantarell-fonts, zsh, zsh-autosuggestions, zsh-syntax-highlighting, fzf,
+# git, base-devel, python, ripgrep, unzip, unrar, firefox.
+
+# --- AUR helper (in the CachyOS repo, no build needed) ---
+paru
 
 # --- Wayland desktop (niri) ---
-niri
-xwayland-satellite
-xdg-desktop-portal-gnome
-xdg-desktop-portal-gtk
 polkit-gnome
 waybar
 fuzzel
@@ -13,36 +20,20 @@ mako
 swaylock
 swayidle
 swaybg
-wl-clipboard
 brightnessctl
 playerctl
-xdg-user-dirs
 jq
 cliphist
 network-manager-applet
-bluez
-bluez-utils
 blueman
-gnome-keyring
 libsecret
 seahorse
-power-profiles-daemon
-
-# --- Audio / network ---
-pipewire
-pipewire-pulse
-wireplumber
-pavucontrol
-networkmanager
 
 # --- Fonts & theming ---
 ttf-jetbrains-mono-nerd
 ttf-iosevka-nerd
-cantarell-fonts
 # icons in Doom's modeline, dashboard and treemacs
 ttf-nerd-fonts-symbols-mono
-noto-fonts
-noto-fonts-emoji
 nwg-look
 # build deps for the Rose Pine GTK theme
 sassc
@@ -58,33 +49,23 @@ qt6-wayland
 # --- Terminal & shell ---
 # Terminal (CPU-rendered, runs with its default config)
 foot
-zsh
 starship
-zsh-autosuggestions
-zsh-syntax-highlighting
 eza
 bat
 zoxide
-fzf
 pyenv
 yt-dlp
-# used by the `extract` function
-unzip
-unrar
+# used by the `extract` function (unzip and unrar come with CachyOS)
 7zip
 cabextract
 cpio
 
 # --- Neovim ---
 neovim
-git
-base-devel
 tree-sitter-cli
-ripgrep
 fd
 nodejs
 npm
-python
 python-pip
 luarocks
 
@@ -105,8 +86,7 @@ aspell-es
 languagetool
 shellcheck
 
-# --- Apps bound to keys in niri ---
-firefox
+# --- Apps bound to keys in niri (Firefox comes with CachyOS) ---
 thunderbird
 libreoffice-fresh
 gimp

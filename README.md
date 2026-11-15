@@ -1,6 +1,6 @@
 # dotfiles
 
-Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo Night theme.
+[CachyOS](https://cachyos.org) + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo Night theme, made for a CachyOS install with the niri desktop.
 
 ## Components
 
@@ -39,7 +39,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
   - Center: niri workspaces.
   - Right: keyboard layout (`es` / `us`), network (click opens `nmtui`), volume (click opens pavucontrol), power profile (click cycles power-saver / balanced / performance), clock with a calendar tooltip, tray.
   - Tray: Wi-Fi menu (`nm-applet`) and Bluetooth (`blueman`).
-- **Login:** niri starts automatically when you log in on tty1 (`.zprofile`), which also unblocks Wi-Fi. Your login password unlocks the GNOME keyring, so apps can save passwords.
+- **Login:** the SDDM login screen (installed by CachyOS) starts the niri session. Your login password unlocks the GNOME keyring, so apps can save passwords. `.zprofile` also unblocks Wi-Fi.
 - **Wayland-native apps:** Electron and Qt apps run natively on Wayland.
 - **Zsh:**
   - Vi mode.
@@ -229,29 +229,32 @@ Run `bindkey` with no arguments to list the current ones. To find a key's code, 
 
 ## Dependencies
 
-The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`packages-aur.txt`](packages-aur.txt) (AUR). Here's what each group is for:
+The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos) and [`packages-aur.txt`](packages-aur.txt) (AUR). They only hold what a CachyOS install with the niri desktop doesn't already have.
+
+**Already installed by CachyOS** (and used by these configs): `niri`, `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `wl-clipboard`, `gnome-keyring`, `sddm`, `networkmanager`, `bluez`, `bluez-utils`, `pipewire-pulse`, `wireplumber`, `pavucontrol`, `power-profiles-daemon`, `xdg-user-dirs`, `noto-fonts`, `noto-fonts-emoji`, `cantarell-fonts`, `zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fzf`, `git`, `base-devel`, `python`, `ripgrep`, `unzip`, `unrar` and `firefox`.
+
+**Installed from this repo:**
 
 | Group | Packages | Used by |
 |---|---|---|
-| Compositor | `niri`, `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `polkit-gnome` | niri; X11 apps; screen sharing and file pickers; password prompts |
-| Desktop | `waybar`, `fuzzel`, `mako`, `swaylock`, `swayidle`, `swaybg`, `wl-clipboard`, `brightnessctl`, `playerctl`, `xdg-user-dirs` | Bar, launcher, notifications, lock/idle, wallpaper, clipboard (Neovim `unnamedplus`), brightness keys |
-| Audio | `pipewire`, `pipewire-pulse`, `wireplumber`, `pavucontrol` | Volume keys (`wpctl`), waybar volume click |
-| Network | `networkmanager`, `network-manager-applet` | waybar network click (`nmtui`), Wi-Fi tray menu |
-| Bluetooth | `bluez`, `bluez-utils`, `blueman` | Bluetooth service and tray applet |
-| Keyring | `gnome-keyring`, `libsecret`, `seahorse` | Saved passwords for Thunderbird, browsers, git; `seahorse` to manage them |
-| Power | `power-profiles-daemon` | waybar power-profile button |
+| AUR helper | `paru` (in the CachyOS repo) | `packages-aur.txt`, `paru -Syu` |
+| Desktop | `polkit-gnome`, `waybar`, `fuzzel`, `mako`, `swaylock`, `swayidle`, `swaybg`, `brightnessctl`, `playerctl` | Password prompts, bar, launcher, notifications, lock/idle, wallpaper, brightness and media keys |
+| Tray | `network-manager-applet`, `blueman` | Wi-Fi and Bluetooth tray menus |
+| Keyring | `libsecret`, `seahorse` | Saved passwords for Thunderbird, browsers, git; `seahorse` to manage them |
 | Clipboard / scripts | `cliphist`, `jq` | `Mod+V` history; `Mod+Shift+Q` force-kill |
-| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons), `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
+| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons) | waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gnome-themes-extra`; AUR: `sunity-cursors-git`, `gtk-engine-murrine` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
 | Terminal | `foot` | `Mod+Return`. Renders on the CPU, so it doesn't depend on the GPU driver |
-| Shell | `zsh`, `starship`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `eza`, `bat`, `zoxide`, `fzf`, `pyenv`, `yt-dlp` | `.zshrc` aliases and plugins |
-| Archives | `unzip`, `unrar`, `7zip`, `cabextract`, `cpio` | The `extract` function |
-| Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `git`, `base-devel`, `tree-sitter-cli`, `ripgrep`, `fd`, `nodejs`, `npm`, `python`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
+| Shell | `starship`, `eza`, `bat`, `zoxide`, `pyenv`, `yt-dlp` | `.zshrc` aliases and prompt |
+| Archives | `7zip`, `cabextract`, `cpio` | The `extract` function |
+| Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
 | LaTeX | `texlive-basic`, `texlive-latex`, `texlive-latexrecommended`, `texlive-latexextra`, `texlive-binextra` (latexmk), `zathura`, `zathura-pdf-mupdf` | VimTeX compile and PDF viewer |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | AUR safety | AUR: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
-| Apps | `firefox`, `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts |
+
+**Removed by `full-install.sh`:** CachyOS's Noctalia shell (`cachyos-niri-noctalia`, `noctalia`), which does the same jobs as waybar, fuzzel, mako, swaylock and swaybg.
 
 Not packaged, so install these by hand:
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 5 below).
@@ -259,120 +262,75 @@ Not packaged, so install these by hand:
 
 ## Installation
 
-The guide has four parts. If Arch is already installed, skip to [Part 2](#part-2--install-the-dotfiles).
+The guide has four parts. If CachyOS is already installed with the niri desktop, skip to [Part 2](#part-2--install-the-dotfiles).
 
-1. [Install Arch Linux](#part-1--install-arch-linux-encrypted-with-archinstall), with the whole system encrypted, using `archinstall`.
+1. [Install CachyOS](#part-1--install-cachyos-encrypted-with-niri), with the whole system encrypted and the niri desktop.
 2. [Install the dotfiles](#part-2--install-the-dotfiles), with one script or step by step.
 3. [First login](#part-3--first-login): monitors and a checklist.
 4. [Keeping it up to date](#part-4--keeping-it-up-to-date).
 
 You can also [test everything in a virtual machine first](#testing-in-a-virtual-machine-first).
 
-### Part 1 — Install Arch Linux (encrypted, with archinstall)
+### Part 1 — Install CachyOS (encrypted, with niri)
 
 #### 1.1 What you need
-- A USB stick of 2 GB or more. It will be erased.
-- An internet connection, ideally a cable. Wi-Fi works too.
+- A USB stick of 4 GB or more. It will be erased.
+- An internet connection, ideally a cable. Wi-Fi works too. The installer downloads the packages.
 - A backup of anything on the target disk. **The install erases the whole disk.**
 - To keep Windows on the same disk (dual boot), stop here: that needs manual partitioning, which this guide doesn't cover.
 
 #### 1.2 Make the USB stick
-1. Download `archlinux-x86_64.iso` from [archlinux.org/download](https://archlinux.org/download/), from a mirror near you.
+1. Download the desktop ISO from [cachyos.org/download](https://cachyos.org/download/).
 2. Write it to the USB stick:
    - **On Windows:** use [Rufus](https://rufus.ie). Select the stick and the ISO, click **Start**, and choose **Write in DD Image mode** when asked.
    - **On Linux:** find the stick with `lsblk` (for example `/dev/sdb`), then run:
      ```sh
-     sudo dd if=archlinux-x86_64.iso of=/dev/sdX bs=4M status=progress oflag=sync
+     sudo dd if=cachyos-desktop-linux-*.iso of=/dev/sdX bs=4M status=progress oflag=sync
      ```
      Replace `/dev/sdX` with the stick, not a partition like `/dev/sdb1`. Double-check it: `dd` overwrites whatever you point it at.
 
-#### 1.3 Firmware (BIOS/UEFI) settings
-Open the firmware setup; the key is usually F2, Del or F10 at power-on. Then:
-1. Turn **Secure Boot** off. The Arch ISO isn't signed for it.
-2. Make sure it boots in **UEFI** mode, not "Legacy" or "CSM".
-3. Save, then boot from the USB stick. The boot-menu key is usually F12, F11 or Esc.
+#### 1.3 Firmware (UEFI) settings
+The computer must boot the USB stick in **UEFI** mode. In Legacy/CSM mode the installer asks where to put the bootloader ("MBR of the drive" or a partition), and with an encrypted disk both GRUB and Limine fail to install there, or install but don't boot.
 
-Pick the first entry in the Arch boot menu and wait for the `root@archiso` prompt.
+**ThinkPad T480:** press **Enter** at the red ThinkPad logo, then **F1**:
+1. **Startup → UEFI/Legacy Boot:** `UEFI Only`. CSM Support then disappears, or set it to `No`.
+2. **Security → Secure Boot → Secure Boot:** `Disabled`. If the Secure Boot keys were cleared, choose **Restore Factory Keys** first, then check it's still `Disabled`.
+3. **Startup → Boot Order Lock:** `Disabled`, so the installer can add its boot entry.
+4. Press **F10** to save. To boot the stick, press **Enter** at the logo, then **F12**, and pick the USB stick.
 
-#### 1.4 Keyboard and network
-1. Set the Spanish keyboard:
-   ```sh
-   loadkeys es
-   ```
-2. **Wired:** nothing to do. **Wi-Fi:** connect with `iwctl`:
-   ```sh
-   iwctl device list
-   ```
-   ```sh
-   iwctl --passphrase "YourWifiPassword" station wlan0 connect "YourNetwork"
-   ```
-   Use the device name from the first command if it isn't `wlan0`.
-3. Check the connection:
-   ```sh
-   ping -c 3 archlinux.org
-   ```
+**Other computers:** the setup key is usually F2, Del or F10, and the boot menu is F12, F11 or Esc. Turn Secure Boot off, set the boot mode to UEFI only, and pick the entry that starts with `UEFI:` in the boot menu.
 
-#### 1.5 Run archinstall
+Once the live desktop is up, open a terminal and check:
 ```sh
-archinstall
+ls /sys/firmware/efi
 ```
-Move with the arrow keys, select with Enter, and go back with Esc. Leave every option not listed here at its default. These menu names are from `archinstall` 3.x and may differ slightly in other versions.
+If it lists files, you're in UEFI mode. If it says "No such file or directory", go back to the firmware settings.
 
-1. **Locales:**
-   - **Keyboard layout:** `es`. This also sets the layout for the disk-passphrase prompt at boot.
-   - **Locale language:** for example `es_ES.UTF-8` or `en_US.UTF-8`.
-   - **Locale encoding:** `UTF-8`.
-2. **Mirrors and repositories → Select regions:** your country, or ones nearby.
-3. **Disk configuration:**
-   1. **Partitioning → Use a best-effort default partition layout.** Select your disk; check its size so you pick the right one. ⚠️ **This erases the whole disk.**
-   2. **Filesystem:** `ext4`.
-   3. **Separate partition for /home:** no. One encrypted partition for everything is simpler.
-   4. **Disk encryption:**
-      - **Encryption type:** `LUKS`.
-      - **Encryption password:** your disk passphrase. You'll type it at every boot. Use letters, numbers and spaces only: characters like `ñ`, `ç`, `-`, `/`, `@` or `"` sit in different places on Spanish and English keyboards. A long phrase of words is strong and easy to type.
-      - **Partitions:** select the **root** partition (the large `ext4` one). Leave the small boot partition (`fat32`, about 1 GB) unencrypted; the firmware has to read it.
-   5. **Back.** The summary should show the boot partition (`fat32`, `/boot`) and the root partition (`ext4`, `/`, encrypted).
-4. **Swap:** leave it on (zram).
-5. **Bootloader:** `Systemd-boot`.
-6. **Unified kernel images:** off.
-7. **Hostname:** a name for the computer, for example `arch`.
-8. **Authentication:**
-   - **Root password:** set one.
-   - **User account → Add a user:** your username and password, and answer **yes** to "superuser (sudo)". This password also unlocks the keyring at login.
-9. **Profile → Type → Minimal.** No desktop: the dotfiles provide niri.
-10. **Applications:**
-    - **Bluetooth:** on, if the computer has Bluetooth.
-    - **Audio:** `Pipewire`.
-11. **Kernels:** `linux`.
-12. **Network configuration:** "Use NetworkManager".
-13. **Additional packages:** `git`, plus the graphics driver for your GPU:
-    - **AMD:** `vulkan-radeon`
-    - **Intel:** `vulkan-intel`
-    - **NVIDIA:** `nvidia-open`, then also do [1.7](#17-nvidia-only).
-14. **Timezone:** yours, for example `Europe/Madrid`.
-15. **Automatic time sync (NTP):** on.
+#### 1.4 Run the installer
+Connect to the network (Wi-Fi is in the panel), then choose **Launch installer** in the CachyOS Hello window. Leave every option not listed here at its default.
 
-Choose **Install**, check the summary (disk, encryption, user), and confirm. When it finishes, answer **no** to chrooting into the new system, then reboot and remove the USB stick:
-```sh
-reboot
-```
+1. **Location:** your timezone (for example `Europe/Madrid`) and language.
+2. **Keyboard:** `Spanish`. This also sets the layout for the disk-passphrase prompt at boot.
+3. **Bootloader:** `Limine` (the default) or `systemd-boot`. There's no location question in UEFI mode; if one appears, you're in Legacy mode (see 1.3).
+4. **Partitions:**
+   1. Pick the disk; check its size so you pick the right one. Choose **Erase disk**. ⚠️ **This erases the whole disk.**
+   2. Leave the file system (`btrfs`) and swap at their defaults.
+   3. Tick **Encrypt system** and type the disk passphrase. You'll type it at every boot. Use letters, numbers and spaces only: characters like `ñ`, `ç`, `-`, `/`, `@` or `"` sit in different places on Spanish and English keyboards. A long phrase of words is strong and easy to type.
 
-#### 1.6 First boot
+   The installer keeps the small EFI partition unencrypted (the firmware has to read it) and encrypts the rest.
+5. **Desktop:** `Niri`. It installs niri, the SDDM login screen and CachyOS's Noctalia shell; `full-install.sh` replaces Noctalia with this repo's waybar, fuzzel, mako and swaylock.
+6. **Packages:** leave the defaults. **Firefox** is ticked, which is the browser `Mod+W` opens. Add **Printing-Support** if you have a printer.
+7. **Users:** your name, username and password. This password also unlocks the keyring at login.
+8. **Summary:** check the disk, encryption and user, then **Install**. When it finishes, restart and remove the USB stick.
+
+What CachyOS sets up, so the dotfiles don't have to: the GPU driver (`chwd` detects it, NVIDIA included), NetworkManager, Bluetooth, PipeWire audio, the firewall, zram swap and the SDDM login screen.
+
+#### 1.5 First boot
 1. Type the **disk passphrase** and press Enter. Nothing shows while you type; that's normal.
-2. Log in as your user on the text console.
-3. **Wi-Fi:** run `nmtui`, choose "Activate a connection" and pick your network.
+2. On the SDDM login screen, check that the session (bottom left) is **niri**, then log in.
+3. Open a terminal with `Mod+Return` (Alacritty, from CachyOS's default niri config). For **Wi-Fi**, run `nmtui`, choose "Activate a connection" and pick your network.
 
-#### 1.7 NVIDIA only
-niri needs kernel modesetting. Find the boot entry and add `nvidia-drm.modeset=1` to the end of its `options` line:
-```sh
-ls /boot/loader/entries/
-```
-```sh
-sudo nano /boot/loader/entries/<the-entry>.conf
-```
-Then reboot. Also read [niri's NVIDIA notes](https://yalter.github.io/niri/Nvidia.html).
-
-#### 1.8 Protect the encryption
+#### 1.6 Protect the encryption
 **If you forget the disk passphrase, the data can't be recovered.** Do these now:
 1. Find the encrypted partition. It's the one marked `crypto_LUKS`, for example `/dev/nvme0n1p2`:
    ```sh
@@ -388,11 +346,17 @@ Then reboot. Also read [niri's NVIDIA notes](https://yalter.github.io/niri/Nvidi
    ```
    Copy `luks-header.img` off the computer (to another drive or a USB stick), then delete it here.
 
+#### 1.7 Update the firmware (ThinkPad T480, optional)
+Older T480 firmware has known Thunderbolt and charging bugs. Lenovo publishes its updates through LVFS:
+```sh
+sudo pacman -S fwupd
+fwupdmgr refresh && fwupdmgr update
+```
+
 ### Part 2 — Install the dotfiles
 
 #### 2.1 Before you start
-- **On an existing system:** back up your home folder to another drive. The installer also moves every file it replaces into `~/.dotfiles-backup/<date>/`.
-- **Network:** the installer turns connman off and uses NetworkManager. Use a cable, or be ready to reconnect Wi-Fi with `nmtui`.
+- **On a system you've already been using:** back up your home folder to another drive. The installer also moves every file it replaces into `~/.dotfiles-backup/<date>/`, including CachyOS's default niri config.
 - **Space:** keep about 20 GB free on `/`. TeX Live, Doom Emacs, LibreOffice and the language servers are large.
 - Log in as your normal user, not root.
 
@@ -405,9 +369,11 @@ git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
 ```
 It runs every step of the [manual install](#23-manual-install) in order. It asks for your sudo password once at the start, `chsh` asks for your password again, and pacman and paru ask you to confirm packages. Accept the defaults, including replace prompts such as `7zip` replacing `p7zip`. The whole run takes a while.
 
+Run it from Alacritty (`Mod+Return` in CachyOS's default niri config) or from a text console (`Ctrl+Alt+F2`).
+
 What it does:
-1. Installs the packages in `packages.txt`. Names that aren't in the official repos are skipped with a warning.
-2. Installs `paru` (an AUR helper) if you don't have it.
+1. Removes CachyOS's Noctalia shell. It first marks `niri` and the other packages this setup shares with it as explicitly installed, so they stay. Noctalia's own settings go to `~/.dotfiles-backup/`.
+2. Updates the system and installs the packages in `packages.txt`, `paru` included. Names that aren't in the repos are skipped with a warning.
 3. Installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning.
 4. Runs `install.sh`, which links the configs, installs the fonts, enables the services and makes zsh your shell.
 5. Installs the GTK, Qt, icon and cursor themes and applies them.
@@ -418,7 +384,7 @@ What it does:
 
 At the end, read the output. Anything in yellow `!!` lines failed; the message says what to run to retry it. You can run the script again safely: finished steps are skipped or redone harmlessly.
 
-Then reboot and log in on **tty1**:
+Then reboot and log in from the SDDM login screen with the **niri** session:
 ```sh
 sudo reboot
 ```
@@ -426,26 +392,26 @@ sudo reboot
 #### 2.3 Manual install
 The same steps as `full-install.sh`, one at a time.
 
-**1. Install an AUR helper** (skip this if you already have `paru` or `yay`):
-```sh
-sudo pacman -S --needed git base-devel
-git clone https://aur.archlinux.org/paru-bin.git /tmp/paru-bin
-cd /tmp/paru-bin && makepkg -si
-```
-
-**2. Clone the repo:**
+**1. Clone the repo:**
 ```sh
 git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ```
 
-**3. Install the packages:**
+**2. Remove the Noctalia shell.** `niri` and a few other packages were installed as its dependencies, so mark them as explicitly installed first; otherwise removing Noctalia takes them along:
+```sh
+sudo pacman -D --asexplicit niri xwayland-satellite xdg-desktop-portal-gnome xdg-desktop-portal-gtk gnome-keyring wl-clipboard noto-fonts noto-fonts-emoji sddm
+sudo pacman -Rs cachyos-niri-noctalia noctalia
+mkdir -p ~/.dotfiles-backup && mv ~/.config/noctalia ~/.dotfiles-backup/noctalia
+```
+
+**3. Install the packages** (`paru` comes from the CachyOS repo with the rest):
 ```sh
 sudo pacman -Syu --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
 paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
 ```
 
-If pacman stops with `target not found: <name>`, that package has left the official repos (often for the AUR). Remove it from `packages.txt` and run the command again; `full-install.sh` skips such names automatically.
+If pacman stops with `target not found: <name>`, that package has left the repos (often for the AUR). Remove it from `packages.txt` and run the command again; `full-install.sh` skips such names automatically.
 
 This installs TrustSight from the AUR. From then on, run `trustsight` before `paru -Syu` to review pending AUR updates for risky changes.
 
@@ -454,12 +420,11 @@ This installs TrustSight from the AUR. From then on, run `trustsight` before `pa
 ./install.sh
 ```
 This script:
-- symlinks every config into `~` (anything already there is moved to `~/.dotfiles-backup/<date>/`);
+- symlinks every config into `~` (anything already there, such as CachyOS's niri config and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/`);
 - installs the bundled fonts;
 - creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
-- enables PipeWire, NetworkManager, Bluetooth, power profiles and the GNOME keyring, and disables connman if it's running;
-- adds `pam_gnome_keyring` to `/etc/pam.d/login` so your login password unlocks the keyring;
-- makes zsh your login shell.
+- enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
+- makes zsh your login shell instead of CachyOS's default, fish.
 
 **5. Install the GTK and icon themes.** Both come from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme). It isn't in the AUR; `rose-pine-gtk-theme-full` there is a different theme.
 ```sh
@@ -521,11 +486,11 @@ pyenv install 3.13
 pyenv global 3.13
 ```
 
-**10. Start niri:** reboot, then log in on **tty1**. `.zprofile` runs `niri-session -l`. Continue with [Part 3](#part-3--first-login).
+**10. Start niri:** reboot, then log in from SDDM with the **niri** session. Continue with [Part 3](#part-3--first-login).
 
 ### Part 3 — First login
 
-Log in on **tty1**: niri starts by itself, with the wallpaper and waybar. On other ttys (`Ctrl+Alt+F2` and up) you get a plain text console, which is handy if something goes wrong.
+Log in from SDDM with the **niri** session: niri starts with the wallpaper and waybar. `Ctrl+Alt+F2` and up give you a plain text console, which is handy if something goes wrong.
 
 #### 3.1 Monitors
 Open a terminal (`Mod+Return`) and list the screens:
@@ -580,10 +545,10 @@ niri applies it as soon as you save.
 
 ### Testing in a virtual machine first
 To try everything without touching your computer, use VirtualBox (free):
-1. Create a VM: type Linux, version Arch Linux (64-bit), 4 GB of RAM or more, 2–4 CPUs, **Enable EFI** ticked, and an **80 GB** disk.
+1. Create a VM: type Linux, version Arch Linux (64-bit), 4 GB of RAM or more, 2–4 CPUs, **Enable EFI** ticked, and an **80 GB** disk. **Enable EFI** matters: without it the installer runs in Legacy mode and the bootloader fails, as in 1.3.
 2. **Settings → Display:** Graphics Controller **VMSVGA**, **Enable 3D Acceleration** ticked, Video Memory at the maximum. niri needs 3D acceleration in a VM.
-3. Follow Part 1 using the Arch ISO as the VM's optical drive. Skip 1.2 and 1.3; add `virtualbox-guest-utils` to the additional packages.
-4. After the first boot, run `sudo systemctl enable --now vboxservice` and take a snapshot (**Machine → Tools → Snapshots → Take**) so you can roll back.
+3. Follow Part 1 using the CachyOS ISO as the VM's optical drive. Skip 1.2, 1.3 and 1.7. CachyOS's hardware detection normally installs the VirtualBox guest tools; if `systemctl status vboxservice` says the unit doesn't exist, run `sudo pacman -S virtualbox-guest-utils` and `sudo systemctl enable --now vboxservice`.
+4. After the first boot, take a snapshot (**Machine → Tools → Snapshots → Take**) so you can roll back.
 5. Follow Part 2.
 
 VirtualBox quirks:
@@ -593,21 +558,23 @@ VirtualBox quirks:
 
 ### Going back to your old setup
 - Every file `install.sh` replaced is in `~/.dotfiles-backup/<date>/`. Copy the ones you want back over the links.
-- Your old packages aren't removed. Restoring your old `.zprofile` brings back your old login, for example `startx`.
+- Your other packages aren't removed. To get CachyOS's Noctalia desktop back, run `sudo pacman -S cachyos-niri-noctalia` and move `~/.config/niri` and `~/.config/noctalia` back from the backup folder.
 
 ## Troubleshooting
-- **The disk passphrase isn't accepted at boot:** try typing it as if on an English (US) keyboard. If that works, the boot screen isn't using the Spanish layout; check that `/etc/vconsole.conf` says `KEYMAP=es`, then run `sudo mkinitcpio -P`. You can always unlock with the backup passphrase from 1.8.
+- **The disk passphrase isn't accepted at boot:** try typing it as if on an English (US) keyboard. If that works, the boot screen isn't using the Spanish layout; check that `/etc/vconsole.conf` says `KEYMAP=es`, then rebuild the boot image with `sudo limine-mkinitcpio` (Limine) or `sudo mkinitcpio -P` (systemd-boot). You can always unlock with the backup passphrase from 1.6.
 - **niri doesn't start, or the screen stays black:** press `Ctrl+Alt+F2`, log in, then run `niri validate` and `journalctl --user -b -u niri --no-pager | tail -40`.
 - **No network after installing:** run `nmtui`. If it says NetworkManager isn't running: `sudo systemctl enable --now NetworkManager`.
 - **Telescope says fzf isn't built:** run `make -C ~/.local/share/nvim/lazy/telescope-fzf-native.nvim`, then restart nvim.
-- **niri doesn't start from tty1:** run `niri-session` by hand and read the errors. `niri validate` also checks the config.
+- **The bootloader fails to install, or the system only boots with the USB stick in:** the installer ran in Legacy/CSM mode. Set the firmware to UEFI only (see 1.3), check with `ls /sys/firmware/efi`, and install again.
+- **SDDM logs you straight back out:** press `Ctrl+Alt+F2`, log in, and run `niri validate`. Check that SDDM's session menu says **niri**.
 - **No sound:** run `systemctl --user status wireplumber`.
 - **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 5 of the manual install again, or pick the theme in `nwg-look`.
 - **Qt apps look unthemed:** check `echo $QT_QPA_PLATFORMTHEME` shows `qt5ct:qt6ct` inside niri, and that `ls ~/.config/Kvantum` lists `rose-pine-foam`. Open `qt6ct` (or `qt5ct` for Double Commander) and check that Style is `kvantum`.
 - **niri ignores your config and uses its defaults:** a duplicate keybinding or a typo stops niri loading `config.kdl`. Run `niri validate` to see the line.
 - **`Mod+º` does nothing:** run `wev`, press the º key and check the keysym it prints. If it isn't `masculine`, use that name in the two workspace-10 binds.
-- **Apps keep asking for a keyring password:** the login unlock isn't working. Check that `grep pam_gnome_keyring /etc/pam.d/login` shows two lines. If the keyring was created with a different password, delete `~/.local/share/keyrings/login.keyring` and log in again.
+- **Apps keep asking for a keyring password:** the login unlock isn't working. Check that `grep pam_gnome_keyring /etc/pam.d/sddm` shows the `auth` and `session` lines. If the keyring was created with a different password, delete `~/.local/share/keyrings/login.keyring` and log in again.
 - **Neovim says nvim-treesitter needs a newer version:** the `main` branch needs Neovim 0.12+. Check with `nvim --version`.
+- **Noctalia's bar shows up next to waybar:** Noctalia is still installed and something starts it. Run step 2 of the [manual install](#23-manual-install).
 - **Two network or Bluetooth icons in the tray:** an app started both from the niri config and from its XDG autostart entry. Run `ls /etc/xdg/autostart ~/.config/autostart` and either remove its `spawn-at-startup` line or hide the entry with a `Hidden=true` file in `~/.config/autostart/`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
