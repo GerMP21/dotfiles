@@ -75,7 +75,7 @@ binds {
     Mod+Shift+Return { spawn "foot"; }
     Mod+D      { spawn "fuzzel"; }
     Mod+E      { spawn "emacsclient" "-c" "-a" "emacs"; }
-    Mod+W      { spawn "waterfox"; }
+    Mod+W      { spawn "firefox"; }
     Mod+M      { spawn "thunderbird"; }
     Mod+O      { spawn "libreoffice"; }
     Mod+G      { spawn "gimp"; }

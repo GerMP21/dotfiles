@@ -2,7 +2,6 @@
 #   paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
 # Names confirmed via AUR search results (Nov 2026).
 
-waterfox-bin
 goodvibes
 # Vets AUR package updates before you install them
 trustsight

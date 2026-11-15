@@ -68,7 +68,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | `Mod+Shift+Return` | foot (backup terminal) |
 | `Mod+D` | fuzzel launcher |
 | `Mod+E` | Emacs (client) |
-| `Mod+W` | Waterfox |
+| `Mod+W` | Firefox |
 | `Mod+M` | Thunderbird |
 | `Mod+O` | LibreOffice |
 | `Mod+G` | GIMP |
@@ -253,7 +253,7 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | LaTeX | `texlive-basic`, `texlive-latex`, `texlive-latexrecommended`, `texlive-latexextra`, `texlive-binextra` (latexmk), `zathura`, `zathura-pdf-mupdf` | VimTeX compile and PDF viewer |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | AUR safety | AUR: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `waterfox-bin`, `goodvibes` | `Mod+` app shortcuts |
+| Apps | `firefox`, `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts |
 
 Not packaged, so install these by hand:
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 5 below).
@@ -393,4 +393,3 @@ pyenv global 3.13
 - **Two network or Bluetooth icons in the tray:** an app started both from the niri config and from its XDG autostart entry. Run `ls /etc/xdg/autostart ~/.config/autostart` and either remove its `spawn-at-startup` line or hide the entry with a `Hidden=true` file in `~/.config/autostart/`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
-- **Waterfox doesn't open:** the AUR binary may be named differently. Check with `which waterfox` and update the `Mod+W` bind.

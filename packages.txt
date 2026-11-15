@@ -107,6 +107,7 @@ languagetool
 shellcheck
 
 # --- Apps bound to keys in niri ---
+firefox
 thunderbird
 libreoffice-fresh
 gimp
