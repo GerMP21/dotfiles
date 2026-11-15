@@ -6,6 +6,6 @@ border-size=2
 border-radius=6
 default-timeout=5000
 
-[urgency=high]
+[urgency=critical]
 border-color=#f7768e
 default-timeout=0
