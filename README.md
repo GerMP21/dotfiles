@@ -11,7 +11,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | Launcher | fuzzel | `.config/fuzzel/fuzzel.ini` |
 | Notifications | mako | `.config/mako/config` |
 | Lock / idle | swaylock + swayidle | `.config/swaylock/config` |
-| Wallpaper | swaybg | set in niri config |
+| Wallpaper | swaybg; Raphael's *The School of Athens* (public domain) | `.local/share/backgrounds/wallpaper.jpg`, path set in the niri config |
 | Terminal | foot (its default config, no config file) | none |
 | Shell | zsh + starship | `.zshenv` (environment, PATH), `.zprofile` (login), `.zshrc` (interactive), `.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `.config/nvim/`, `.config/doom/` |
@@ -265,7 +265,7 @@ On a working Arch install with a regular user and `sudo`:
 git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
 ~/dotfiles/full-install.sh
 ```
-It runs every step below in order and asks for your password when needed (sudo, `chsh`, package confirmations). If an AUR package fails, the script warns you and keeps going. You can run it again safely. When it finishes, add a wallpaper and log in on tty1.
+It runs every step below in order and asks for your password when needed (sudo, `chsh`, package confirmations). If an AUR package fails, the script warns you and keeps going. You can run it again safely. When it finishes, log in on tty1.
 
 ### Manual install
 
@@ -347,7 +347,7 @@ doom doctor
 ```
 `--env` generates Doom's envvar file, so Emacs sees the `PATH` from `.zshenv`. Your Doom config is already linked at `~/.config/doom`.
 
-**7. Add a wallpaper** at `~/Pictures/wallpaper.png`, or change the `swaybg` line in `~/.config/niri/config.kdl`.
+**7. Wallpaper:** the repo includes one, Raphael's *The School of Athens* (public domain), linked to `~/.local/share/backgrounds/wallpaper.jpg`. To use another image, replace that file or change the `swaybg` line in `~/.config/niri/config.kdl`. `-m fill` crops the image to fill the screen; use `-m fit` to show all of it with borders.
 
 **8. Start niri:** log out, then log in on **tty1**. `.zprofile` runs `niri-session`. Then:
 ```sh
