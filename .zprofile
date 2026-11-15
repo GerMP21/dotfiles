@@ -4,10 +4,12 @@
 # Some laptops boot with Wi-Fi soft-blocked
 command -v rfkill >/dev/null && rfkill unblock wifi 2>/dev/null
 
-# Start niri when you log in on tty1. The -o interactive check matters:
-# niri-session re-runs itself through a non-interactive login shell
-# (`zsh -l -c ...`) to pick up your environment, and that shell reads this
-# file too. Without the check it would call niri-session again, forever.
-if [[ -o interactive && -z $WAYLAND_DISPLAY && $(tty) = /dev/tty1 ]]; then
-    exec niri-session
+# Start niri when you log in on tty1 (Arch wiki "Start X at Login" pattern).
+# -l tells niri-session it is already running in a login shell. Without it,
+# niri-session re-runs itself through `$SHELL -l -c`, that shell reads this
+# file again, and it loops forever without ever starting niri.
+if [[ -z $WAYLAND_DISPLAY && $XDG_VTNR == 1 ]]; then
+    exec niri-session -l
+    # Only reached if niri-session couldn't be run at all
+    print -u2 "niri-session failed to start; see: journalctl --user -b -u niri"
 fi
