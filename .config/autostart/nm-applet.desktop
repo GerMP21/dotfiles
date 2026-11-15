@@ -1,0 +1,7 @@
+# Hides the system autostart entry for nm-applet so it doesn't start twice:
+# niri's config starts it with --indicator, which waybar's tray needs.
+[Desktop Entry]
+Type=Application
+Name=Network
+Exec=nm-applet
+Hidden=true

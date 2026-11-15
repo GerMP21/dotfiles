@@ -17,6 +17,8 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | Editors | Neovim (lazy.nvim), Doom Emacs | `.config/nvim/`, `.config/doom/` |
 | GTK theme | GTK 2/3/4 settings | `.config/gtk-3.0/`, `.config/gtk-4.0/`, `.gtkrc-2.0`, `.icons/` |
 | Qt theme | Kvantum + qt5ct/qt6ct | `.config/Kvantum/`, `.config/qt5ct/`, `.config/qt6ct/` |
+| Portals | xdg-desktop-portal (file pickers through GTK, screencasting through GNOME) | `.config/xdg-desktop-portal/niri-portals.conf` |
+| Autostart | XDG autostart entries, run by `niri-session` | `.config/autostart/` (hides the duplicate `nm-applet`) |
 | Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled) | `.local/share/fonts/` |
 
 ## Features
@@ -28,7 +30,8 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
   - 8px gaps and a 2px Tokyo Night focus ring.
   - Rounded corners and a translucent alacritty.
   - Preset column widths (1/3, 1/2, 2/3).
-- **Autostart:** waybar, mako, swaybg, swayidle, the Emacs daemon, the network and Bluetooth tray applets, and the clipboard history watcher.
+- **Autostart:** waybar, mako, swaybg, swayidle, the Emacs daemon, the network tray applet and the clipboard history watcher, from the niri config. `niri-session` also runs the standard XDG autostart entries, which is how the Bluetooth applet starts.
+- **File pickers:** "Open file" dialogs from portal-using apps (Flatpaks, Firefox-based browsers) use the GTK file chooser, because GNOME's portal would need Nautilus.
 - **Idle:** locks after 10 minutes, turns monitors off after 15, and locks before sleep.
 - **Screenshots:** built into niri, saved to `~/Pictures/Screenshots`.
 - **Waybar:**
@@ -384,6 +387,7 @@ pyenv global 3.13
 - **`Mod+º` does nothing:** run `wev`, press the º key and check the keysym it prints. If it isn't `masculine`, use that name in the two workspace-10 binds.
 - **Apps keep asking for a keyring password:** the login unlock isn't working. Check that `grep pam_gnome_keyring /etc/pam.d/login` shows two lines. If the keyring was created with a different password, delete `~/.local/share/keyrings/login.keyring` and log in again.
 - **Neovim says nvim-treesitter needs a newer version:** the `main` branch needs Neovim 0.12+. Check with `nvim --version`.
+- **Two network or Bluetooth icons in the tray:** an app started both from the niri config and from its XDG autostart entry. Run `ls /etc/xdg/autostart ~/.config/autostart` and either remove its `spawn-at-startup` line or hide the entry with a `Hidden=true` file in `~/.config/autostart/`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
 - **Waterfox doesn't open:** the AUR binary may be named differently. Check with `which waterfox` and update the `Mod+W` bind.

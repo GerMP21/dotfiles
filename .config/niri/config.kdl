@@ -31,15 +31,15 @@ layout {
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "waybar"
 spawn-at-startup "mako"
-// sh -c so that ~ expands to your home folder
-spawn-at-startup "sh" "-c" "swaybg -m fill -i ~/Pictures/wallpaper.png"
+spawn-sh-at-startup "swaybg -m fill -i ~/Pictures/wallpaper.png"
 spawn-at-startup "swayidle" "-w" "timeout" "600" "swaylock -f" "timeout" "900" "niri msg action power-off-monitors" "before-sleep" "swaylock -f"
 spawn-at-startup "emacs" "--daemon"
+// --indicator puts it in waybar's tray. Its own XDG autostart entry (which
+// niri-session would also run) is hidden in ~/.config/autostart.
 spawn-at-startup "nm-applet" "--indicator"
-spawn-at-startup "blueman-applet"
-// Clipboard history (Mod+V)
-spawn-at-startup "wl-paste" "--type" "text" "--watch" "cliphist" "store"
-spawn-at-startup "wl-paste" "--type" "image" "--watch" "cliphist" "store"
+// blueman-applet starts from its XDG autostart entry; no spawn needed.
+// Clipboard history (Mod+V), one watcher as the cliphist docs recommend
+spawn-sh-at-startup "wl-paste --watch cliphist store"
 
 prefer-no-csd
 
@@ -97,8 +97,8 @@ binds {
     // Windows
     Mod+Q       { close-window; }
     // Force-kill the focused window's process (for frozen apps)
-    Mod+Shift+Q { spawn "sh" "-c" r#"pid=$(niri msg --json focused-window | jq -r '.pid // empty'); [ -n "$pid" ] && kill -9 "$pid""#; }
-    Mod+V       { spawn "sh" "-c" "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"; }
+    Mod+Shift+Q { spawn-sh r#"pid=$(niri msg --json focused-window | jq -r '.pid // empty'); [ -n "$pid" ] && kill -9 "$pid""#; }
+    Mod+V       { spawn-sh "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"; }
     Mod+F       { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
     Mod+T       { toggle-window-floating; }
