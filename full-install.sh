@@ -114,8 +114,8 @@ nvim --headless --cmd "let g:bootstrap=1" -c "MasonInstall bash-language-server 
   || warn "Some language servers failed; run :Mason in nvim"
 
 step "8/9 Wallpaper"
-if [ ! -f "$HOME/Pictures/wallpaper.png" ]; then
-  warn "No ~/Pictures/wallpaper.png yet; swaybg shows nothing until you add one."
+if [ ! -f "$HOME/.local/share/backgrounds/wallpaper.jpg" ]; then
+  warn "Wallpaper missing at ~/.local/share/backgrounds/wallpaper.jpg; re-run install.sh."
 fi
 
 step "9/9 Check the niri config"

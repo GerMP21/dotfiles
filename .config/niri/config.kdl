@@ -32,7 +32,9 @@ layout {
 spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
 spawn-at-startup "waybar"
 spawn-at-startup "mako"
-spawn-sh-at-startup "swaybg -m fill -i ~/Pictures/wallpaper.png"
+// Wallpaper: Raphael, The School of Athens (public domain). To change it,
+// replace this file or point the path at another image.
+spawn-sh-at-startup "swaybg -m fill -i ~/.local/share/backgrounds/wallpaper.jpg"
 spawn-at-startup "swayidle" "-w" "timeout" "600" "swaylock -f" "timeout" "900" "niri msg action power-off-monitors" "before-sleep" "swaylock -f"
 spawn-at-startup "emacs" "--daemon"
 // --indicator puts it in waybar's tray. Its own XDG autostart entry (which
@@ -58,7 +60,7 @@ environment {
 }
 
 window-rule {
-    match app-id="^Alacritty$"
+    match app-id="^foot$"
     opacity 0.92
 }
 window-rule {
@@ -70,9 +72,7 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Apps (ported from sxhkd)
-    Mod+Return { spawn "alacritty"; }
-    // Backup terminal: foot draws on the CPU, so it works when OpenGL doesn't
-    Mod+Shift+Return { spawn "foot"; }
+    Mod+Return { spawn "foot"; }
     Mod+D      { spawn "fuzzel"; }
     Mod+E      { spawn "emacsclient" "-c" "-a" "emacs"; }
     Mod+W      { spawn "firefox"; }

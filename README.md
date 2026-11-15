@@ -11,8 +11,8 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | Launcher | fuzzel | `.config/fuzzel/fuzzel.ini` |
 | Notifications | mako | `.config/mako/config` |
 | Lock / idle | swaylock + swayidle | `.config/swaylock/config` |
-| Wallpaper | swaybg | set in niri config |
-| Terminal | alacritty, plus foot as a backup (default config) | `.config/alacritty/` |
+| Wallpaper | swaybg; Raphael's *The School of Athens* (public domain) | `.local/share/backgrounds/wallpaper.jpg`, path set in the niri config |
+| Terminal | foot (its default config, no config file) | none |
 | Shell | zsh + starship | `.zshenv` (environment, PATH), `.zprofile` (login), `.zshrc` (interactive), `.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `.config/nvim/`, `.config/doom/` |
 | GTK theme | GTK 2/3/4 settings | `.config/gtk-3.0/`, `.config/gtk-4.0/`, `.gtkrc-2.0`, `.icons/` |
@@ -28,7 +28,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
   - Touchpad tap-to-click, natural scrolling, and disable-while-typing.
   - Focus follows the mouse.
   - 8px gaps and a 2px Tokyo Night focus ring.
-  - Rounded corners and a translucent alacritty.
+  - Rounded corners and a translucent terminal (foot).
   - Preset column widths (1/3, 1/2, 2/3).
 - **Autostart:** waybar, mako, swaybg, swayidle, the Emacs daemon, the network tray applet and the clipboard history watcher, from the niri config. `niri-session` also runs the standard XDG autostart entries, which is how the Bluetooth applet starts.
 - **File pickers:** "Open file" dialogs from portal-using apps (Flatpaks, Firefox-based browsers) use the GTK file chooser, because GNOME's portal would need Nautilus.
@@ -64,8 +64,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 ### Apps
 | Key | Action |
 |---|---|
-| `Mod+Return` | Alacritty |
-| `Mod+Shift+Return` | foot (backup terminal) |
+| `Mod+Return` | foot (terminal) |
 | `Mod+D` | fuzzel launcher |
 | `Mod+E` | Emacs (client) |
 | `Mod+W` | Firefox |
@@ -133,12 +132,16 @@ Leader is `Space`.
 | `C-Arrows` | Resize splits |
 | `<` / `>` (visual) | Indent and keep selection |
 
-### Alacritty
+### foot
+foot runs with its default keys; `man foot.ini` (section `key-bindings`) lists them all. The main ones:
+
 | Key | Action |
 |---|---|
 | `Ctrl+Shift+C` / `Ctrl+Shift+V` | Copy / paste |
-| `Ctrl+=` / `Ctrl+-` / `Ctrl+0` | Font bigger / smaller / reset |
-| Middle click | Paste selection |
+| `Ctrl++` / `Ctrl+-` / `Ctrl+0` | Font bigger / smaller / reset |
+| `Shift+PageUp` / `Shift+PageDown` | Scroll back / forward |
+| `Ctrl+Shift+R` | Search the scrollback |
+| `Ctrl+Shift+N` | New terminal in the same folder |
 
 ## Customizing keybindings
 
@@ -152,7 +155,7 @@ binds {
     Mod+B { spawn "firefox"; }
 
     // Arguments are separate strings
-    Mod+Ctrl+Return { spawn "alacritty" "-e" "btop"; }
+    Mod+Ctrl+Return { spawn "foot" "btop"; }
 
     // Shell syntax (pipes, $VARS, ~) needs sh -c
     Mod+Shift+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
@@ -199,17 +202,12 @@ vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers)
 - List everything with `:Telescope keymaps`.
 - Restart Neovim after editing.
 
-### Alacritty
-Add a `[keyboard]` section to `~/.config/alacritty/alacritty.toml`. Alacritty reloads it live.
-```toml
-[keyboard]
-bindings = [
-  { key = "N", mods = "Control|Shift", action = "SpawnNewInstance" },
-  { key = "K", mods = "Control|Shift", action = "ClearHistory" },
-  { key = "Return", mods = "Control|Shift", command = { program = "alacritty", args = ["--working-directory", "."] } },
-]
+### foot
+foot has no config file here, so it uses its defaults. To change keys (or fonts and colors), create `~/.config/foot/foot.ini`, starting from the commented example at `/etc/xdg/foot/foot.ini`:
+```sh
+mkdir -p ~/.config/foot && cp /etc/xdg/foot/foot.ini ~/.config/foot/
 ```
-`man 5 alacritty` lists every action and key name.
+Keys go in the `[key-bindings]` section, for example `clipboard-copy=Control+Shift+c`. `man foot.ini` lists every action. Open a new foot window to apply changes.
 
 ### Doom Emacs
 Doom uses Evil (vim keys), and `SPC` is the leader. Add bindings with `map!` in `~/.config/doom/config.el`, then run `SPC h r r` (or restart Emacs):
@@ -243,10 +241,10 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | Keyring | `gnome-keyring`, `libsecret`, `seahorse` | Saved passwords for Thunderbird, browsers, git; `seahorse` to manage them |
 | Power | `power-profiles-daemon` | waybar power-profile button |
 | Clipboard / scripts | `cliphist`, `jq` | `Mod+V` history; `Mod+Shift+Q` force-kill |
-| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons), `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | Alacritty, waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
+| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons), `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gnome-themes-extra`; AUR: `sunity-cursors-git`, `gtk-engine-murrine` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
-| Terminals | `alacritty`, `foot` | `Mod+Return` (Alacritty, GPU-rendered); `Mod+Shift+Return` (foot, CPU-rendered backup with its default config) |
+| Terminal | `foot` | `Mod+Return`. Renders on the CPU, so it doesn't depend on the GPU driver |
 | Shell | `zsh`, `starship`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `eza`, `bat`, `zoxide`, `fzf`, `pyenv`, `yt-dlp` | `.zshrc` aliases and plugins |
 | Archives | `unzip`, `unrar`, `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `git`, `base-devel`, `tree-sitter-cli`, `ripgrep`, `fd`, `nodejs`, `npm`, `python`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
@@ -267,7 +265,7 @@ On a working Arch install with a regular user and `sudo`:
 git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
 ~/dotfiles/full-install.sh
 ```
-It runs every step below in order and asks for your password when needed (sudo, `chsh`, package confirmations). If an AUR package fails, the script warns you and keeps going. You can run it again safely. When it finishes, add a wallpaper and log in on tty1.
+It runs every step below in order and asks for your password when needed (sudo, `chsh`, package confirmations). If an AUR package fails, the script warns you and keeps going. You can run it again safely. When it finishes, log in on tty1.
 
 ### Manual install
 
@@ -349,7 +347,7 @@ doom doctor
 ```
 `--env` generates Doom's envvar file, so Emacs sees the `PATH` from `.zshenv`. Your Doom config is already linked at `~/.config/doom`.
 
-**7. Add a wallpaper** at `~/Pictures/wallpaper.png`, or change the `swaybg` line in `~/.config/niri/config.kdl`.
+**7. Wallpaper:** the repo includes one, Raphael's *The School of Athens* (public domain), linked to `~/.local/share/backgrounds/wallpaper.jpg`. To use another image, replace that file or change the `swaybg` line in `~/.config/niri/config.kdl`. `-m fill` crops the image to fill the screen; use `-m fit` to show all of it with borders.
 
 **8. Start niri:** log out, then log in on **tty1**. `.zprofile` runs `niri-session`. Then:
 ```sh
@@ -370,7 +368,7 @@ pyenv global 3.13
 ```
 
 ### Check that everything works
-- [ ] `Mod+Return` opens Alacritty with the Tokyo Night colors.
+- [ ] `Mod+Return` opens foot.
 - [ ] `Mod+D` opens fuzzel.
 - [ ] The workspace and battery modules show up in waybar.
 - [ ] The volume and brightness keys work.

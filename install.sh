@@ -33,6 +33,7 @@ for d in "$DOTS"/.config/*/ ; do
 done
 link .config/starship.toml
 link .local/share/goodvibes/stations.xml
+link .local/share/backgrounds/wallpaper.jpg
 
 # Fonts are copied, not linked, so fontconfig picks them up reliably
 mkdir -p "$HOME/.local/share/fonts"
@@ -66,4 +67,4 @@ fi
 
 echo
 echo "Done. Backups (if any) are in $BACKUP"
-echo "Next: put a wallpaper at ~/Pictures/wallpaper.png, then log out and log in on tty1."
+echo "Next: log out and log in on tty1."

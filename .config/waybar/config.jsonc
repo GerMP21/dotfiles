@@ -11,7 +11,7 @@
   "cpu": { "format": "CPU {usage}%", "interval": 2 },
   "memory": { "format": "RAM {percentage}%" },
   "disk": { "format": "/ {percentage_used}%", "path": "/" },
-  "network": { "format-wifi": "{essid} {signalStrength}%", "format-ethernet": "ETH", "format-disconnected": "offline", "on-click": "alacritty -e nmtui" },
+  "network": { "format-wifi": "{essid} {signalStrength}%", "format-ethernet": "ETH", "format-disconnected": "offline", "on-click": "foot nmtui" },
   "wireplumber": { "format": "VOL {volume}%", "format-muted": "muted", "on-click": "pavucontrol" },
   "power-profiles-daemon": {
     "format": "{icon}",
