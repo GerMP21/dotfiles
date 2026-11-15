@@ -101,6 +101,12 @@ fi
 
 step "7/9 Neovim plugins, parsers and language servers"
 nvim --headless "+Lazy! sync" +qa || warn "lazy.nvim sync failed; open nvim to retry"
+# Telescope's fzf extension is a C library that lazy.nvim builds with make;
+# build it here if that didn't happen, so Telescope gets the fast sorter
+FZF="${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/telescope-fzf-native.nvim"
+if [ -d "$FZF" ] && [ ! -f "$FZF/build/libfzf.so" ]; then
+  make -C "$FZF" || warn "telescope-fzf-native failed to build; run: make -C $FZF"
+fi
 # Both of these block until done when nvim runs headless
 nvim --headless --cmd "let g:bootstrap=1" -c "lua require('nvim-treesitter').install(require('plugins.config.ts_parsers')):wait(600000)" -c qa \
   || warn "Treesitter parsers failed; run :TSUpdate in nvim"

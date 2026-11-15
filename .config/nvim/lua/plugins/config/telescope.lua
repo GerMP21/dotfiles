@@ -21,7 +21,13 @@ telescope.setup({
     },
   },
 })
-telescope.load_extension("fzf")
+-- fzf-native is a compiled C library (built with `make` on install). If the
+-- build failed, keep Telescope working with its default sorter instead of
+-- failing the whole config.
+if not pcall(telescope.load_extension, "fzf") then
+  vim.notify("telescope-fzf-native isn't built; run :Lazy build telescope-fzf-native.nvim",
+    vim.log.levels.WARN)
+end
 
 vim.keymap.set("n", "<leader>ff", builtin.find_files)
 vim.keymap.set("n", "<leader>fg", builtin.git_files)

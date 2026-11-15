@@ -12,7 +12,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | Notifications | mako | `.config/mako/config` |
 | Lock / idle | swaylock + swayidle | `.config/swaylock/config` |
 | Wallpaper | swaybg | set in niri config |
-| Terminal | alacritty | `.config/alacritty/` |
+| Terminal | alacritty, plus foot as a backup (default config) | `.config/alacritty/` |
 | Shell | zsh + starship | `.zshenv` (environment, PATH), `.zprofile` (login), `.zshrc` (interactive), `.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `.config/nvim/`, `.config/doom/` |
 | GTK theme | GTK 2/3/4 settings | `.config/gtk-3.0/`, `.config/gtk-4.0/`, `.gtkrc-2.0`, `.icons/` |
@@ -65,9 +65,10 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | Key | Action |
 |---|---|
 | `Mod+Return` | Alacritty |
+| `Mod+Shift+Return` | foot (backup terminal) |
 | `Mod+D` | fuzzel launcher |
 | `Mod+E` | Emacs (client) |
-| `Mod+W` | Waterfox |
+| `Mod+W` | Firefox |
 | `Mod+M` | Thunderbird |
 | `Mod+O` | LibreOffice |
 | `Mod+G` | GIMP |
@@ -151,7 +152,7 @@ binds {
     Mod+B { spawn "firefox"; }
 
     // Arguments are separate strings
-    Mod+Shift+Return { spawn "alacritty" "-e" "btop"; }
+    Mod+Ctrl+Return { spawn "alacritty" "-e" "btop"; }
 
     // Shell syntax (pipes, $VARS, ~) needs sh -c
     Mod+Shift+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
@@ -245,13 +246,14 @@ The complete lists are in [`packages.txt`](packages.txt) (official repos) and [`
 | Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons), `cantarell-fonts`, `noto-fonts`, `noto-fonts-emoji` | Alacritty, waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gnome-themes-extra`; AUR: `sunity-cursors-git`, `gtk-engine-murrine` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
+| Terminals | `alacritty`, `foot` | `Mod+Return` (Alacritty, GPU-rendered); `Mod+Shift+Return` (foot, CPU-rendered backup with its default config) |
 | Shell | `zsh`, `starship`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `eza`, `bat`, `zoxide`, `fzf`, `pyenv`, `yt-dlp` | `.zshrc` aliases and plugins |
 | Archives | `unzip`, `unrar`, `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `git`, `base-devel`, `tree-sitter-cli`, `ripgrep`, `fd`, `nodejs`, `npm`, `python`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
 | LaTeX | `texlive-basic`, `texlive-latex`, `texlive-latexrecommended`, `texlive-latexextra`, `texlive-binextra` (latexmk), `zathura`, `zathura-pdf-mupdf` | VimTeX compile and PDF viewer |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | AUR safety | AUR: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `waterfox-bin`, `goodvibes` | `Mod+` app shortcuts |
+| Apps | `firefox`, `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts |
 
 Not packaged, so install these by hand:
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 5 below).
@@ -391,4 +393,3 @@ pyenv global 3.13
 - **Two network or Bluetooth icons in the tray:** an app started both from the niri config and from its XDG autostart entry. Run `ls /etc/xdg/autostart ~/.config/autostart` and either remove its `spawn-at-startup` line or hide the entry with a `Hidden=true` file in `~/.config/autostart/`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
-- **Waterfox doesn't open:** the AUR binary may be named differently. Check with `which waterfox` and update the `Mod+W` bind.
