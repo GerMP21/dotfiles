@@ -7,38 +7,35 @@
 | Role | Tool | Config |
 |---|---|---|
 | Window manager | niri (scrollable tiling) | `.config/niri/config.kdl` |
-| Bar | waybar | `.config/waybar/` |
-| Launcher | fuzzel | `.config/fuzzel/fuzzel.ini` |
-| Notifications | mako | `.config/mako/config` |
-| Lock / idle | swaylock + swayidle | `.config/swaylock/config` |
-| Wallpaper | swaybg; Raphael's *The School of Athens* (public domain) | `.local/share/backgrounds/wallpaper.jpg`, path set in the niri config |
+| Shell | [Noctalia](https://docs.noctalia.dev) (installed by CachyOS): bar, launcher, clipboard history, notifications, volume/brightness popups, control center, lock screen, idle, wallpaper, password prompts | `.config/noctalia/config.toml` |
+| Wallpaper | Raphael's *The School of Athens* (public domain), shown by Noctalia | `.local/share/backgrounds/wallpaper.jpg` |
 | Terminal | foot (its default config, no config file) | none |
 | Shell | zsh + starship | `.zshenv` (environment, PATH), `.zprofile` (login), `.zshrc` (interactive), `.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `.config/nvim/`, `.config/doom/` |
 | GTK theme | GTK 2/3/4 settings | `.config/gtk-3.0/`, `.config/gtk-4.0/`, `.gtkrc-2.0`, `.icons/` |
 | Qt theme | Kvantum + qt5ct/qt6ct | `.config/Kvantum/`, `.config/qt5ct/`, `.config/qt6ct/` |
 | Portals | xdg-desktop-portal (file pickers through GTK, screencasting through GNOME) | `.config/xdg-desktop-portal/niri-portals.conf` |
-| Autostart | XDG autostart entries, run by `niri-session` | `.config/autostart/` (hides the duplicate `nm-applet`) |
 | Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled) | `.local/share/fonts/` |
 
 ## Features
 
 - **niri**
-  - Spanish (`es`) and English (`us`) keyboard layouts: Spanish is the default, `Mod+Ctrl+Space` switches, and waybar shows the current one.
+  - Spanish (`es`) and English (`us`) keyboard layouts: Spanish is the default, `Mod+Ctrl+Space` switches, and the bar shows the current one.
   - Touchpad tap-to-click, natural scrolling, and disable-while-typing.
   - Focus follows the mouse.
   - 8px gaps and a 2px Tokyo Night focus ring.
   - Rounded corners and a translucent terminal (foot).
   - Preset column widths (1/3, 1/2, 2/3).
-- **Autostart:** waybar, mako, swaybg, swayidle, the Emacs daemon, the network tray applet and the clipboard history watcher, from the niri config. `niri-session` also runs the standard XDG autostart entries, which is how the Bluetooth applet starts.
+- **Autostart:** Noctalia and the Emacs daemon, from the niri config.
 - **File pickers:** "Open file" dialogs from portal-using apps (Flatpaks, Firefox-based browsers) use the GTK file chooser, because GNOME's portal would need Nautilus.
-- **Idle:** locks after 10 minutes, turns monitors off after 15, and locks before sleep.
+- **Idle:** Noctalia locks after 10 minutes, turns monitors off after 15, and locks before sleep (lid close or suspend).
 - **Screenshots:** built into niri, saved to `~/Pictures/Screenshots`.
-- **Waybar:**
-  - Left: battery, CPU, memory, disk.
-  - Center: niri workspaces.
-  - Right: keyboard layout (`es` / `us`), network (click opens `nmtui`), volume (click opens pavucontrol), power profile (click cycles power-saver / balanced / performance), clock with a calendar tooltip, tray.
-  - Tray: Wi-Fi menu (`nm-applet`) and Bluetooth (`blueman`).
+- **Noctalia** (Tokyo Night palette, JetBrains Mono font):
+  - Bar left: launcher, battery, CPU, RAM, disk.
+  - Bar center: niri workspaces.
+  - Bar right: keyboard layout (`es` / `us`), network, Bluetooth, volume, power profile, clock, tray, notifications, control center, session menu.
+  - Clicking network, Bluetooth or volume opens its panel; the control center (`Mod+S`) has Wi-Fi, Bluetooth, audio and power settings in one place.
+  - Changes made in its Settings window (`Mod+Shift+S`) are saved to `~/.local/state/noctalia/settings.toml` and override `config.toml`.
 - **Login:** the SDDM login screen (installed by CachyOS) starts the niri session. Your login password unlocks the GNOME keyring, so apps can save passwords. `.zprofile` also unblocks Wi-Fi.
 - **Wayland-native apps:** Electron and Qt apps run natively on Wayland.
 - **Zsh:**
@@ -59,24 +56,31 @@
 
 ## Keybindings
 
-`Mod` is the Super key. `Mod+Shift+/` shows every binding.
+`Mod` is the Super key. `Mod+Shift+Escape` shows every binding.
 
 ### Apps
 | Key | Action |
 |---|---|
 | `Mod+Return` | foot (terminal) |
-| `Mod+D` | fuzzel launcher |
 | `Mod+E` | Emacs (client) |
 | `Mod+W` | Firefox |
-| `Mod+M` | Thunderbird |
 | `Mod+O` | LibreOffice |
 | `Mod+G` | GIMP |
-| `Mod+I` | Inkscape |
 | `Mod+N` | Double Commander |
 | `Mod+P` | KeePassXC |
-| `Mod+V` | Clipboard history (fuzzel) |
 | `Mod+R` | Goodvibes (radio) |
+
+Thunderbird and Inkscape have no key; open them from the launcher.
+
+### Noctalia
+| Key | Action |
+|---|---|
+| `Mod+D` | Launcher (apps; `/calc`, `/emo` for the calculator and emoji) |
+| `Mod+V` | Clipboard history |
+| `Mod+S` | Control center |
+| `Mod+Shift+S` | Noctalia settings |
 | `Mod+Escape` | Lock screen |
+| Volume, mic-mute, brightness and media keys | Change the value and show a popup (also on the lock screen) |
 
 ### Windows
 | Key | Action |
@@ -84,17 +88,23 @@
 | `Mod+Q` | Close window |
 | `Mod+Shift+Q` | Force-kill the window's process (frozen apps) |
 | `Mod+F` / `Mod+Shift+F` | Maximize column / fullscreen |
+| `Mod+Ctrl+F` | Widen column to fill the free space |
 | `Mod+T` | Toggle floating |
 | `Mod+Tab` | Overview |
-| `Mod+H` / `Mod+L` (or arrows) | Focus column left / right |
+| `Mod+H` / `Mod+L` (or `Left` / `Right`) | Focus column left / right |
 | `Mod+J` / `Mod+K` (or `Down` / `Up`) | Focus window or workspace down / up |
-| `Mod+Alt+H/J/K/L` | Move window or column |
-| `Mod+Shift+H/L` | Column width −/+ 10% |
-| `Mod+Shift+J/K` | Window height +/− 10% |
+| `Mod+Home` / `Mod+End` | Focus first / last column |
+| `Mod+Alt+H` / `Mod+Alt+L` (or `Left` / `Right`) | Move column left / right |
+| `Mod+Alt+J` / `Mod+Alt+K` (or `Down` / `Up`) | Move window down / up, on to the next workspace at the edge |
+| `Mod+Ctrl+Home` / `Mod+Ctrl+End` | Move column to first / last |
+| `Mod+-` / `Mod++` | Column width −/+ 10% |
+| `Mod+Shift+-` / `Mod+Shift++` | Window height −/+ 10% |
 | `Mod+[` / `Mod+]` | Pull window into / push out of column |
+| `Mod+,` / `Mod+.` | Pull the window on the right into this column / push the bottom window out |
 | `Mod+Space` | Cycle preset column widths |
 | `Mod+Ctrl+Space` | Switch keyboard layout: Spanish ↔ English |
 | `Mod+C` | Center column |
+| `Mod+Ctrl+Escape` | Get your shortcuts back when a fullscreen app or a VM has grabbed the keyboard |
 
 ### Workspaces and system
 | Key | Action |
@@ -104,8 +114,6 @@
 | `Mod+Scroll` | Previous / next workspace |
 | `Ctrl+Alt+P` | Screenshot (select area) |
 | `Print` / `Alt+Print` | Screenshot screen / window |
-| Volume, mic-mute, brightness keys | `wpctl` / `brightnessctl` |
-| Play / pause / next / previous keys | `playerctl` (any media player) |
 | `Mod+Shift+P` | Monitors off |
 | `Mod+Alt+Q` | Quit niri |
 
@@ -158,13 +166,13 @@ binds {
     Mod+Ctrl+Return { spawn "foot" "btop"; }
 
     // Shell syntax (pipes, $VARS, ~) needs sh -c
-    Mod+Shift+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
+    Mod+Ctrl+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
 
     // Built-in actions
     Mod+C { center-column; }
 
     // Media keys, still working on the lock screen
-    XF86AudioPlay allow-when-locked=true { spawn "playerctl" "play-pause"; }
+    XF86AudioPlay allow-when-locked=true { spawn "noctalia" "msg" "media" "toggle"; }
 
     // Repeat-limited (good for mouse wheel binds)
     Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
@@ -177,16 +185,16 @@ binds {
 - **Removing a bind:** delete the line.
 - **All actions:** `niri msg action --help` lists them, and the [niri wiki](https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings) documents them.
 - **Using Alt as Mod:** add `mod-key "Alt"` to the `input { }` block. That's useful when running niri nested inside another session.
-- **Hotkey overlay:** `Mod+Shift+/` shows the bindings. Add `hotkey-overlay-title="My title"` after the key to give a bind a readable name in it.
+- **Hotkey overlay:** `Mod+Shift+Escape` shows the bindings. Add `hotkey-overlay-title="My title"` after the key to give a bind a readable name in it.
 
 After changing binds, update the keybinding tables in this README too.
 
-### Waybar click actions
-Clicks on bar modules are set in `~/.config/waybar/config.jsonc` with `on-click`, `on-click-right` and `on-scroll-up` / `on-scroll-down`:
-```jsonc
-"clock": { "format": "{:%H:%M}", "on-click": "gnome-calendar" }
+### Noctalia
+Noctalia's own panels use fixed keys (arrows, Enter, Escape). Change them in the `[keybinds]` section of `~/.config/noctalia/config.toml`. Anything Noctalia can do from a key is a `noctalia msg` command, which you bind in niri:
+```kdl
+Mod+Shift+N { spawn "noctalia" "msg" "notification-clear-history"; }
 ```
-Restart the bar to apply: `pkill waybar; waybar &`.
+`noctalia msg --help` lists the commands. Bar clicks are set per widget in `config.toml`; see the [bar actions docs](https://docs.noctalia.dev/noctalia/bar/actions/).
 
 ### Neovim
 Global maps are in `~/.config/nvim/lua/core/remaps.lua`. Plugin maps sit next to each plugin's config in `~/.config/nvim/lua/plugins/config/` (e.g. `telescope.lua`, `harpoon.lua`). LSP maps are in the `LspAttach` block of `lsp.lua`, and completion keys are in `cmp.lua`.
@@ -231,18 +239,16 @@ Run `bindkey` with no arguments to list the current ones. To find a key's code, 
 
 The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos) and [`packages-aur.txt`](packages-aur.txt) (AUR). They only hold what a CachyOS install with the niri desktop doesn't already have.
 
-**Already installed by CachyOS** (and used by these configs): `niri`, `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `wl-clipboard`, `gnome-keyring`, `sddm`, `networkmanager`, `bluez`, `bluez-utils`, `pipewire-pulse`, `wireplumber`, `pavucontrol`, `power-profiles-daemon`, `xdg-user-dirs`, `noto-fonts`, `noto-fonts-emoji`, `cantarell-fonts`, `zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fzf`, `git`, `base-devel`, `python`, `ripgrep`, `unzip`, `unrar` and `firefox`.
+**Already installed by CachyOS** (and used by these configs): `niri`, `noctalia` (from `cachyos-niri-noctalia`), `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `wl-clipboard`, `gnome-keyring`, `sddm`, `networkmanager`, `bluez`, `bluez-utils`, `pipewire-pulse`, `wireplumber`, `pavucontrol`, `power-profiles-daemon`, `xdg-user-dirs`, `noto-fonts`, `noto-fonts-emoji`, `cantarell-fonts`, `zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fzf`, `git`, `base-devel`, `python`, `ripgrep`, `unzip`, `unrar` and `firefox`.
 
 **Installed from this repo:**
 
 | Group | Packages | Used by |
 |---|---|---|
 | AUR helper | `paru` (in the CachyOS repo) | `packages-aur.txt`, `paru -Syu` |
-| Desktop | `polkit-gnome`, `waybar`, `fuzzel`, `mako`, `swaylock`, `swayidle`, `swaybg`, `brightnessctl`, `playerctl` | Password prompts, bar, launcher, notifications, lock/idle, wallpaper, brightness and media keys |
-| Tray | `network-manager-applet`, `blueman` | Wi-Fi and Bluetooth tray menus |
 | Keyring | `libsecret`, `seahorse` | Saved passwords for Thunderbird, browsers, git; `seahorse` to manage them |
-| Clipboard / scripts | `cliphist`, `jq` | `Mod+V` history; `Mod+Shift+Q` force-kill |
-| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons) | waybar, fuzzel, mako, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
+| Scripts | `jq` | `Mod+Shift+Q` force-kill |
+| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons) | Noctalia, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gnome-themes-extra`; AUR: `sunity-cursors-git`, `gtk-engine-murrine` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
 | Terminal | `foot` | `Mod+Return`. Renders on the CPU, so it doesn't depend on the GPU driver |
@@ -252,13 +258,12 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos) and [`p
 | LaTeX | `texlive-basic`, `texlive-latex`, `texlive-latexrecommended`, `texlive-latexextra`, `texlive-binextra` (latexmk), `zathura`, `zathura-pdf-mupdf` | VimTeX compile and PDF viewer |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | AUR safety | AUR: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts and the launcher |
 
-**Removed by `full-install.sh`:** CachyOS's Noctalia shell (`cachyos-niri-noctalia`, `noctalia`), which does the same jobs as waybar, fuzzel, mako, swaylock and swaybg.
 
 Not packaged, so install these by hand:
-- **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 5 below).
-- **Doom Emacs** (step 6 below).
+- **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 4 below).
+- **Doom Emacs** (step 5 below).
 
 ## Installation
 
@@ -318,7 +323,7 @@ Connect to the network (Wi-Fi is in the panel), then choose **Launch installer**
    3. Tick **Encrypt system** and type the disk passphrase. You'll type it at every boot. Use letters, numbers and spaces only: characters like `ñ`, `ç`, `-`, `/`, `@` or `"` sit in different places on Spanish and English keyboards. A long phrase of words is strong and easy to type.
 
    The installer keeps the small EFI partition unencrypted (the firmware has to read it) and encrypts the rest.
-5. **Desktop:** `Niri`. It installs niri, the SDDM login screen and CachyOS's Noctalia shell; `full-install.sh` replaces Noctalia with this repo's waybar, fuzzel, mako and swaylock.
+5. **Desktop:** `Niri`. It installs niri, the SDDM login screen and the Noctalia shell, which this setup uses.
 6. **Packages:** leave the defaults. **Firefox** is ticked, which is the browser `Mod+W` opens. Add **Printing-Support** if you have a printer.
 7. **Users:** your name, username and password. This password also unlocks the keyring at login.
 8. **Summary:** check the disk, encryption and user, then **Install**. When it finishes, restart and remove the USB stick.
@@ -356,7 +361,7 @@ fwupdmgr refresh && fwupdmgr update
 ### Part 2 — Install the dotfiles
 
 #### 2.1 Before you start
-- **On a system you've already been using:** back up your home folder to another drive. The installer also moves every file it replaces into `~/.dotfiles-backup/<date>/`, including CachyOS's default niri config.
+- **On a system you've already been using:** back up your home folder to another drive. The installer also moves every file it replaces into `~/.dotfiles-backup/<date>/`, including CachyOS's default niri and Noctalia configs.
 - **Space:** keep about 20 GB free on `/`. TeX Live, Doom Emacs, LibreOffice and the language servers are large.
 - Log in as your normal user, not root.
 
@@ -372,15 +377,14 @@ It runs every step of the [manual install](#23-manual-install) in order. It asks
 Run it from Alacritty (`Mod+Return` in CachyOS's default niri config) or from a text console (`Ctrl+Alt+F2`).
 
 What it does:
-1. Removes CachyOS's Noctalia shell. It first marks `niri` and the other packages this setup shares with it as explicitly installed, so they stay. Noctalia's own settings go to `~/.dotfiles-backup/`.
-2. Updates the system and installs the packages in `packages.txt`, `paru` included. Names that aren't in the repos are skipped with a warning.
-3. Installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning.
-4. Runs `install.sh`, which links the configs, installs the fonts, enables the services and makes zsh your shell.
-5. Installs the GTK, Qt, icon and cursor themes and applies them.
-6. Installs Doom Emacs.
-7. Installs the Neovim plugins, treesitter parsers and language servers, and builds Telescope's fzf extension.
-8. Checks that the wallpaper is in place.
-9. Checks the niri config with `niri validate`.
+1. Updates the system and installs the packages in `packages.txt`, `paru` included. Names that aren't in the repos are skipped with a warning.
+2. Installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning.
+3. Runs `install.sh`, which links the configs (replacing CachyOS's default niri and Noctalia configs), installs the fonts, enables the services and makes zsh your shell.
+4. Installs the GTK, Qt, icon and cursor themes and applies them.
+5. Installs Doom Emacs.
+6. Installs the Neovim plugins, treesitter parsers and language servers, and builds Telescope's fzf extension.
+7. Checks that the wallpaper is in place.
+8. Checks the niri and Noctalia configs with `niri validate` and `noctalia config validate`.
 
 At the end, read the output. Anything in yellow `!!` lines failed; the message says what to run to retry it. You can run the script again safely: finished steps are skipped or redone harmlessly.
 
@@ -398,14 +402,7 @@ git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
 cd ~/dotfiles
 ```
 
-**2. Remove the Noctalia shell.** `niri` and a few other packages were installed as its dependencies, so mark them as explicitly installed first; otherwise removing Noctalia takes them along:
-```sh
-sudo pacman -D --asexplicit niri xwayland-satellite xdg-desktop-portal-gnome xdg-desktop-portal-gtk gnome-keyring wl-clipboard noto-fonts noto-fonts-emoji sddm
-sudo pacman -Rs cachyos-niri-noctalia noctalia
-mkdir -p ~/.dotfiles-backup && mv ~/.config/noctalia ~/.dotfiles-backup/noctalia
-```
-
-**3. Install the packages** (`paru` comes from the CachyOS repo with the rest):
+**2. Install the packages** (`paru` comes from the CachyOS repo with the rest):
 ```sh
 sudo pacman -Syu --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
 paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
@@ -415,18 +412,18 @@ If pacman stops with `target not found: <name>`, that package has left the repos
 
 This installs TrustSight from the AUR. From then on, run `trustsight` before `paru -Syu` to review pending AUR updates for risky changes.
 
-**4. Link the dotfiles:**
+**3. Link the dotfiles:**
 ```sh
 ./install.sh
 ```
 This script:
-- symlinks every config into `~` (anything already there, such as CachyOS's niri config and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/`);
+- symlinks every config into `~` (anything already there, such as CachyOS's niri and Noctalia configs and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/`);
 - installs the bundled fonts;
 - creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
 - enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
 - makes zsh your login shell instead of CachyOS's default, fish.
 
-**5. Install the GTK and icon themes.** Both come from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme). It isn't in the AUR; `rose-pine-gtk-theme-full` there is a different theme.
+**4. Install the GTK and icon themes.** Both come from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme). It isn't in the AUR; `rose-pine-gtk-theme-full` there is a different theme.
 ```sh
 git clone --depth 1 https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme.git /tmp/rose-pine-gtk
 cd /tmp/rose-pine-gtk/themes
@@ -436,7 +433,7 @@ cp -r /tmp/rose-pine-gtk/icons/Rose-Pine-Moon ~/.local/share/icons/
 gtk-update-icon-cache -f ~/.local/share/icons/Rose-Pine-Moon
 cd ~/dotfiles
 ```
-The cursor theme `Sunity-cursors` comes from the AUR package `sunity-cursors-git` (installed in step 3). To install it by hand instead:
+The cursor theme `Sunity-cursors` comes from the AUR package `sunity-cursors-git` (installed in step 2). To install it by hand instead:
 ```sh
 git clone --depth 1 https://github.com/alvatip/Sunity-cursors.git /tmp/sunity
 mkdir -p ~/.icons
@@ -460,7 +457,7 @@ gsettings set org.gnome.desktop.interface cursor-size 24
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 ```
 
-**6. Install Doom Emacs:**
+**5. Install Doom Emacs:**
 ```sh
 git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 ~/.config/emacs/bin/doom install --env
@@ -469,9 +466,9 @@ git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 ```
 `--env` generates Doom's envvar file, so Emacs sees the `PATH` from `.zshenv`. Your Doom config is already linked at `~/.config/doom`.
 
-**7. Wallpaper:** the repo includes one, Raphael's *The School of Athens* (public domain), linked to `~/.local/share/backgrounds/wallpaper.jpg`. To use another image, replace that file or change the `swaybg` line in `~/.config/niri/config.kdl`. `-m fill` crops the image to fill the screen; use `-m fit` to show all of it with borders.
+**6. Wallpaper:** the repo includes one, Raphael's *The School of Athens* (public domain), linked to `~/.local/share/backgrounds/wallpaper.jpg`. Noctalia shows it (`[wallpaper]` in `~/.config/noctalia/config.toml`). To use another image, replace that file, or put images in `~/.local/share/backgrounds` and pick one in Noctalia's wallpaper panel. `fill_mode = "crop"` crops the image to fill the screen; `"fit"` shows all of it with borders.
 
-**8. Set up Neovim:** run `nvim`. lazy.nvim installs the plugins, treesitter builds its parsers, and Mason installs the language servers (this takes a minute). Make sure Telescope's fzf extension got compiled, then check everything:
+**7. Set up Neovim:** run `nvim`. lazy.nvim installs the plugins, treesitter builds its parsers, and Mason installs the language servers (this takes a minute). Make sure Telescope's fzf extension got compiled, then check everything:
 ```sh
 make -C ~/.local/share/nvim/lazy/telescope-fzf-native.nvim
 ```
@@ -480,17 +477,17 @@ make -C ~/.local/share/nvim/lazy/telescope-fzf-native.nvim
 :Mason
 ```
 
-**9. Set up Python (optional):**
+**8. Set up Python (optional):**
 ```sh
 pyenv install 3.13
 pyenv global 3.13
 ```
 
-**10. Start niri:** reboot, then log in from SDDM with the **niri** session. Continue with [Part 3](#part-3--first-login).
+**9. Start niri:** reboot, then log in from SDDM with the **niri** session. Continue with [Part 3](#part-3--first-login).
 
 ### Part 3 — First login
 
-Log in from SDDM with the **niri** session: niri starts with the wallpaper and waybar. `Ctrl+Alt+F2` and up give you a plain text console, which is handy if something goes wrong.
+Log in from SDDM with the **niri** session: niri starts with the wallpaper and Noctalia's bar. `Ctrl+Alt+F2` and up give you a plain text console, which is handy if something goes wrong.
 
 #### 3.1 Monitors
 Open a terminal (`Mod+Return`) and list the screens:
@@ -507,15 +504,16 @@ output "eDP-1" {
 niri applies it as soon as you save.
 
 #### 3.2 Check that everything works
-- [ ] `Mod+Return` opens foot, and `Mod+D` opens fuzzel.
-- [ ] Waybar shows the layout, battery, CPU, memory, disk, workspaces, network, volume, power profile and clock.
-- [ ] `Mod+Ctrl+Space` switches between Spanish and English, and waybar shows `es` / `us`.
+- [ ] `Mod+Return` opens foot, and `Mod+D` opens Noctalia's launcher.
+- [ ] The bar shows the launcher, battery, CPU, RAM, disk, workspaces, keyboard layout, network, Bluetooth, volume, power profile and clock, in Tokyo Night colors.
+- [ ] `Mod+Ctrl+Space` switches between Spanish and English, and the bar shows the layout.
 - [ ] The volume, mic-mute, brightness and media keys work.
 - [ ] The tray shows one network icon and one Bluetooth icon.
 - [ ] `notify-send hi` shows a notification.
 - [ ] `Mod+Escape` locks the screen, and your password unlocks it.
 - [ ] `Ctrl+Alt+P` saves a screenshot to `~/Pictures/Screenshots`, and `Mod+V` opens the clipboard history.
 - [ ] `Mod+W` opens Firefox, its file dialogs open, and nothing asks for a keyring password.
+- [ ] `Mod+S` opens the control center, and `Mod+V` the clipboard history.
 - [ ] GTK apps (Thunderbird) and Qt apps (`Mod+P` KeePassXC, `Mod+N` Double Commander) use the Rose Pine theme.
 - [ ] In the terminal, `z <dir>` jumps to a directory, `ls` shows eza output, and Tab completes.
 - [ ] `nvim` opens. In it:
@@ -558,7 +556,7 @@ VirtualBox quirks:
 
 ### Going back to your old setup
 - Every file `install.sh` replaced is in `~/.dotfiles-backup/<date>/`. Copy the ones you want back over the links.
-- Your other packages aren't removed. To get CachyOS's Noctalia desktop back, run `sudo pacman -S cachyos-niri-noctalia` and move `~/.config/niri` and `~/.config/noctalia` back from the backup folder.
+- Your other packages aren't removed. To get CachyOS's default niri and Noctalia setup back, move `~/.config/niri` and `~/.config/noctalia` back from the backup folder, or copy them from `/etc/skel/.config/`.
 
 ## Troubleshooting
 - **The disk passphrase isn't accepted at boot:** try typing it as if on an English (US) keyboard. If that works, the boot screen isn't using the Spanish layout; check that `/etc/vconsole.conf` says `KEYMAP=es`, then rebuild the boot image with `sudo limine-mkinitcpio` (Limine) or `sudo mkinitcpio -P` (systemd-boot). You can always unlock with the backup passphrase from 1.6.
@@ -568,13 +566,12 @@ VirtualBox quirks:
 - **The bootloader fails to install, or the system only boots with the USB stick in:** the installer ran in Legacy/CSM mode. Set the firmware to UEFI only (see 1.3), check with `ls /sys/firmware/efi`, and install again.
 - **SDDM logs you straight back out:** press `Ctrl+Alt+F2`, log in, and run `niri validate`. Check that SDDM's session menu says **niri**.
 - **No sound:** run `systemctl --user status wireplumber`.
-- **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 5 of the manual install again, or pick the theme in `nwg-look`.
+- **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 4 of the manual install again, or pick the theme in `nwg-look`.
 - **Qt apps look unthemed:** check `echo $QT_QPA_PLATFORMTHEME` shows `qt5ct:qt6ct` inside niri, and that `ls ~/.config/Kvantum` lists `rose-pine-foam`. Open `qt6ct` (or `qt5ct` for Double Commander) and check that Style is `kvantum`.
 - **niri ignores your config and uses its defaults:** a duplicate keybinding or a typo stops niri loading `config.kdl`. Run `niri validate` to see the line.
 - **`Mod+º` does nothing:** run `wev`, press the º key and check the keysym it prints. If it isn't `masculine`, use that name in the two workspace-10 binds.
 - **Apps keep asking for a keyring password:** the login unlock isn't working. Check that `grep pam_gnome_keyring /etc/pam.d/sddm` shows the `auth` and `session` lines. If the keyring was created with a different password, delete `~/.local/share/keyrings/login.keyring` and log in again.
 - **Neovim says nvim-treesitter needs a newer version:** the `main` branch needs Neovim 0.12+. Check with `nvim --version`.
-- **Noctalia's bar shows up next to waybar:** Noctalia is still installed and something starts it. Run step 2 of the [manual install](#23-manual-install).
-- **Two network or Bluetooth icons in the tray:** an app started both from the niri config and from its XDG autostart entry. Run `ls /etc/xdg/autostart ~/.config/autostart` and either remove its `spawn-at-startup` line or hide the entry with a `Hidden=true` file in `~/.config/autostart/`.
+- **No bar after logging in:** run `noctalia config validate` to find errors in `~/.config/noctalia/config.toml`, then start it by hand with `noctalia` to see its log. If a setting from the file seems ignored, it was probably changed in Noctalia's Settings window; check `~/.local/state/noctalia/settings.toml`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.

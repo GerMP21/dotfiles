@@ -1,0 +1,63 @@
+# Noctalia shell: bar, launcher, clipboard history, notifications, volume and
+# brightness popups, lock screen, idle and wallpaper. niri starts it
+# (spawn-at-startup in ~/.config/niri/config.kdl).
+#
+# Options are documented at https://docs.noctalia.dev. Check this file with:
+#   noctalia config validate
+# Changes made in Noctalia's Settings window go to
+# ~/.local/state/noctalia/settings.toml and override this file.
+
+[shell]
+font_family  = "JetBrainsMono Nerd Font"
+polkit_agent = true   # password prompts for apps that ask for admin rights
+
+[theme]
+mode    = "dark"
+source  = "builtin"
+builtin = "Tokyo-Night"
+
+# Raphael's The School of Athens (public domain), linked by install.sh
+[wallpaper]
+fill_mode = "crop"
+directory = "~/.local/share/backgrounds"
+
+[wallpaper.default]
+path = "~/.local/share/backgrounds/wallpaper.jpg"
+
+# Lock after 10 minutes, monitors off after 15. Noctalia also locks before
+# suspend (lid close, systemctl suspend) by default.
+[idle.behavior.lock]
+timeout = 600
+action  = "lock"
+enabled = true
+
+[idle.behavior.screen-off]
+timeout = 900
+action  = "screen_off"
+enabled = true
+
+# Same layout as the old waybar: system stats left, workspaces center,
+# keyboard layout, network, volume, power profile, clock and tray right
+[bar.default]
+position = "top"
+start  = ["launcher", "battery", "cpu", "ram", "disk"]
+center = ["workspaces"]
+end    = ["keyboard_layout", "network", "bluetooth", "volume", "power_profile",
+          "clock", "tray", "notifications", "control-center", "session"]
+
+[widget.cpu]
+type = "sysmon"
+stat = "cpu_usage"
+
+[widget.ram]
+type = "sysmon"
+stat = "ram_pct"
+
+[widget.disk]
+type = "sysmon"
+stat = "disk_used_pct"
+path = "/"
+
+[widget.clock]
+format         = "{:%a %d %b  %H:%M}"
+tooltip_format = "{:%A, %d %B %Y}"

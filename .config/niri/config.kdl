@@ -29,20 +29,20 @@ layout {
     border { off; }
 }
 
-spawn-at-startup "/usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1"
-spawn-at-startup "waybar"
-spawn-at-startup "mako"
-// Wallpaper: Raphael, The School of Athens (public domain). To change it,
-// replace this file or point the path at another image.
-spawn-sh-at-startup "swaybg -m fill -i ~/.local/share/backgrounds/wallpaper.jpg"
-spawn-at-startup "swayidle" "-w" "timeout" "600" "swaylock -f" "timeout" "900" "niri msg action power-off-monitors" "before-sleep" "swaylock -f"
+// Noctalia: bar, launcher, clipboard, notifications, lock, idle, wallpaper.
+// Its config is ~/.config/noctalia/config.toml.
+spawn-at-startup "noctalia"
 spawn-at-startup "emacs" "--daemon"
-// --indicator puts it in waybar's tray. Its own XDG autostart entry (which
-// niri-session would also run) is hidden in ~/.config/autostart.
-spawn-at-startup "nm-applet" "--indicator"
-// blueman-applet starts from its XDG autostart entry; no spawn needed.
-// Clipboard history (Mod+V), one watcher as the cliphist docs recommend
-spawn-sh-at-startup "wl-paste --watch cliphist store"
+
+// Lets Noctalia's notification buttons focus the app that sent them
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+// Flat Tokyo Night background in the overview (Mod+Tab)
+overview {
+    backdrop-color "#1a1b26"
+}
 
 prefer-no-csd
 
@@ -67,75 +67,101 @@ window-rule {
     geometry-corner-radius 6
     clip-to-geometry true
 }
+// Noctalia's settings window (Mod+Shift+S)
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
 
 binds {
-    Mod+Shift+Slash { show-hotkey-overlay; }
+    Mod+Shift+Escape { show-hotkey-overlay; }
 
-    // Apps (ported from sxhkd)
+    // Apps
     Mod+Return { spawn "foot"; }
-    Mod+D      { spawn "fuzzel"; }
     Mod+E      { spawn "emacsclient" "-c" "-a" "emacs"; }
     Mod+W      { spawn "firefox"; }
-    Mod+M      { spawn "thunderbird"; }
     Mod+O      { spawn "libreoffice"; }
     Mod+G      { spawn "gimp"; }
-    Mod+I      { spawn "inkscape"; }
     Mod+N      { spawn "doublecmd"; }
     Mod+P      { spawn "keepassxc"; }
     Mod+R      { spawn "goodvibes"; }
-    Mod+Escape { spawn "swaylock"; }
 
-    // Media
-    XF86AudioRaiseVolume  allow-when-locked=true { spawn "wpctl" "set-volume" "-l" "1.0" "@DEFAULT_AUDIO_SINK@" "5%+"; }
-    XF86AudioLowerVolume  allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "5%-"; }
-    XF86AudioMute         allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
-    XF86AudioMicMute      allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
-    XF86AudioPlay         allow-when-locked=true { spawn "playerctl" "play-pause"; }
-    XF86AudioPause        allow-when-locked=true { spawn "playerctl" "play-pause"; }
-    XF86AudioNext         allow-when-locked=true { spawn "playerctl" "next"; }
-    XF86AudioPrev         allow-when-locked=true { spawn "playerctl" "previous"; }
-    XF86MonBrightnessUp   allow-when-locked=true { spawn "brightnessctl" "set" "10%+"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "10%-"; }
+    // Noctalia
+    Mod+D       { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Mod+V       { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+    Mod+S       { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
+    Mod+Shift+S { spawn "noctalia" "msg" "settings-toggle"; }
+    Mod+Escape  { spawn "noctalia" "msg" "session" "lock"; }
+
+    // Media and brightness, through Noctalia so its popups show
+    XF86AudioRaiseVolume  allow-when-locked=true { spawn "noctalia" "msg" "volume-up"; }
+    XF86AudioLowerVolume  allow-when-locked=true { spawn "noctalia" "msg" "volume-down"; }
+    XF86AudioMute         allow-when-locked=true { spawn "noctalia" "msg" "volume-mute"; }
+    XF86AudioMicMute      allow-when-locked=true { spawn "noctalia" "msg" "mic-mute"; }
+    XF86AudioPlay         allow-when-locked=true { spawn "noctalia" "msg" "media" "toggle"; }
+    XF86AudioPause        allow-when-locked=true { spawn "noctalia" "msg" "media" "toggle"; }
+    XF86AudioNext         allow-when-locked=true { spawn "noctalia" "msg" "media" "next"; }
+    XF86AudioPrev         allow-when-locked=true { spawn "noctalia" "msg" "media" "previous"; }
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "noctalia" "msg" "brightness-up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia" "msg" "brightness-down"; }
 
     // Windows
     Mod+Q       { close-window; }
     // Force-kill the focused window's process (for frozen apps)
     Mod+Shift+Q { spawn-sh r#"pid=$(niri msg --json focused-window | jq -r '.pid // empty'); [ -n "$pid" ] && kill -9 "$pid""#; }
-    Mod+V       { spawn-sh "cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"; }
     Mod+F       { maximize-column; }
     Mod+Shift+F { fullscreen-window; }
+    Mod+Ctrl+F  { expand-column-to-available-width; }
     Mod+T       { toggle-window-floating; }
     Mod+Tab     { toggle-overview; }
+    // Gets your shortcuts back when a fullscreen app or a VM has grabbed the keyboard
+    Mod+Ctrl+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
 
     // Focus (vim keys, or arrows)
     Mod+H     { focus-column-left; }
     Mod+L     { focus-column-right; }
     Mod+J     { focus-window-or-workspace-down; }
+    Mod+K     { focus-window-or-workspace-up; }
     Mod+Left  { focus-column-left; }
     Mod+Right { focus-column-right; }
     Mod+Down  { focus-window-or-workspace-down; }
-    Mod+K     { focus-window-or-workspace-up; }
     Mod+Up    { focus-window-or-workspace-up; }
+    Mod+Home  { focus-column-first; }
+    Mod+End   { focus-column-last; }
 
-    // Move
-    Mod+Alt+H { move-column-left; }
-    Mod+Alt+L { move-column-right; }
-    Mod+Alt+J { move-window-down-or-to-workspace-down; }
-    Mod+Alt+K { move-window-up-or-to-workspace-up; }
+    // Move (vim keys, or arrows)
+    Mod+Alt+H     { move-column-left; }
+    Mod+Alt+L     { move-column-right; }
+    Mod+Alt+J     { move-window-down-or-to-workspace-down; }
+    Mod+Alt+K     { move-window-up-or-to-workspace-up; }
+    Mod+Alt+Left  { move-column-left; }
+    Mod+Alt+Right { move-column-right; }
+    Mod+Alt+Down  { move-window-down-or-to-workspace-down; }
+    Mod+Alt+Up    { move-window-up-or-to-workspace-up; }
+    Mod+Ctrl+Home { move-column-to-first; }
+    Mod+Ctrl+End  { move-column-to-last; }
 
     // Columns
     Mod+BracketLeft  { consume-or-expel-window-left; }
     Mod+BracketRight { consume-or-expel-window-right; }
+    Mod+Comma        { consume-window-into-column; }
+    Mod+Period       { expel-window-from-column; }
     Mod+Space        { switch-preset-column-width; }
+    Mod+C            { center-column; }
 
     // Keyboard layout: toggle Spanish (es) <-> English (us)
     Mod+Ctrl+Space   { switch-layout "next"; }
 
-    Mod+C            { center-column; }
-    Mod+Shift+H { set-column-width "-10%"; }
-    Mod+Shift+L { set-column-width "+10%"; }
-    Mod+Shift+J { set-window-height "+10%"; }
-    Mod+Shift+K { set-window-height "-10%"; }
+    // Sizes. + is Plus on the Spanish layout and Equal on English, so both
+    // are bound (niri matches the key in the current layout).
+    Mod+Minus       { set-column-width "-10%"; }
+    Mod+Plus        { set-column-width "+10%"; }
+    Mod+Equal       { set-column-width "+10%"; }
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Plus  { set-window-height "+10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
 
     // Workspaces
     Mod+1 { focus-workspace 1; }

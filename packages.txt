@@ -2,7 +2,7 @@
 # niri desktop doesn't already have. Install with:
 #   sudo pacman -S --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
 #
-# Already installed by CachyOS, so not listed here: niri, xwayland-satellite,
+# Already installed by CachyOS, so not listed here: niri, noctalia, xwayland-satellite,
 # xdg-desktop-portal-gnome/-gtk, wl-clipboard, gnome-keyring, sddm,
 # networkmanager, bluez, bluez-utils, pipewire-pulse, wireplumber, pavucontrol,
 # power-profiles-daemon, xdg-user-dirs, noto-fonts, noto-fonts-emoji,
@@ -12,20 +12,11 @@
 # --- AUR helper (in the CachyOS repo, no build needed) ---
 paru
 
-# --- Wayland desktop (niri) ---
-polkit-gnome
-waybar
-fuzzel
-mako
-swaylock
-swayidle
-swaybg
-brightnessctl
-playerctl
+# --- Desktop extras ---
+# The Noctalia shell (bar, launcher, notifications, lock, idle, wallpaper) and
+# niri come with CachyOS's niri desktop (package cachyos-niri-noctalia).
+# jq: Mod+Shift+Q force-kill. libsecret/seahorse: saved passwords.
 jq
-cliphist
-network-manager-applet
-blueman
 libsecret
 seahorse
 

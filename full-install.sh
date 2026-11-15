@@ -25,28 +25,7 @@ fi
 sudo -v
 while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done 2>/dev/null &
 
-step "1/9 Remove the Noctalia shell (replaced by waybar, fuzzel, mako and swaylock)"
-mapfile -t NOCTALIA < <(pacman -Qq cachyos-niri-noctalia noctalia 2>/dev/null || true)
-if [ "${#NOCTALIA[@]}" -gt 0 ]; then
-  # These came in as dependencies of cachyos-niri-noctalia, but this setup
-  # needs them too. Marking them as explicitly installed stops pacman -Rs
-  # (and the `cleanup` alias) from removing them along with it.
-  mapfile -t KEEP < <(pacman -Qq niri xwayland-satellite xdg-desktop-portal-gnome \
-    xdg-desktop-portal-gtk gnome-keyring wl-clipboard noto-fonts noto-fonts-emoji sddm 2>/dev/null || true)
-  if [ "${#KEEP[@]}" -gt 0 ]; then
-    sudo pacman -D --asexplicit "${KEEP[@]}"
-  fi
-  sudo pacman -Rs "${NOCTALIA[@]}"
-  if [ -d "$HOME/.config/noctalia" ]; then
-    mkdir -p "$HOME/.dotfiles-backup"
-    mv "$HOME/.config/noctalia" "$HOME/.dotfiles-backup/noctalia-$(date +%Y%m%d-%H%M%S)"
-    echo "moved ~/.config/noctalia to ~/.dotfiles-backup/"
-  fi
-else
-  echo "Noctalia isn't installed"
-fi
-
-step "2/9 Repo packages (including paru)"
+step "1/8 Repo packages (including paru)"
 sudo pacman -Syu
 # Skip names that aren't in the repos (e.g. moved to the AUR) instead
 # of letting one unknown name make pacman refuse the whole list
@@ -59,7 +38,7 @@ if [ "${#MISSING[@]}" -gt 0 ]; then
 fi
 sudo pacman -S --needed "${PKGS[@]}"
 
-step "3/9 AUR packages"
+step "2/8 AUR packages"
 mapfile -t AUR < <(pkglist "$DOTS/packages-aur.txt")
 if ! paru -S --needed "${AUR[@]}"; then
   warn "Some AUR packages failed. Retrying them one by one."
@@ -68,10 +47,10 @@ if ! paru -S --needed "${AUR[@]}"; then
   done
 fi
 
-step "4/9 Link dotfiles"
+step "3/8 Link dotfiles"
 "$DOTS/install.sh"
 
-step "5/9 GTK and Qt themes, icons and cursor"
+step "4/8 GTK and Qt themes, icons and cursor"
 git clone --depth 1 https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme.git "$TMP/rose-pine-gtk"
 (cd "$TMP/rose-pine-gtk/themes" && ./install.sh -c dark -l)
 mkdir -p "$HOME/.local/share/icons"
@@ -102,7 +81,7 @@ else
   warn "gsettings schema missing; set the theme later in nwg-look"
 fi
 
-step "6/9 Doom Emacs"
+step "5/8 Doom Emacs"
 if [ -x "$HOME/.config/emacs/bin/doom" ]; then
   "$HOME/.config/emacs/bin/doom" sync
 else
@@ -112,7 +91,7 @@ else
 fi
 "$HOME/.config/emacs/bin/doom" doctor || warn "doom doctor reported issues; review them above"
 
-step "7/9 Neovim plugins, parsers and language servers"
+step "6/8 Neovim plugins, parsers and language servers"
 nvim --headless "+Lazy! sync" +qa || warn "lazy.nvim sync failed; open nvim to retry"
 # Telescope's fzf extension is a C library that lazy.nvim builds with make;
 # build it here if that didn't happen, so Telescope gets the fast sorter
@@ -126,13 +105,14 @@ nvim --headless --cmd "let g:bootstrap=1" -c "lua require('nvim-treesitter').ins
 nvim --headless --cmd "let g:bootstrap=1" -c "MasonInstall bash-language-server python-lsp-server typescript-language-server rust-analyzer lua-language-server" -c qa \
   || warn "Some language servers failed; run :Mason in nvim"
 
-step "8/9 Wallpaper"
+step "7/8 Wallpaper"
 if [ ! -f "$HOME/.local/share/backgrounds/wallpaper.jpg" ]; then
   warn "Wallpaper missing at ~/.local/share/backgrounds/wallpaper.jpg; re-run install.sh."
 fi
 
-step "9/9 Check the niri config"
+step "8/8 Check the niri and Noctalia configs"
 niri validate || warn "niri validate failed; fix ~/.config/niri/config.kdl before logging in"
+noctalia config validate || warn "noctalia config validate failed; fix ~/.config/noctalia/config.toml"
 
 printf '\n\033[1;32mDone.\033[0m Log out, then log back in from the login screen with the niri session.\n'
 echo "Then run :checkhealth in nvim, and 'niri msg outputs' to set up monitors."
