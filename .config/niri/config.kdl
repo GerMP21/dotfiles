@@ -144,8 +144,11 @@ binds {
     Mod+Ctrl+End  { move-column-to-last; }
 
     // Columns
-    Mod+BracketLeft  { consume-or-expel-window-left; }
-    Mod+BracketRight { consume-or-expel-window-right; }
+    // Move the window into the column on the left/right, or out of its column
+    Mod+Ctrl+H       { consume-or-expel-window-left; }
+    Mod+Ctrl+L       { consume-or-expel-window-right; }
+    Mod+Ctrl+Left    { consume-or-expel-window-left; }
+    Mod+Ctrl+Right   { consume-or-expel-window-right; }
     Mod+Comma        { consume-window-into-column; }
     Mod+Period       { expel-window-from-column; }
     Mod+Space        { switch-preset-column-width; }
@@ -154,8 +157,8 @@ binds {
     // Keyboard layout: toggle Spanish (es) <-> English (us)
     Mod+Ctrl+Space   { switch-layout "next"; }
 
-    // Sizes. + is Plus on the Spanish layout and Equal on English, so both
-    // are bound (niri matches the key in the current layout).
+    // Sizes. + has its own key on the Spanish layout (Plus); on English it's
+    // Shift+= (Equal), so both are bound.
     Mod+Minus       { set-column-width "-10%"; }
     Mod+Plus        { set-column-width "+10%"; }
     Mod+Equal       { set-column-width "+10%"; }

@@ -99,7 +99,7 @@ Thunderbird and Inkscape have no key; open them from the launcher.
 | `Mod+Ctrl+Home` / `Mod+Ctrl+End` | Move column to first / last |
 | `Mod+-` / `Mod++` | Column width −/+ 10% |
 | `Mod+Shift+-` / `Mod+Shift++` | Window height −/+ 10% |
-| `Mod+[` / `Mod+]` | Pull window into / push out of column |
+| `Mod+Ctrl+H` / `Mod+Ctrl+L` (or `Left` / `Right`) | Move window into the column on the left / right, or out of its column |
 | `Mod+,` / `Mod+.` | Pull the window on the right into this column / push the bottom window out |
 | `Mod+Space` | Cycle preset column widths |
 | `Mod+Ctrl+Space` | Switch keyboard layout: Spanish ↔ English |
