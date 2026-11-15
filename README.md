@@ -259,17 +259,172 @@ Not packaged, so install these by hand:
 
 ## Installation
 
-### Quick install
-On a working Arch install with a regular user and `sudo`:
+The guide has four parts. If Arch is already installed, skip to [Part 2](#part-2--install-the-dotfiles).
+
+1. [Install Arch Linux](#part-1--install-arch-linux-encrypted-with-archinstall), with the whole system encrypted, using `archinstall`.
+2. [Install the dotfiles](#part-2--install-the-dotfiles), with one script or step by step.
+3. [First login](#part-3--first-login): monitors and a checklist.
+4. [Keeping it up to date](#part-4--keeping-it-up-to-date).
+
+You can also [test everything in a virtual machine first](#testing-in-a-virtual-machine-first).
+
+### Part 1 — Install Arch Linux (encrypted, with archinstall)
+
+#### 1.1 What you need
+- A USB stick of 2 GB or more. It will be erased.
+- An internet connection, ideally a cable. Wi-Fi works too.
+- A backup of anything on the target disk. **The install erases the whole disk.**
+- To keep Windows on the same disk (dual boot), stop here: that needs manual partitioning, which this guide doesn't cover.
+
+#### 1.2 Make the USB stick
+1. Download `archlinux-x86_64.iso` from [archlinux.org/download](https://archlinux.org/download/), from a mirror near you.
+2. Write it to the USB stick:
+   - **On Windows:** use [Rufus](https://rufus.ie). Select the stick and the ISO, click **Start**, and choose **Write in DD Image mode** when asked.
+   - **On Linux:** find the stick with `lsblk` (for example `/dev/sdb`), then run:
+     ```sh
+     sudo dd if=archlinux-x86_64.iso of=/dev/sdX bs=4M status=progress oflag=sync
+     ```
+     Replace `/dev/sdX` with the stick, not a partition like `/dev/sdb1`. Double-check it: `dd` overwrites whatever you point it at.
+
+#### 1.3 Firmware (BIOS/UEFI) settings
+Open the firmware setup; the key is usually F2, Del or F10 at power-on. Then:
+1. Turn **Secure Boot** off. The Arch ISO isn't signed for it.
+2. Make sure it boots in **UEFI** mode, not "Legacy" or "CSM".
+3. Save, then boot from the USB stick. The boot-menu key is usually F12, F11 or Esc.
+
+Pick the first entry in the Arch boot menu and wait for the `root@archiso` prompt.
+
+#### 1.4 Keyboard and network
+1. Set the Spanish keyboard:
+   ```sh
+   loadkeys es
+   ```
+2. **Wired:** nothing to do. **Wi-Fi:** connect with `iwctl`:
+   ```sh
+   iwctl device list
+   ```
+   ```sh
+   iwctl --passphrase "YourWifiPassword" station wlan0 connect "YourNetwork"
+   ```
+   Use the device name from the first command if it isn't `wlan0`.
+3. Check the connection:
+   ```sh
+   ping -c 3 archlinux.org
+   ```
+
+#### 1.5 Run archinstall
+```sh
+archinstall
+```
+Move with the arrow keys, select with Enter, and go back with Esc. Leave every option not listed here at its default. These menu names are from `archinstall` 3.x and may differ slightly in other versions.
+
+1. **Locales:**
+   - **Keyboard layout:** `es`. This also sets the layout for the disk-passphrase prompt at boot.
+   - **Locale language:** for example `es_ES.UTF-8` or `en_US.UTF-8`.
+   - **Locale encoding:** `UTF-8`.
+2. **Mirrors and repositories → Select regions:** your country, or ones nearby.
+3. **Disk configuration:**
+   1. **Partitioning → Use a best-effort default partition layout.** Select your disk; check its size so you pick the right one. ⚠️ **This erases the whole disk.**
+   2. **Filesystem:** `ext4`.
+   3. **Separate partition for /home:** no. One encrypted partition for everything is simpler.
+   4. **Disk encryption:**
+      - **Encryption type:** `LUKS`.
+      - **Encryption password:** your disk passphrase. You'll type it at every boot. Use letters, numbers and spaces only: characters like `ñ`, `ç`, `-`, `/`, `@` or `"` sit in different places on Spanish and English keyboards. A long phrase of words is strong and easy to type.
+      - **Partitions:** select the **root** partition (the large `ext4` one). Leave the small boot partition (`fat32`, about 1 GB) unencrypted; the firmware has to read it.
+   5. **Back.** The summary should show the boot partition (`fat32`, `/boot`) and the root partition (`ext4`, `/`, encrypted).
+4. **Swap:** leave it on (zram).
+5. **Bootloader:** `Systemd-boot`.
+6. **Unified kernel images:** off.
+7. **Hostname:** a name for the computer, for example `arch`.
+8. **Authentication:**
+   - **Root password:** set one.
+   - **User account → Add a user:** your username and password, and answer **yes** to "superuser (sudo)". This password also unlocks the keyring at login.
+9. **Profile → Type → Minimal.** No desktop: the dotfiles provide niri.
+10. **Applications:**
+    - **Bluetooth:** on, if the computer has Bluetooth.
+    - **Audio:** `Pipewire`.
+11. **Kernels:** `linux`.
+12. **Network configuration:** "Use NetworkManager".
+13. **Additional packages:** `git`, plus the graphics driver for your GPU:
+    - **AMD:** `vulkan-radeon`
+    - **Intel:** `vulkan-intel`
+    - **NVIDIA:** `nvidia-open`, then also do [1.7](#17-nvidia-only).
+14. **Timezone:** yours, for example `Europe/Madrid`.
+15. **Automatic time sync (NTP):** on.
+
+Choose **Install**, check the summary (disk, encryption, user), and confirm. When it finishes, answer **no** to chrooting into the new system, then reboot and remove the USB stick:
+```sh
+reboot
+```
+
+#### 1.6 First boot
+1. Type the **disk passphrase** and press Enter. Nothing shows while you type; that's normal.
+2. Log in as your user on the text console.
+3. **Wi-Fi:** run `nmtui`, choose "Activate a connection" and pick your network.
+
+#### 1.7 NVIDIA only
+niri needs kernel modesetting. Find the boot entry and add `nvidia-drm.modeset=1` to the end of its `options` line:
+```sh
+ls /boot/loader/entries/
+```
+```sh
+sudo nano /boot/loader/entries/<the-entry>.conf
+```
+Then reboot. Also read [niri's NVIDIA notes](https://yalter.github.io/niri/Nvidia.html).
+
+#### 1.8 Protect the encryption
+**If you forget the disk passphrase, the data can't be recovered.** Do these now:
+1. Find the encrypted partition. It's the one marked `crypto_LUKS`, for example `/dev/nvme0n1p2`:
+   ```sh
+   lsblk -f
+   ```
+2. Add a second, backup passphrase. Keep it somewhere safe outside this computer, for example in KeePassXC on another device:
+   ```sh
+   sudo cryptsetup luksAddKey /dev/nvme0n1p2
+   ```
+3. Back up the encryption header. If that part of the disk gets damaged, this copy can save the data:
+   ```sh
+   sudo cryptsetup luksHeaderBackup /dev/nvme0n1p2 --header-backup-file luks-header.img
+   ```
+   Copy `luks-header.img` off the computer (to another drive or a USB stick), then delete it here.
+
+### Part 2 — Install the dotfiles
+
+#### 2.1 Before you start
+- **On an existing system:** back up your home folder to another drive. The installer also moves every file it replaces into `~/.dotfiles-backup/<date>/`.
+- **Network:** the installer turns connman off and uses NetworkManager. Use a cable, or be ready to reconnect Wi-Fi with `nmtui`.
+- **Space:** keep about 20 GB free on `/`. TeX Live, Doom Emacs, LibreOffice and the language servers are large.
+- Log in as your normal user, not root.
+
+#### 2.2 Quick install (recommended)
 ```sh
 git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
+```
+```sh
 ~/dotfiles/full-install.sh
 ```
-It runs every step below in order and asks for your password when needed (sudo, `chsh`, package confirmations). If an AUR package fails, the script warns you and keeps going. You can run it again safely. When it finishes, log in on tty1.
+It runs every step of the [manual install](#23-manual-install) in order. It asks for your sudo password once at the start, `chsh` asks for your password again, and pacman and paru ask you to confirm packages. Accept the defaults, including replace prompts such as `7zip` replacing `p7zip`. The whole run takes a while.
 
-### Manual install
+What it does:
+1. Installs the packages in `packages.txt`. Names that aren't in the official repos are skipped with a warning.
+2. Installs `paru` (an AUR helper) if you don't have it.
+3. Installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning.
+4. Runs `install.sh`, which links the configs, installs the fonts, enables the services and makes zsh your shell.
+5. Installs the GTK, Qt, icon and cursor themes and applies them.
+6. Installs Doom Emacs.
+7. Installs the Neovim plugins, treesitter parsers and language servers, and builds Telescope's fzf extension.
+8. Checks that the wallpaper is in place.
+9. Checks the niri config with `niri validate`.
 
-Start from a working Arch install with a regular user, `sudo` and an internet connection.
+At the end, read the output. Anything in yellow `!!` lines failed; the message says what to run to retry it. You can run the script again safely: finished steps are skipped or redone harmlessly.
+
+Then reboot and log in on **tty1**:
+```sh
+sudo reboot
+```
+
+#### 2.3 Manual install
+The same steps as `full-install.sh`, one at a time.
 
 **1. Install an AUR helper** (skip this if you already have `paru` or `yay`):
 ```sh
@@ -289,6 +444,8 @@ cd ~/dotfiles
 sudo pacman -Syu --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
 paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
 ```
+
+If pacman stops with `target not found: <name>`, that package has left the official repos (often for the AUR). Remove it from `packages.txt` and run the command again; `full-install.sh` skips such names automatically.
 
 This installs TrustSight from the AUR. From then on, run `trustsight` before `paru -Syu` to review pending AUR updates for risky changes.
 
@@ -342,47 +499,110 @@ gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 ```sh
 git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 ~/.config/emacs/bin/doom install --env
-doom sync
-doom doctor
+~/.config/emacs/bin/doom sync
+~/.config/emacs/bin/doom doctor
 ```
 `--env` generates Doom's envvar file, so Emacs sees the `PATH` from `.zshenv`. Your Doom config is already linked at `~/.config/doom`.
 
 **7. Wallpaper:** the repo includes one, Raphael's *The School of Athens* (public domain), linked to `~/.local/share/backgrounds/wallpaper.jpg`. To use another image, replace that file or change the `swaybg` line in `~/.config/niri/config.kdl`. `-m fill` crops the image to fill the screen; use `-m fit` to show all of it with borders.
 
-**8. Start niri:** log out, then log in on **tty1**. `.zprofile` runs `niri-session`. Then:
+**8. Set up Neovim:** run `nvim`. lazy.nvim installs the plugins, treesitter builds its parsers, and Mason installs the language servers (this takes a minute). Make sure Telescope's fzf extension got compiled, then check everything:
 ```sh
-niri validate          # config check
-niri msg outputs       # list monitors, then add output blocks to the config if needed
+make -C ~/.local/share/nvim/lazy/telescope-fzf-native.nvim
 ```
-
-**9. Set up Neovim:** run `nvim`. lazy.nvim installs the plugins, treesitter builds its parsers, and Mason installs the language servers (this takes a minute). Then run:
 ```vim
 :checkhealth
 :Mason
 ```
 
-**10. Set up Python (optional):**
+**9. Set up Python (optional):**
 ```sh
 pyenv install 3.13
 pyenv global 3.13
 ```
 
-### Check that everything works
-- [ ] `Mod+Return` opens foot.
-- [ ] `Mod+D` opens fuzzel.
-- [ ] The workspace and battery modules show up in waybar.
-- [ ] The volume and brightness keys work.
-- [ ] `notify-send hi` shows a mako notification.
-- [ ] `Mod+Escape` locks the screen.
-- [ ] `Ctrl+Alt+P` saves a screenshot to `~/Pictures/Screenshots`.
-- [ ] `z <dir>` jumps to a directory, and `ls` shows eza output.
-- [ ] In Neovim, `:LspInfo` lists a server on a `.lua`, `.py` or `.ts` file.
+**10. Start niri:** reboot, then log in on **tty1**. `.zprofile` runs `niri-session -l`. Continue with [Part 3](#part-3--first-login).
+
+### Part 3 — First login
+
+Log in on **tty1**: niri starts by itself, with the wallpaper and waybar. On other ttys (`Ctrl+Alt+F2` and up) you get a plain text console, which is handy if something goes wrong.
+
+#### 3.1 Monitors
+Open a terminal (`Mod+Return`) and list the screens:
+```sh
+niri msg outputs
+```
+If a resolution, refresh rate or scale is wrong, add a block to `~/.config/niri/config.kdl` using the name shown (for example `eDP-1` or `HDMI-A-1`):
+```kdl
+output "eDP-1" {
+    mode "1920x1080@60"
+    scale 1.0
+}
+```
+niri applies it as soon as you save.
+
+#### 3.2 Check that everything works
+- [ ] `Mod+Return` opens foot, and `Mod+D` opens fuzzel.
+- [ ] Waybar shows the layout, battery, CPU, memory, disk, workspaces, network, volume, power profile and clock.
+- [ ] `Mod+Ctrl+Space` switches between Spanish and English, and waybar shows `es` / `us`.
+- [ ] The volume, mic-mute, brightness and media keys work.
+- [ ] The tray shows one network icon and one Bluetooth icon.
+- [ ] `notify-send hi` shows a notification.
+- [ ] `Mod+Escape` locks the screen, and your password unlocks it.
+- [ ] `Ctrl+Alt+P` saves a screenshot to `~/Pictures/Screenshots`, and `Mod+V` opens the clipboard history.
+- [ ] `Mod+W` opens Firefox, its file dialogs open, and nothing asks for a keyring password.
+- [ ] GTK apps (Thunderbird) and Qt apps (`Mod+P` KeePassXC, `Mod+N` Double Commander) use the Rose Pine theme.
+- [ ] In the terminal, `z <dir>` jumps to a directory, `ls` shows eza output, and Tab completes.
+- [ ] `nvim` opens. In it:
+  - `:checkhealth` shows no errors.
+  - `Space ff` opens Telescope.
+  - `:LspInfo` lists a server on a `.lua`, `.py` or `.ts` file.
 - [ ] `Mod+E` opens Emacs.
 
+### Part 4 — Keeping it up to date
+- **System and AUR packages:** check pending AUR updates with TrustSight first, then update everything:
+  ```sh
+  trustsight
+  ```
+  ```sh
+  paru -Syu
+  ```
+- **Dotfiles:** pull the latest version and re-run the linker, which is safe to repeat:
+  ```sh
+  cd ~/dotfiles && git pull && ./install.sh
+  ```
+  New packages in `packages.txt` need `full-install.sh`, which is also safe to re-run.
+- **Neovim plugins:** `:Lazy sync`, then `:TSUpdate` and `:MasonUpdate`.
+- **Doom Emacs:**
+  ```sh
+  doom upgrade
+  ```
+
+### Testing in a virtual machine first
+To try everything without touching your computer, use VirtualBox (free):
+1. Create a VM: type Linux, version Arch Linux (64-bit), 4 GB of RAM or more, 2–4 CPUs, **Enable EFI** ticked, and an **80 GB** disk.
+2. **Settings → Display:** Graphics Controller **VMSVGA**, **Enable 3D Acceleration** ticked, Video Memory at the maximum. niri needs 3D acceleration in a VM.
+3. Follow Part 1 using the Arch ISO as the VM's optical drive. Skip 1.2 and 1.3; add `virtualbox-guest-utils` to the additional packages.
+4. After the first boot, run `sudo systemctl enable --now vboxservice` and take a snapshot (**Machine → Tools → Snapshots → Take**) so you can roll back.
+5. Follow Part 2.
+
+VirtualBox quirks:
+- Its **Host key** is Right Ctrl: use Left Ctrl for shortcuts, and `Right Ctrl+F2` to switch to tty2.
+- Turn on **File → Preferences → Input → Auto Capture Keyboard** and click inside the VM, so the Super key reaches niri.
+- Windows keeps `Win+L` for itself.
+
+### Going back to your old setup
+- Every file `install.sh` replaced is in `~/.dotfiles-backup/<date>/`. Copy the ones you want back over the links.
+- Your old packages aren't removed. Restoring your old `.zprofile` brings back your old login, for example `startx`.
+
 ## Troubleshooting
+- **The disk passphrase isn't accepted at boot:** try typing it as if on an English (US) keyboard. If that works, the boot screen isn't using the Spanish layout; check that `/etc/vconsole.conf` says `KEYMAP=es`, then run `sudo mkinitcpio -P`. You can always unlock with the backup passphrase from 1.8.
+- **niri doesn't start, or the screen stays black:** press `Ctrl+Alt+F2`, log in, then run `niri validate` and `journalctl --user -b -u niri --no-pager | tail -40`.
+- **No network after installing:** run `nmtui`. If it says NetworkManager isn't running: `sudo systemctl enable --now NetworkManager`.
+- **Telescope says fzf isn't built:** run `make -C ~/.local/share/nvim/lazy/telescope-fzf-native.nvim`, then restart nvim.
 - **niri doesn't start from tty1:** run `niri-session` by hand and read the errors. `niri validate` also checks the config.
 - **No sound:** run `systemctl --user status wireplumber`.
-- **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 4 again, or pick the theme in `nwg-look`.
+- **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 5 of the manual install again, or pick the theme in `nwg-look`.
 - **Qt apps look unthemed:** check `echo $QT_QPA_PLATFORMTHEME` shows `qt5ct:qt6ct` inside niri, and that `ls ~/.config/Kvantum` lists `rose-pine-foam`. Open `qt6ct` (or `qt5ct` for Double Commander) and check that Style is `kvantum`.
 - **niri ignores your config and uses its defaults:** a duplicate keybinding or a typo stops niri loading `config.kdl`. Run `niri validate` to see the line.
 - **`Mod+º` does nothing:** run `wev`, press the º key and check the keysym it prints. If it isn't `masculine`, use that name in the two workspace-10 binds.
