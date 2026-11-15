@@ -24,7 +24,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 ## Features
 
 - **niri**
-  - Spanish (`es`) keyboard layout.
+  - Spanish (`es`) and English (`us`) keyboard layouts: Spanish is the default, `Mod+Ctrl+Space` switches, and waybar shows the current one.
   - Touchpad tap-to-click, natural scrolling, and disable-while-typing.
   - Focus follows the mouse.
   - 8px gaps and a 2px Tokyo Night focus ring.
@@ -37,7 +37,7 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 - **Waybar:**
   - Left: battery, CPU, memory, disk.
   - Center: niri workspaces.
-  - Right: network (click opens `nmtui`), volume (click opens pavucontrol), power profile (click cycles power-saver / balanced / performance), clock with a calendar tooltip, tray.
+  - Right: keyboard layout (`es` / `us`), network (click opens `nmtui`), volume (click opens pavucontrol), power profile (click cycles power-saver / balanced / performance), clock with a calendar tooltip, tray.
   - Tray: Wi-Fi menu (`nm-applet`) and Bluetooth (`blueman`).
 - **Login:** niri starts automatically when you log in on tty1 (`.zprofile`), which also unblocks Wi-Fi. Your login password unlocks the GNOME keyring, so apps can save passwords.
 - **Wayland-native apps:** Electron and Qt apps run natively on Wayland.
@@ -93,13 +93,14 @@ Arch Linux + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo
 | `Mod+Shift+J/K` | Window height +/− 10% |
 | `Mod+[` / `Mod+]` | Pull window into / push out of column |
 | `Mod+Space` | Cycle preset column widths |
+| `Mod+Ctrl+Space` | Switch keyboard layout: Spanish ↔ English |
 | `Mod+C` | Center column |
 
 ### Workspaces and system
 | Key | Action |
 |---|---|
-| `Mod+1…9`, `Mod+º` | Go to workspace 1–9, 10 |
-| `Mod+Shift+1…9`, `Mod+Shift+º` | Move column to workspace 1–9, 10 |
+| `Mod+1…9`, `Mod+º` (`` Mod+` `` on English) | Go to workspace 1–9, 10 |
+| `Mod+Shift+1…9`, `Mod+Shift+º` (`` Mod+Shift+` `` on English) | Move column to workspace 1–9, 10 |
 | `Mod+Scroll` | Previous / next workspace |
 | `Ctrl+Alt+P` | Screenshot (select area) |
 | `Print` / `Alt+Print` | Screenshot screen / window |
