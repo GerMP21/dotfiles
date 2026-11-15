@@ -58,7 +58,7 @@ environment {
 }
 
 window-rule {
-    match app-id="^Alacritty$"
+    match app-id="^foot$"
     opacity 0.92
 }
 window-rule {
@@ -70,9 +70,7 @@ binds {
     Mod+Shift+Slash { show-hotkey-overlay; }
 
     // Apps (ported from sxhkd)
-    Mod+Return { spawn "alacritty"; }
-    // Backup terminal: foot draws on the CPU, so it works when OpenGL doesn't
-    Mod+Shift+Return { spawn "foot"; }
+    Mod+Return { spawn "foot"; }
     Mod+D      { spawn "fuzzel"; }
     Mod+E      { spawn "emacsclient" "-c" "-a" "emacs"; }
     Mod+W      { spawn "firefox"; }

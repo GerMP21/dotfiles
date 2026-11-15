@@ -56,8 +56,7 @@ qt5-wayland
 qt6-wayland
 
 # --- Terminal & shell ---
-alacritty
-# Backup terminal (CPU-rendered, default config)
+# Terminal (CPU-rendered, runs with its default config)
 foot
 zsh
 starship
