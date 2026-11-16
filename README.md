@@ -85,7 +85,7 @@ dotfiles/
   - Preset column widths (1/3, 1/2, 2/3).
   - A flat Tokyo Night background in the overview (`Mod+Tab`).
   - Starts Noctalia and the Emacs daemon at login.
-  - `Mod+Shift+Escape` shows a two-column cheat sheet of every binding, read live from the config.
+  - `Mod+Shift+Escape` shows a compact cheat sheet of every binding in columns, read live from the config; niri's own overlay doesn't pop up at login.
 - **Noctalia** (Tokyo Night palette, JetBrains Mono font):
   - Bar left: launcher, battery, CPU, RAM, disk.
   - Bar center: niri workspaces.
@@ -94,7 +94,7 @@ dotfiles/
   - Launcher (`Mod+D`) with a calculator (`/calc`) and emoji (`/emo`), and clipboard history (`Mod+V`).
   - Popups for volume and brightness changes, and password prompts when an app needs admin rights.
   - Changes made in its Settings window (`Mod+Shift+S`) are saved to `~/.local/state/noctalia/settings.toml` and override `config.toml`.
-- **Idle:** Noctalia locks after 10 minutes, turns monitors off after 15, and locks before sleep (lid close or suspend). The lock screen takes your login password.
+- **Idle:** Noctalia locks after 10 minutes, turns monitors off after 15, and suspends after 5 hours (`[idle.behavior.*]` in `config.toml`). It locks before any suspend, including closing the lid, which suspends right away (systemd's default). The lock screen takes your login password.
 - **Login:** the SDDM login screen starts the niri session. Your login password unlocks the GNOME keyring, so apps can save passwords. `.zprofile` also unblocks Wi-Fi.
 - **Terminal:** Alacritty with CachyOS's config (translucent, Nord colors), which the CachyOS install put in `~/.config/alacritty/alacritty.toml`.
 - **Screenshots:** built into niri, saved to `~/Pictures/Screenshots`.
@@ -120,7 +120,7 @@ dotfiles/
 
 ## Keybindings
 
-`Mod` is the Super key. `Mod+Shift+Escape` opens a cheat sheet with every niri binding in two columns (any key closes it). It reads `~/.config/niri/config.kdl` each time, so it always matches your config.
+`Mod` is the Super key. `Mod+Shift+Escape` opens a compact cheat sheet with every niri binding in columns (any key closes it). Keys that share modifiers are joined, so `Mod+H/←` means `Mod+H` or `Mod+←`. It reads `~/.config/niri/config.kdl` each time, so it always matches your config. niri's own key overlay no longer pops up at login.
 
 ### Apps
 | Key | Action |
@@ -264,9 +264,10 @@ binds {
     ```kdl
     Mod+B hotkey-overlay-title="Browser" { spawn "firefox"; }
     ```
-  - keys with the same description share a line, and runs like `Mod+1` … `Mod+9` become one.
+  - keys with the same description share a line, keys with the same modifiers are joined (`Mod+H/←`), and runs like `Mod+1` … `Mod+9` become one (`Mod+1–9`);
+  - it uses as few columns as fit the window's height, each only as wide as its content, and shortens descriptions only when the window is too narrow.
 
-  It opens in a floating Alacritty window (the `keybinds` window rule in `config.kdl`). Run `keybinds` in any terminal to see it there. niri's own overlay is no longer bound; `niri msg action show-hotkey-overlay` still opens it.
+  It opens in a floating Alacritty window (the `keybinds` window rule in `config.kdl`). Run `keybinds` in any terminal to see it there. niri's own overlay is no longer bound, and `hotkey-overlay { skip-at-startup }` in `config.kdl` stops it appearing at login; `niri msg action show-hotkey-overlay` still opens it.
 
 ### Noctalia
 - **Settings:** `~/.config/noctalia/config.toml` sets the theme, wallpaper, idle timeouts and bar layout. Its comments say what each part does; every option is documented at [docs.noctalia.dev](https://docs.noctalia.dev). Check it with `noctalia config validate`.

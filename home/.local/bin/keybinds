@@ -8,10 +8,11 @@ without editing this script:
   a bind are notes and are skipped.
 - A bind's description is its hotkey-overlay-title, or else its action
   ("focus-column-left" becomes "Focus column left").
-- Keys with the same description are shown together, and runs like
-  Mod+1 … Mod+9 are shortened to one line.
+- Keys with the same description share a line, and runs like Mod+1 … Mod+9
+  are shortened to one (Mod+1–9).
 
-Usage: keybinds [config.kdl]. Any key closes it.
+Usage: keybinds [config.kdl]. Any key closes it. It uses as few columns as
+fit the window, and joins keys that share modifiers: Mod+H/← is Mod+H or Mod+←.
 """
 import os
 import re
@@ -89,12 +90,27 @@ def read_sections(path):
     return [(h, merge(entries)) for h, entries in sections if entries]
 
 
+def join_keys(keys):
+    """['Mod+H', 'Mod+Left'] -> 'Mod+H/←': keys with the same modifiers share them."""
+    groups = {}
+    for key in keys:
+        mods, _, last = key.rpartition("+")
+        if key.endswith("+Plus") or key == "Plus":
+            mods, last = key[:-len("Plus")].rstrip("+"), "Plus"
+        groups.setdefault(mods, []).append(KEY_NAMES.get(last, last))
+    parts = []
+    for mods, lasts in groups.items():
+        prefix = "+".join(KEY_NAMES.get(m, m) for m in mods.split("+")) + "+" if mods else ""
+        parts.append(prefix + "/".join(lasts))
+    return " ".join(parts)
+
+
 def merge(entries):
     """Join keys with the same description, then shorten numbered runs."""
     joined = {}
     for key, desc in entries:
-        joined.setdefault(desc, []).append(pretty_key(key))
-    rows = [(" / ".join(keys), desc) for desc, keys in joined.items()]
+        joined.setdefault(desc, []).append(key)
+    rows = [(join_keys(keys), desc) for desc, keys in joined.items()]
 
     out, i = [], 0
     while i < len(rows):
@@ -113,51 +129,82 @@ def merge(entries):
         if j - i >= 2:
             last_k = re.fullmatch(r"(.*?)(\d)", rows[j][0])[2]
             last_d = re.fullmatch(r"(.*?)(\d+)", rows[j][1])[2]
-            out.append((f"{km[1]}{km[2]}…{last_k}", f"{dm[1]}{dm[2]}–{last_d}"))
+            out.append((f"{km[1]}{km[2]}–{last_k}", f"{dm[1]}{dm[2]}–{last_d}"))
         else:
             out.extend(rows[i:j + 1])
         i = j + 1
     return out
 
 
-def render(sections, width, height):
-    # Each section is a block of lines; blocks aren't split across columns
-    blocks = [[("head", h)] + [("row", r) for r in rows] for h, rows in sections]
-    total = sum(len(b) + 1 for b in blocks)
-    ncols = 2 if width >= 90 else 1
-    if ncols == 2 and total / 2 > height - 2 and width >= 150:
-        ncols = 3
-    target = total / ncols
-    columns, col, count = [], [], 0
+def split_columns(blocks, ncols):
+    """Fill ncols columns in order, starting a new one at a section boundary."""
+    total = sum(len(b) for b in blocks)
+    target = -(-total // ncols)
+    columns, col = [], []
     for b in blocks:
-        if col and count + len(b) > target and len(columns) < ncols - 1:
+        if col and len(col) + len(b) > target and len(columns) < ncols - 1:
             columns.append(col)
-            col, count = [], 0
-        col.extend(b + [("blank", "")])
-        count += len(b) + 1
+            col = []
+        col.extend(b)
     columns.append(col)
+    return columns
 
-    colw = width // len(columns) - 2
-    keyw = min(max((len(r[0]) for c in columns for kind, r in c if kind == "row"), default=10), colw // 2)
 
-    def cell(item):
-        kind, val = item
-        if kind == "head":
-            text, shown = f"{BLUE}{val}{RESET}", val
-        elif kind == "row":
+def natural_width(col):
+    keyw = max((len(r[0]) for kind, r in col if kind == "row"), default=0)
+    descw = max((len(r[1]) for kind, r in col if kind == "row"), default=0)
+    headw = max((len(v) for kind, v in col if kind == "head"), default=0)
+    return keyw, max(keyw + 2 + descw, headw)
+
+
+def render(sections, width, height):
+    """As few columns as fit the window's height, each only as wide as its
+    content, centered. Descriptions are shortened only if the window is too
+    narrow for that."""
+    blocks = [[("head", h)] + [("row", r) for r in rows] for h, rows in sections]
+    gap, min_colw = 3, 34
+    rows_free = max(height - 1, 10)  # minus the title line
+    max_cols = max(1, min(4, (width + gap) // (min_colw + gap)))
+    columns = None
+    for n in range(1, max_cols + 1):
+        columns = split_columns(blocks, n)
+        if max(len(c) for c in columns) <= rows_free:
+            break
+
+    widths = [natural_width(c) for c in columns]
+    total = sum(w for _, w in widths) + gap * (len(columns) - 1)
+    room = width - gap * (len(columns) - 1)
+    if total > width:  # shrink every column by the same share; keys keep 8+, descriptions 10+
+        natural = sum(w for _, w in widths)
+        shrunk = []
+        for k, w in widths:
+            colw = room * w // natural
+            shrunk.append((max(min(k, colw - 12), min(k, 8)), colw))
+        widths = shrunk
+        total = sum(w for _, w in widths) + gap * (len(columns) - 1)
+    margin = " " * max((width - total) // 2, 0)
+
+    def column_lines(col, keyw, colw):
+        out = []
+        for kind, val in col:
+            if kind == "head":
+                out.append((f"{BLUE}{val[:colw]}{RESET}", len(val[:colw])))
+                continue
             key, desc = val
             key = key if len(key) <= keyw else key[:keyw - 1] + "…"
-            room = colw - keyw - 2
-            desc = desc if len(desc) <= room else desc[:room - 1] + "…"
-            text = f"{YELLOW}{key.ljust(keyw)}{RESET}  {desc}"
-            shown = f"{key.ljust(keyw)}  {desc}"
-        else:
-            text = shown = ""
-        return text + " " * (colw - len(shown))
+            space = colw - keyw - 2
+            desc = desc if len(desc) <= space else desc[:max(space - 1, 0)] + "…"
+            out.append((f"{YELLOW}{key.ljust(keyw)}{RESET}  {desc}", keyw + 2 + len(desc)))
+        return out, colw
 
+    rendered = [column_lines(c, k, w) for c, (k, w) in zip(columns, widths)]
     lines = []
-    for i in range(max(len(c) for c in columns)):
-        lines.append("  ".join(cell(c[i]) if i < len(c) else " " * colw for c in columns))
+    for i in range(max(len(c) for c, _ in rendered)):
+        cells = []
+        for c, colw in rendered:
+            text, shown = c[i] if i < len(c) else ("", 0)
+            cells.append(text + " " * (colw - shown))
+        lines.append(margin + (" " * gap).join(cells))
     return lines
 
 
@@ -181,10 +228,9 @@ def main():
         wait_for_key()
         return 1
     size = shutil.get_terminal_size((160, 50))
-    print(f"{BOLD}niri keybindings{RESET}  {DIM}(Mod is Super; from {CONFIG}){RESET}\n")
+    print(f"{BOLD}niri keybindings{RESET}  {DIM}Mod = Super · any key closes · {CONFIG}{RESET}")
     for line in render(sections, size.columns, size.lines):
         print(line.rstrip())
-    print(f"{DIM}Press any key to close.{RESET}", end="", flush=True)
     wait_for_key()
     return 0
 

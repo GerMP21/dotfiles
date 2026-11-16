@@ -46,6 +46,12 @@ overview {
 
 prefer-no-csd
 
+// niri shows its own key overlay at every login unless told not to.
+// Mod+Shift+Escape opens the cheat sheet (~/.local/bin/keybinds) instead.
+hotkey-overlay {
+    skip-at-startup
+}
+
 cursor {
     xcursor-theme "Sunity-cursors"
     xcursor-size 24
