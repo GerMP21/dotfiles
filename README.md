@@ -767,5 +767,56 @@ VirtualBox quirks:
 - **Neovim says nvim-treesitter needs a newer version:** the `main` branch needs Neovim 0.12+. Check with `nvim --version`.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
 - **Doom Emacs complains about missing packages after a pull:** run `doom sync`, then restart Emacs. `doom doctor` lists anything else it needs.
-- **`doom doctor` says `Cannot open load file … straight`:** Doom's packages were never installed, usually because `doom install` stopped partway (a network drop or an interrupted run). Run `~/.config/emacs/bin/doom sync`, which downloads what's missing. If it fails again, the error at the end of its output says which package or download broke; run it again once the network is fine.
+- **`doom doctor` says `Cannot open load file … straight`, or `doom sync` fails with `unknown revision` or `ambiguous argument 'HEAD'`:** some of Doom's package downloads are broken. Follow [Debugging Doom Emacs packages](#debugging-doom-emacs-packages).
 - **`doom doctor` warns that Symbola is missing:** install the AUR package with `paru -S ttf-symbola` (it's in `packages-aur.txt`), then restart Emacs.
+
+### Debugging Doom Emacs packages
+Doom downloads each package as a git repository into `~/.config/emacs/.local/straight/repos/` and builds it into `~/.config/emacs/.local/straight/build-*/`. If `doom install` or `doom sync` is interrupted (a network drop, closing the terminal, a reboot), it can leave a repository folder whose download never finished. Doom then thinks the package is there and fails when it tries to use it.
+
+**Symptoms:**
+- `doom doctor` reports `Cannot open load file` … `straight`.
+- `doom sync` or `doom upgrade` stops with `The package manager threw an error`, and the log shows `git rev-parse HEAD` failing in a package's folder:
+  ```
+  $ cd ~/.config/emacs/.local/straight/repos/auto-minor-mode/
+  $ git rev-parse HEAD
+  fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
+  ```
+- `doom sync` says `No packages need attention` but Emacs still can't load a package.
+
+These folders are only downloaded copies. Deleting them loses nothing of yours; your config is in `~/.config/doom`, which none of this touches.
+
+**1. List the broken downloads.** This changes nothing; it prints each package folder without a finished download:
+```sh
+cd ~/.config/emacs/.local/straight/repos
+for d in */; do git -C "$d" rev-parse -q --verify HEAD >/dev/null 2>&1 || echo "${d%/}"; done
+```
+
+**2. Delete them**, together with their half-built copies:
+```sh
+cd ~/.config/emacs/.local/straight/repos
+for d in */; do
+  d="${d%/}"
+  if ! git -C "$d" rev-parse -q --verify HEAD >/dev/null 2>&1; then
+    rm -rf "$d" ../build*/"$d"
+    echo "removed $d"
+  fi
+done
+```
+
+**3. Download them again and check:**
+```sh
+doom sync
+doom doctor
+```
+Use `doom sync` once Doom is installed. `doom install` is only for the first setup; running it again just repeats the same sync.
+
+**If that doesn't fix it,** for example when step 1 lists dozens of packages or `doom sync` keeps failing on another one, delete all downloaded packages and fetch everything fresh. It takes longer, since every package is downloaded and compiled again, but it leaves nothing half-done:
+```sh
+rm -rf ~/.config/emacs/.local/straight
+doom sync
+```
+
+**Where to look for more:**
+- `doom sync` prints the last lines of straight's error log, which name the package and the git command that failed.
+- The full logs are in `~/.config/emacs/.local/state/logs/`; the newest file is the last run.
+- Run `doom sync` again once the network is stable: a download that failed because of the network usually works the second time.
