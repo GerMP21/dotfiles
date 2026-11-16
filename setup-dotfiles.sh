@@ -24,6 +24,16 @@ if [ "$EUID" -eq 0 ]; then
   exit 1
 fi
 
+# Stop before changing anything if the packages aren't installed yet
+missing=()
+for cmd in git zsh nvim emacs niri noctalia fc-cache; do
+  command -v "$cmd" >/dev/null || missing+=("$cmd")
+done
+if [ "${#missing[@]}" -gt 0 ]; then
+  echo "Missing: ${missing[*]}. Run install-packages.sh first; nothing was changed." >&2
+  exit 1
+fi
+
 BACKUP="$HOME/.dotfiles-backup/$(date +%Y%m%d-%H%M%S)"
 
 # put <link|copy> <path>: the path is the same under home/ and under ~
@@ -101,7 +111,7 @@ fi
 
 step "Folders, font cache and theme settings"
 fc-cache -f
-xdg-user-dirs-update
+command -v xdg-user-dirs-update >/dev/null && xdg-user-dirs-update
 mkdir -p "$HOME/Pictures/Screenshots" "$HOME/Projects" "$HOME/org"
 # GTK 4 / libadwaita apps ignore settings.ini on Wayland
 if gsettings list-schemas 2>/dev/null | grep -q org.gnome.desktop.interface; then
@@ -117,22 +127,35 @@ fi
 step "Services and login shell"
 # CachyOS already enabled NetworkManager, Bluetooth, PipeWire and SDDM
 # (whose login unlocks the keyring); these two it doesn't
-sudo systemctl enable --now power-profiles-daemon
-systemctl --user enable gnome-keyring-daemon.socket
-# CachyOS makes fish the default
+if systemctl list-unit-files power-profiles-daemon.service >/dev/null 2>&1; then
+  sudo systemctl enable --now power-profiles-daemon || warn "couldn't enable power-profiles-daemon"
+else
+  warn "power-profiles-daemon isn't installed; the bar's power profile button won't work"
+fi
+systemctl --user enable gnome-keyring-daemon.socket || warn "couldn't enable the GNOME keyring socket"
+# CachyOS makes fish the default. Only switch when zsh is a valid login shell.
 if [ "$(basename "$SHELL")" != "zsh" ]; then
-  chsh -s /usr/bin/zsh
+  if grep -qx /usr/bin/zsh /etc/shells; then
+    chsh -s /usr/bin/zsh || warn "chsh failed; run it later: chsh -s /usr/bin/zsh"
+  else
+    warn "/usr/bin/zsh isn't in /etc/shells; your login shell stays $SHELL"
+  fi
 fi
 
 step "Doom Emacs"
 if [ -x "$HOME/.config/emacs/bin/doom" ]; then
-  "$HOME/.config/emacs/bin/doom" sync
-else
-  git clone --depth 1 https://github.com/doomemacs/doomemacs "$HOME/.config/emacs"
+  "$HOME/.config/emacs/bin/doom" sync || warn "doom sync failed; run it later: doom sync"
+elif [ -e "$HOME/.config/emacs" ]; then
+  warn "~/.config/emacs exists but isn't Doom Emacs; left alone, so Doom isn't installed"
+elif git clone --depth 1 https://github.com/doomemacs/doomemacs "$HOME/.config/emacs"; then
   # --env generates the envvar file; --force answers yes to any other prompt
-  "$HOME/.config/emacs/bin/doom" install --env --force
+  "$HOME/.config/emacs/bin/doom" install --env --force || warn "doom install failed; run it later: ~/.config/emacs/bin/doom install --env"
+else
+  warn "Doom Emacs failed to download; run this script again later"
 fi
-"$HOME/.config/emacs/bin/doom" doctor || warn "doom doctor reported issues; review them above"
+if [ -x "$HOME/.config/emacs/bin/doom" ]; then
+  "$HOME/.config/emacs/bin/doom" doctor || warn "doom doctor reported issues; review them above"
+fi
 
 step "Neovim plugins, parsers and language servers"
 nvim --headless "+Lazy! sync" +qa || warn "lazy.nvim sync failed; open nvim to retry"

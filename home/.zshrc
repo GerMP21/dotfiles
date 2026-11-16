@@ -61,13 +61,16 @@ fi
 ### ALIASES ###
 
 # Changing "ls" to "eza" (exa is unmaintained)
-alias ls='eza -al --color=auto --group-directories-first' # my preferred listing
-alias la='eza -a --color=auto --group-directories-first'  # all files and dirs
-alias ll='eza -l --color=auto --group-directories-first'  # long format
-alias lt='eza -aT --color=auto --group-directories-first' # tree listing
+# Only when eza is installed, so ls keeps working without it
+if command -v eza >/dev/null; then
+  alias ls='eza -al --color=auto --group-directories-first' # my preferred listing
+  alias la='eza -a --color=auto --group-directories-first'  # all files and dirs
+  alias ll='eza -l --color=auto --group-directories-first'  # long format
+  alias lt='eza -aT --color=auto --group-directories-first' # tree listing
+fi
 
 # Changing "cat" with "bat"
-alias cat='bat'
+command -v bat >/dev/null && alias cat='bat'
 
 
 # Clear
@@ -116,7 +119,7 @@ alias yta-wav="yt-dlp --extract-audio --audio-format wav "
 alias ytv-best="yt-dlp -f bestvideo+bestaudio "
 
 ### SETTING THE STARSHIP PROMPT ###
-eval "$(starship init zsh)"
+command -v starship >/dev/null && eval "$(starship init zsh)"
 
 
 ### ZOXIDE (z / zi) ###
@@ -126,6 +129,8 @@ command -v zoxide >/dev/null && eval "$(zoxide init zsh)"
 command -v pyenv >/dev/null && eval "$(pyenv init - zsh)"
 
 ### PLUGINS (syntax highlighting must be sourced last)
-source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+for plugin in zsh-autosuggestions zsh-syntax-highlighting; do
+  [[ -r /usr/share/zsh/plugins/$plugin/$plugin.zsh ]] && source /usr/share/zsh/plugins/$plugin/$plugin.zsh
+done
+unset plugin
 

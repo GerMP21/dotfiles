@@ -588,6 +588,7 @@ VirtualBox quirks:
 - **`Mod+º` does nothing:** run `wev`, press the º key and check the keysym it prints. If it isn't `masculine`, use that name in the two workspace-10 binds.
 - **Apps keep asking for a keyring password:** the login unlock isn't working. Check that `grep pam_gnome_keyring /etc/pam.d/sddm` shows the `auth` and `session` lines. If the keyring was created with a different password, delete `~/.local/share/keyrings/login.keyring` and log in again.
 - **Neovim says nvim-treesitter needs a newer version:** the `main` branch needs Neovim 0.12+. Check with `nvim --version`.
+- **The lock screen crashed and the screen stays locked (red or blank):** niri keeps the session locked on purpose. Press `Ctrl+Alt+F3`, log in, and run `loginctl terminate-user $USER`. That logs you out everywhere (unsaved work in open apps is lost); go back to the login screen with `Ctrl+Alt+F1` or `F2` and log in again.
 - **No bar after logging in:** run `noctalia config validate` to find errors in `~/.config/noctalia/config.toml`, then start it by hand with `noctalia` to see its log. If a setting from the file seems ignored, it was probably changed in Noctalia's Settings window; check `~/.local/state/noctalia/settings.toml`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
