@@ -47,7 +47,7 @@ overview {
 prefer-no-csd
 
 // niri shows its own key overlay at every login unless told not to.
-// Mod+Shift+Escape opens the cheat sheet (~/.local/bin/keybinds) instead.
+// Mod+Shift+H opens the cheat sheet (~/.local/bin/keybinds) instead.
 hotkey-overlay {
     skip-at-startup
 }
@@ -70,7 +70,7 @@ window-rule {
     geometry-corner-radius 6
     clip-to-geometry true
 }
-// Keybinding cheat sheet (Mod+Shift+Escape)
+// Keybinding cheat sheet (Mod+Shift+H)
 window-rule {
     match app-id="^keybinds$"
     open-floating true
@@ -87,7 +87,7 @@ window-rule {
 
 binds {
     // Help: a cheat sheet of every binding below, in columns (~/.local/bin/keybinds)
-    Mod+Shift+Escape hotkey-overlay-title="Show all keybindings" { spawn-sh "alacritty --class keybinds -o font.size=10 -e ~/.local/bin/keybinds"; }
+    Mod+Shift+H hotkey-overlay-title="Show all keybindings" { spawn-sh "alacritty --class keybinds -o font.size=10 -e ~/.local/bin/keybinds"; }
 
     // Apps
     Mod+Return hotkey-overlay-title="Terminal (Alacritty)" { spawn "alacritty"; }

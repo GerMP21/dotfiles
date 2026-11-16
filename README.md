@@ -44,7 +44,7 @@ dotfiles/
 │   ├── .config/            niri, noctalia, nvim, doom, gtk-*, Kvantum, qt5ct, qt6ct,
 │   │                       xdg-desktop-portal, starship.toml
 │   └── .local/            share/: fonts (copied), wallpaper, goodvibes radio stations
-│                           bin/keybinds: the Mod+Shift+Escape cheat sheet
+│                           bin/keybinds: the Mod+Shift+H cheat sheet
 ├── packages.txt            packages from the CachyOS/Arch repos (pacman)
 ├── packages-aur.txt        packages from the AUR (paru)
 ├── packages-pipx.txt       Python tools (pipx)
@@ -85,7 +85,7 @@ dotfiles/
   - Preset column widths (1/3, 1/2, 2/3).
   - A flat Tokyo Night background in the overview (`Mod+Tab`).
   - Starts Noctalia and the Emacs daemon at login.
-  - `Mod+Shift+Escape` shows a compact cheat sheet of every binding in columns, read live from the config; niri's own overlay doesn't pop up at login.
+  - `Mod+Shift+H` shows a compact cheat sheet of every binding in columns, read live from the config; niri's own overlay doesn't pop up at login.
 - **Noctalia** (Tokyo Night palette, JetBrains Mono font):
   - Bar left: launcher, battery, CPU, RAM, disk.
   - Bar center: niri workspaces.
@@ -120,7 +120,7 @@ dotfiles/
 
 ## Keybindings
 
-`Mod` is the Super key. `Mod+Shift+Escape` opens a compact cheat sheet with every niri binding in columns (any key closes it). Keys that share modifiers are joined, so `Mod+H/←` means `Mod+H` or `Mod+←`. It reads `~/.config/niri/config.kdl` each time, so it always matches your config. niri's own key overlay no longer pops up at login.
+`Mod` is the Super key. `Mod+Shift+H` opens a compact cheat sheet with every niri binding in columns (any key closes it). Keys that share modifiers are joined, so `Mod+H/←` means `Mod+H` or `Mod+←`. It reads `~/.config/niri/config.kdl` each time, so it always matches your config. niri's own key overlay no longer pops up at login.
 
 ### Apps
 | Key | Action |
@@ -264,7 +264,7 @@ binds {
 - **Removing a bind:** delete the line.
 - **All actions:** `niri msg action --help` lists them, and the [niri wiki](https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings) documents them.
 - **Using Alt as Mod:** add `mod-key "Alt"` to the `input { }` block. That's useful when running niri nested inside another session.
-- **Cheat sheet (`Mod+Shift+Escape`):** the script `~/.local/bin/keybinds` reads the `binds { }` block and shows it in columns, so new binds appear in it without changes:
+- **Cheat sheet (`Mod+Shift+H`):** the script `~/.local/bin/keybinds` reads the `binds { }` block and shows it in columns, so new binds appear in it without changes:
   - a comment after a blank line starts a section, and the text before the first `:`, `(`, `.` or `,` is its heading (`// Apps`, `// Media and brightness, …`); comments right after a bind are notes and are skipped;
   - a bind's description is its `hotkey-overlay-title`, or else its action (`focus-column-left` → "Focus column left"):
     ```kdl

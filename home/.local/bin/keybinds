@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Show every niri keybinding in columns. Mod+Shift+Escape opens it.
+"""Show every niri keybinding in columns. Mod+Shift+H opens it.
 
 Reads the binds { } block of ~/.config/niri/config.kdl, so new binds show up
 without editing this script:
