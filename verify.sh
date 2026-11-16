@@ -184,4 +184,4 @@ if [ "$FAIL" -gt 0 ]; then
   echo "Fix the ✗ lines (most say what to run), then run ./verify.sh again."
   exit 1
 fi
-echo "All good. Last checks need you: reboot without the USB stick, then go through the README's Part 3.2 checklist."
+echo "All good. Last checks need you: reboot without the USB stick, then go through the README's 3.5 checklist."
