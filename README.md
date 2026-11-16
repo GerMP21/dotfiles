@@ -128,14 +128,18 @@ dotfiles/
 | `Mod+Return` | Alacritty (terminal) |
 | `Mod+E` | Emacs (client) |
 | `Mod+W` | Firefox |
-| `Mod+O` | LibreOffice |
+| `Mod+O` | Obsidian (notes) |
+| `Mod+Shift+O` | LibreOffice |
 | `Mod+G` | GIMP |
 | `Mod+N` | Double Commander |
 | `Mod+M` | Thunar (second file manager) |
 | `Mod+P` | KeePassXC |
-| `Mod+I` | Obsidian (notes) |
 | `Mod+C` | VSCodium |
+| `Mod+X` | Claude Desktop |
 | `Mod+R` | Goodvibes (radio) |
+| `Mod+Shift+T` | TuxGuitar |
+| `Mod+Shift+D` | Discord |
+| `Mod+Shift+A` | Audacity |
 | `Mod+A` | Steam |
 | `Mod+Y` | YGO Omega (from `~/Documents/Games/YGO Omega`) |
 
@@ -353,7 +357,11 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Archives | `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `steam`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `vscodium-bin` | `Mod+` app shortcuts and the launcher |
+| Development | `docker`, `docker-buildx`, `docker-compose`, `geany`, `mysql-workbench`, `mariadb-libs`, `rustup`, `uv`; AUR: `postman-bin`, `pyenv-virtualenv` | Containers, editor, MySQL/MariaDB client, Rust and Python toolchains, API client |
+| Network | `wireguard-tools`, `qbittorrent`; AUR: `wireguird` | WireGuard VPN (and its GUI), torrents |
+| Media and writing | `audacity`, `discord`; AUR: `tuxguitar`, `trelby` | Audio editing, chat, guitar tabs, screenwriting |
+| Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+A` |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `vscodium-bin`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
 
 Not packaged, so `setup-desktop.sh` (themes) and `setup-editors.sh` (Doom) download them, or see the [manual install](#23-manual-install):
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`**, from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme).

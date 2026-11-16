@@ -93,14 +93,18 @@ binds {
     Mod+Return hotkey-overlay-title="Terminal (Alacritty)" { spawn "alacritty"; }
     Mod+E hotkey-overlay-title="Emacs" { spawn "emacsclient" "-c" "-a" "emacs"; }
     Mod+W hotkey-overlay-title="Firefox" { spawn "firefox"; }
-    Mod+O hotkey-overlay-title="LibreOffice" { spawn "libreoffice"; }
+    Mod+O hotkey-overlay-title="Obsidian" { spawn "obsidian"; }
+    Mod+Shift+O hotkey-overlay-title="LibreOffice" { spawn "libreoffice"; }
     Mod+G hotkey-overlay-title="GIMP" { spawn "gimp"; }
     Mod+N hotkey-overlay-title="Double Commander" { spawn "doublecmd"; }
     Mod+M hotkey-overlay-title="Thunar (files)" { spawn "thunar"; }
     Mod+P hotkey-overlay-title="KeePassXC" { spawn "keepassxc"; }
-    Mod+I hotkey-overlay-title="Obsidian" { spawn "obsidian"; }
     Mod+C hotkey-overlay-title="VSCodium" { spawn "codium"; }
+    Mod+X hotkey-overlay-title="Claude" { spawn "claude-desktop"; }
     Mod+R hotkey-overlay-title="Goodvibes (radio)" { spawn "goodvibes"; }
+    Mod+Shift+T hotkey-overlay-title="TuxGuitar" { spawn "tuxguitar"; }
+    Mod+Shift+D hotkey-overlay-title="Discord" { spawn "discord"; }
+    Mod+Shift+A hotkey-overlay-title="Audacity" { spawn "audacity"; }
     Mod+A hotkey-overlay-title="Steam" { spawn "steam"; }
     Mod+Y hotkey-overlay-title="YGO Omega" { spawn-sh r#"cd "$HOME/Documents/Games/YGO Omega" && exec "./YGO Omega.x86_64""#; }
 
