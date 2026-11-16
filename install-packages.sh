@@ -6,7 +6,7 @@
 #
 # Run as your normal user:  ~/dotfiles/install-packages.sh
 # It asks for your sudo password. Safe to run again: what's installed is skipped.
-# Then run setup-dotfiles.sh.
+# Then run setup-dotfiles.sh, setup-desktop.sh and setup-editors.sh.
 set -euo pipefail
 
 DOTS="$(cd "$(dirname "$0")" && pwd)"
@@ -62,4 +62,4 @@ for p in "${PIPX[@]}"; do
   fi
 done
 
-printf '\n\033[1;32mDone.\033[0m Next: %s/setup-dotfiles.sh. The files it puts in ~ are in %s/home.\n' "$DOTS" "$DOTS"
+printf '\n\033[1;32mDone.\033[0m Next: %s/setup-dotfiles.sh, then setup-desktop.sh and setup-editors.sh.\n' "$DOTS"

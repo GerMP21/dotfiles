@@ -1,46 +1,103 @@
 # dotfiles
 
-[CachyOS](https://cachyos.org) + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo Night theme, made for a CachyOS install with the niri desktop.
+[CachyOS](https://cachyos.org) + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo Night theme, made for a CachyOS install with the niri desktop, tested on a ThinkPad T480.
 
-## Components
+On top of what CachyOS installs, it adds:
+- a niri config with Spanish/English keyboard layouts and vim-style keys;
+- Noctalia (the shell CachyOS ships) set up to match: bar, launcher, notifications, lock screen and idle;
+- zsh with starship, Neovim, Doom Emacs, and Rose Pine GTK/Qt themes;
+- scripts that install the packages, link the files, set up the desktop and the editors, and check the result.
 
-Everything that goes into your home folder is in [`home/`](home), laid out as it is in `~`: `home/.config/niri` becomes `~/.config/niri`. `setup-dotfiles.sh` symlinks the configs from there (the fonts are copied).
+**Quick start**, on a fresh CachyOS install with the niri desktop (details in [Installation](#installation)):
+```sh
+git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
+~/dotfiles/install-packages.sh   # packages
+~/dotfiles/setup-dotfiles.sh     # link the configs into ~, copy the fonts
+~/dotfiles/setup-desktop.sh      # themes, folders, services, zsh as login shell
+~/dotfiles/setup-editors.sh      # Doom Emacs and Neovim plugins (the slow one)
+~/dotfiles/verify.sh             # check everything
+```
 
+## Contents
+- [Repository layout](#repository-layout)
+- [What you get](#what-you-get): components and features
+- [Keybindings](#keybindings)
+- [Customizing](#customizing): keys, Noctalia, Doom modules, Neovim
+- [Dependencies](#dependencies)
+- [Installation](#installation)
+  - [Part 1: Install CachyOS](#part-1--install-cachyos-encrypted-with-niri)
+  - [Part 2: Install the dotfiles](#part-2--install-the-dotfiles)
+  - [Part 3: Check the install and first login](#part-3--check-the-install-and-first-login)
+  - [Part 4: Keeping it up to date](#part-4--keeping-it-up-to-date)
+- [The scripts in detail](#the-scripts-in-detail)
+- [Testing in a virtual machine first](#testing-in-a-virtual-machine-first)
+- [Going back to your old setup](#going-back-to-your-old-setup)
+- [Troubleshooting](#troubleshooting)
+
+## Repository layout
+
+```
+dotfiles/
+├── home/                   everything that goes into ~, laid out as in ~
+│   ├── .zshenv .zprofile .zshrc .gtkrc-2.0
+│   ├── .icons/default/     default cursor theme
+│   ├── .config/            niri, noctalia, nvim, doom, gtk-*, Kvantum, qt5ct, qt6ct,
+│   │                       xdg-desktop-portal, starship.toml
+│   └── .local/            share/: fonts (copied), wallpaper, goodvibes radio stations
+│                           bin/keybinds: the Mod+Shift+Escape cheat sheet
+├── packages.txt            packages from the CachyOS/Arch repos (pacman)
+├── packages-aur.txt        packages from the AUR (paru)
+├── packages-pipx.txt       Python tools (pipx)
+├── install-packages.sh     installs the three lists
+├── setup-dotfiles.sh       links home/ into ~ and copies the fonts; nothing else
+├── setup-desktop.sh        themes, folders, services, zsh as login shell
+├── setup-editors.sh        Doom Emacs, Neovim plugins, parsers and language servers
+└── verify.sh               checks all of the above, plus the boot setup; changes nothing
+```
+
+`home/.config/niri` becomes `~/.config/niri`, and so on. `setup-dotfiles.sh` **symlinks** everything from `home/` into `~`, so editing a file in `~/.config` edits it in the repo, and `git diff` shows your changes. Only the fonts are **copied**. That's all `setup-dotfiles.sh` does: no downloads, no sudo. The themes and Doom Emacs aren't in the repo; `setup-desktop.sh` and `setup-editors.sh` download them.
+
+## What you get
+
+### Components
 | Role | Tool | Config |
 |---|---|---|
 | Window manager | niri (scrollable tiling) | `home/.config/niri/config.kdl` |
 | Shell | [Noctalia](https://docs.noctalia.dev) (installed by CachyOS): bar, launcher, clipboard history, notifications, volume/brightness popups, control center, lock screen, idle, wallpaper, password prompts | `home/.config/noctalia/config.toml` |
+| Login screen | SDDM (installed by CachyOS) | not in this repo |
 | Wallpaper | Raphael's *The School of Athens* (public domain), shown by Noctalia | `home/.local/share/backgrounds/wallpaper.jpg` |
 | Terminal | Alacritty (installed by CachyOS, with CachyOS's config) | `~/.config/alacritty/alacritty.toml`, not in this repo |
 | Shell | zsh + starship | `home/.zshenv` (environment, PATH), `home/.zprofile` (login), `home/.zshrc` (interactive), `home/.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `home/.config/nvim/`, `home/.config/doom/` |
-| GTK theme | GTK 2/3/4 settings | `home/.config/gtk-3.0/`, `home/.config/gtk-4.0/`, `home/.gtkrc-2.0`, `home/.icons/` |
-| Qt theme | Kvantum + qt5ct/qt6ct | `home/.config/Kvantum/`, `home/.config/qt5ct/`, `home/.config/qt6ct/` |
+| GTK theme | Rose Pine (`Rosepine-Dark`, `Rose-Pine-Moon` icons, `Sunity-cursors`) | `home/.config/gtk-3.0/`, `home/.config/gtk-4.0/`, `home/.gtkrc-2.0`, `home/.icons/` |
+| Qt theme | Kvantum `rose-pine-foam` + qt5ct/qt6ct | `home/.config/Kvantum/`, `home/.config/qt5ct/`, `home/.config/qt6ct/` |
 | Portals | xdg-desktop-portal (file pickers through GTK, screencasting through GNOME) | `home/.config/xdg-desktop-portal/niri-portals.conf` |
 | Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled) | `home/.local/share/fonts/` |
 
-## Features
-
+### Features
 - **niri**
   - Spanish (`es`) and English (`us`) keyboard layouts: Spanish is the default, `Mod+Ctrl+Space` switches, and the bar shows the current one.
   - Touchpad tap-to-click, natural scrolling, and disable-while-typing.
   - Focus follows the mouse.
-  - 8px gaps and a 2px Tokyo Night focus ring.
-  - Rounded corners.
-- **Terminal:** Alacritty with CachyOS's config (translucent, Nord colors), which the CachyOS install put in `~/.config/alacritty/alacritty.toml`.
+  - 8px gaps, a 2px Tokyo Night focus ring and rounded corners.
   - Preset column widths (1/3, 1/2, 2/3).
-- **Autostart:** Noctalia and the Emacs daemon, from the niri config.
-- **File pickers:** "Open file" dialogs from portal-using apps (Flatpaks, Firefox-based browsers) use the GTK file chooser, because GNOME's portal would need Nautilus.
-- **Idle:** Noctalia locks after 10 minutes, turns monitors off after 15, and locks before sleep (lid close or suspend).
-- **Screenshots:** built into niri, saved to `~/Pictures/Screenshots`.
+  - A flat Tokyo Night background in the overview (`Mod+Tab`).
+  - Starts Noctalia and the Emacs daemon at login.
+  - `Mod+Shift+Escape` shows a two-column cheat sheet of every binding, read live from the config.
 - **Noctalia** (Tokyo Night palette, JetBrains Mono font):
   - Bar left: launcher, battery, CPU, RAM, disk.
   - Bar center: niri workspaces.
   - Bar right: keyboard layout (`es` / `us`), network, Bluetooth, volume, power profile, clock, tray, notifications, control center, session menu.
-  - Clicking network, Bluetooth or volume opens its panel; the control center (`Mod+S`) has Wi-Fi, Bluetooth, audio and power settings in one place.
+  - Clicking network, Bluetooth or volume opens its panel. The control center (`Mod+S`) has Wi-Fi, Bluetooth, audio and power settings in one place.
+  - Launcher (`Mod+D`) with a calculator (`/calc`) and emoji (`/emo`), and clipboard history (`Mod+V`).
+  - Popups for volume and brightness changes, and password prompts when an app needs admin rights.
   - Changes made in its Settings window (`Mod+Shift+S`) are saved to `~/.local/state/noctalia/settings.toml` and override `config.toml`.
-- **Login:** the SDDM login screen (installed by CachyOS) starts the niri session. Your login password unlocks the GNOME keyring, so apps can save passwords. `.zprofile` also unblocks Wi-Fi.
-- **Wayland-native apps:** Electron and Qt apps run natively on Wayland.
+- **Idle:** Noctalia locks after 10 minutes, turns monitors off after 15, and locks before sleep (lid close or suspend). The lock screen takes your login password.
+- **Login:** the SDDM login screen starts the niri session. Your login password unlocks the GNOME keyring, so apps can save passwords. `.zprofile` also unblocks Wi-Fi.
+- **Terminal:** Alacritty with CachyOS's config (translucent, Nord colors), which the CachyOS install put in `~/.config/alacritty/alacritty.toml`.
+- **Screenshots:** built into niri, saved to `~/Pictures/Screenshots`.
+- **File pickers:** "Open file" dialogs from portal-using apps (Flatpaks, Firefox-based browsers) use the GTK file chooser, because GNOME's portal would need Nautilus.
+- **Wayland-native apps:** Electron and Qt apps run natively on Wayland. Qt apps without the Wayland plugin fall back to X11 through xwayland-satellite.
 - **Zsh:**
   - Vi mode.
   - Neovim as editor and man pager.
@@ -48,7 +105,8 @@ Everything that goes into your home folder is in [`home/`](home), laid out as it
   - Environment and `PATH` set in `.zshenv`, so apps launched from niri see them too.
   - XDG directories.
   - An `extract` function for archives.
-  - Starship prompt.
+  - Starship prompt, zoxide (`z`), eza (`ls`), bat (`cat`), autosuggestions and syntax highlighting.
+  - Every tool is optional: if one is missing, `ls`, `cat` and the prompt keep working without errors.
 - **Neovim:**
   - Native LSP (`vim.lsp.config`, Neovim 0.12+), with servers installed through Mason, plus nvim-cmp and LuaSnip.
   - Treesitter.
@@ -56,10 +114,11 @@ Everything that goes into your home folder is in [`home/`](home), laid out as it
   - Harpoon, fugitive and undotree.
   - VimWiki.
   - Kanagawa colorscheme.
+- **Doom Emacs:** Evil (vim keys), LSP, Magit, Org, spell and grammar checking, and 27 language modules (see [Doom modules](#doom-emacs-modules)).
 
 ## Keybindings
 
-`Mod` is the Super key. `Mod+Shift+Escape` shows every binding.
+`Mod` is the Super key. `Mod+Shift+Escape` opens a cheat sheet with every niri binding in two columns (any key closes it). It reads `~/.config/niri/config.kdl` each time, so it always matches your config.
 
 ### Apps
 | Key | Action |
@@ -71,6 +130,7 @@ Everything that goes into your home folder is in [`home/`](home), laid out as it
 | `Mod+G` | GIMP |
 | `Mod+N` | Double Commander |
 | `Mod+P` | KeePassXC |
+| `Mod+I` | Obsidian (notes) |
 | `Mod+R` | Goodvibes (radio) |
 
 Thunderbird and Inkscape have no key; open them from the launcher.
@@ -109,6 +169,8 @@ Thunderbird and Inkscape have no key; open them from the launcher.
 | `Mod+C` | Center column |
 | `Mod+Ctrl+Escape` | Get your shortcuts back when a fullscreen app or a VM has grabbed the keyboard |
 
+`+` has its own key on the Spanish layout and is `Shift+=` on English; both are bound, so `Mod++` works on either.
+
 ### Workspaces and system
 | Key | Action |
 |---|---|
@@ -118,7 +180,7 @@ Thunderbird and Inkscape have no key; open them from the launcher.
 | `Ctrl+Alt+P` | Screenshot (select area) |
 | `Print` / `Alt+Print` | Screenshot screen / window |
 | `Mod+Shift+P` | Monitors off |
-| `Mod+Alt+Q` | Quit niri |
+| `Mod+Alt+Q` | Quit niri (log out; asks to confirm) |
 
 ### Neovim
 Leader is `Space`.
@@ -155,9 +217,11 @@ Alacritty's keys with CachyOS's config:
 | `Ctrl+Shift+N` | New terminal in the same folder |
 | `Ctrl+Shift+Space` | Vi mode (select and copy with the keyboard) |
 
-## Customizing keybindings
+## Customizing
 
-### niri (window manager)
+Edit the files in `~/.config` (they're links into `~/dotfiles/home/`), then commit them from `~/dotfiles`. After changing keys, update the keybinding tables above too.
+
+### niri keys
 Bindings live in the `binds { }` block of `~/.config/niri/config.kdl`. niri reloads the file as soon as you save it, so there's nothing to restart. Run `niri validate` if a change doesn't take effect; a broken file keeps the last working config and shows an error.
 
 Each line is `<keys> { <action>; }`:
@@ -185,37 +249,65 @@ binds {
 
 - **Modifiers:** `Mod` is Super. You can also use `Super`, `Ctrl`, `Alt` and `Shift`, combined with `+`.
 - **Key names** follow xkb. Run `wev` (`sudo pacman -S wev`) and press a key to see its name, e.g. `Return`, `Print`, `XF86AudioMute`, `Comma`.
+- **Spanish keyboard:** niri matches the key's symbol on the current layout, and falls back to the English layout when that symbol isn't a plain character. Keys that need AltGr on Spanish, such as `[` and `]`, can't be bound reliably; use letters, digits or `,` `.` `-` `+` instead.
 - **Changing a key:** edit the key on the left. A key can only be bound once; if two lines use the same key, `niri validate` reports it.
 - **Removing a bind:** delete the line.
 - **All actions:** `niri msg action --help` lists them, and the [niri wiki](https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings) documents them.
 - **Using Alt as Mod:** add `mod-key "Alt"` to the `input { }` block. That's useful when running niri nested inside another session.
-- **Hotkey overlay:** `Mod+Shift+Escape` shows the bindings. Add `hotkey-overlay-title="My title"` after the key to give a bind a readable name in it.
+- **Cheat sheet (`Mod+Shift+Escape`):** the script `~/.local/bin/keybinds` reads the `binds { }` block and shows it in columns, so new binds appear in it without changes:
+  - a comment after a blank line starts a section, and the text before the first `:`, `(`, `.` or `,` is its heading (`// Apps`, `// Media and brightness, …`); comments right after a bind are notes and are skipped;
+  - a bind's description is its `hotkey-overlay-title`, or else its action (`focus-column-left` → "Focus column left"):
+    ```kdl
+    Mod+B hotkey-overlay-title="Browser" { spawn "firefox"; }
+    ```
+  - keys with the same description share a line, and runs like `Mod+1` … `Mod+9` become one.
 
-After changing binds, update the keybinding tables in this README too.
+  It opens in a floating Alacritty window (the `keybinds` window rule in `config.kdl`). Run `keybinds` in any terminal to see it there. niri's own overlay is no longer bound; `niri msg action show-hotkey-overlay` still opens it.
 
 ### Noctalia
-Noctalia's own panels use fixed keys (arrows, Enter, Escape). Change them in the `[keybinds]` section of `~/.config/noctalia/config.toml`. Anything Noctalia can do from a key is a `noctalia msg` command, which you bind in niri:
-```kdl
-Mod+Shift+N { spawn "noctalia" "msg" "notification-clear-history"; }
+- **Settings:** `~/.config/noctalia/config.toml` sets the theme, wallpaper, idle timeouts and bar layout. Its comments say what each part does; every option is documented at [docs.noctalia.dev](https://docs.noctalia.dev). Check it with `noctalia config validate`.
+- **Settings window:** changes made in Noctalia's Settings window (`Mod+Shift+S`) go to `~/.local/state/noctalia/settings.toml`, not the repo, and win over `config.toml`. If an edit to `config.toml` seems ignored, look there.
+- **Bar widgets:** the `start`, `center` and `end` lists in `[bar.default]` pick and order them. Bar clicks are set per widget; see the [bar actions docs](https://docs.noctalia.dev/noctalia/bar/actions/).
+- **Keys:** Noctalia's panels use fixed keys (arrows, Enter, Escape), set in the `[keybinds]` section. Anything Noctalia can do from a key is a `noctalia msg` command, which you bind in niri; `noctalia msg --help` lists them:
+  ```kdl
+  Mod+Shift+N { spawn "noctalia" "msg" "notification-clear-history"; }
+  ```
+
+### Doom Emacs modules
+Modules are switched on and off in `~/.config/doom/init.el`: a line starting with `;;` is off. After changing it, run `doom sync` and restart Emacs. Every module you switch off is less for `doom install` and `doom upgrade` to download and compile, so switching off unused languages makes installs much faster.
+
+Language modules that are on (27): `cc` (C/C++), `csharp`, `dart`, `elixir`, `elm`, `emacs-lisp`, `go`, `graphql`, `haskell`, `json`, `java`, `javascript`, `julia`, `kotlin`, `markdown`, `nim`, `ocaml`, `org`, `php`, `python`, `rust`, `scala`, `sh`, `swift`, `web`, `yaml`, `zig`.
+
+Switched off on purpose: `clojure`, `common-lisp`, `lean`, `lua`, `nix`, `raku`, `solidity` and `latex`. The `grammar` checker needs LanguageTool, which brings in Java; switch it off and drop `languagetool` from `packages.txt` if you don't use it.
+
+Doom keys: Doom uses Evil (vim keys), and `SPC` is the leader. Add bindings with `map!` in `~/.config/doom/config.el`, then run `SPC h r r` (or restart Emacs):
+```elisp
+(map! :leader
+      :desc "Save file" "w" #'save-buffer)
+(map! :n "C-h" #'evil-window-left
+      :n "C-l" #'evil-window-right)
 ```
-`noctalia msg --help` lists the commands. Bar clicks are set per widget in `config.toml`; see the [bar actions docs](https://docs.noctalia.dev/noctalia/bar/actions/).
+`SPC h k` then a key shows what it's bound to.
 
 ### Neovim
-Global maps are in `~/.config/nvim/lua/core/remaps.lua`. Plugin maps sit next to each plugin's config in `~/.config/nvim/lua/plugins/config/` (e.g. `telescope.lua`, `harpoon.lua`). LSP maps are in the `LspAttach` block of `lsp.lua`, and completion keys are in `cmp.lua`.
-```lua
--- mode, keys, action, options
-vim.keymap.set("n", "<leader>w", "<cmd>write<CR>", { desc = "Save file" })
-vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank to clipboard" })
-vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers)
-```
-- Modes: `n` normal, `i` insert, `v` visual, `t` terminal.
-- The leader is `Space`, set at the top of `remaps.lua`. Change `vim.g.mapleader` to use another key.
-- Check whether a key is free with `:verbose nmap <key>`.
-- List everything with `:Telescope keymaps`.
-- Restart Neovim after editing.
+- **Keys:** global maps are in `~/.config/nvim/lua/core/remaps.lua`. Plugin maps sit next to each plugin's config in `~/.config/nvim/lua/plugins/config/` (e.g. `telescope.lua`, `harpoon.lua`). LSP maps are in the `LspAttach` block of `lsp.lua`, and completion keys are in `cmp.lua`.
+  ```lua
+  -- mode, keys, action, options
+  vim.keymap.set("n", "<leader>w", "<cmd>write<CR>", { desc = "Save file" })
+  vim.keymap.set({ "n", "v" }, "<leader>y", '"+y', { desc = "Yank to clipboard" })
+  vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers)
+  ```
+  - Modes: `n` normal, `i` insert, `v` visual, `t` terminal.
+  - The leader is `Space`, set at the top of `remaps.lua`. Change `vim.g.mapleader` to use another key.
+  - Check whether a key is free with `:verbose nmap <key>`.
+  - List everything with `:Telescope keymaps`.
+  - Restart Neovim after editing.
+- **Plugins:** listed in `~/.config/nvim/lua/plugins/init.lua`. Add or remove an entry, then run `:Lazy sync`.
+- **Treesitter parsers:** listed in `~/.config/nvim/lua/plugins/config/ts_parsers.lua`: bash, lua, python, javascript, typescript, rust, c, markdown, vim, vimdoc and query. Each one compiles when installed; add a language there and run `:TSUpdate`.
+- **Language servers:** `setup-editors.sh` installs bash, Python, TypeScript, Rust and Lua servers through Mason. Add more with `:Mason`.
 
 ### Alacritty
-Alacritty reads `~/.config/alacritty/alacritty.toml`, which CachyOS created. That file already has a `[keyboard]` section, so add your keys to its `bindings` list rather than writing a second `[keyboard]` (that would be an error):
+Alacritty reads `~/.config/alacritty/alacritty.toml`, which CachyOS created; it isn't in this repo. That file already has a `[keyboard]` section, so add your keys to its `bindings` list rather than writing a second `[keyboard]` (that would be an error):
 ```toml
 [keyboard]
 bindings = [
@@ -225,59 +317,49 @@ bindings = [
 ```
 `man 5 alacritty` lists every action and option. Alacritty reloads the file as soon as you save it.
 
-### Doom Emacs
-Doom uses Evil (vim keys), and `SPC` is the leader. Add bindings with `map!` in `~/.config/doom/config.el`, then run `SPC h r r` (or restart Emacs):
-```elisp
-(map! :leader
-      :desc "Save file" "w" #'save-buffer)
-(map! :n "C-h" #'evil-window-left
-      :n "C-l" #'evil-window-right)
-```
-`SPC h k` then a key shows what it's bound to.
-
 ### zsh
 The shell uses vi mode (`bindkey -v` in `~/.zshrc`). Add your own bindings after that line:
 ```zsh
 bindkey '^R' history-incremental-search-backward   # Ctrl+R
 bindkey -M viins '^E' autosuggest-accept          # Ctrl+E accepts the suggestion
 ```
-Run `bindkey` with no arguments to list the current ones. To find a key's code, run `cat`, press the key, then `Ctrl+C`. Open a new terminal or run `source ~/.zshrc` to apply.
+Run `bindkey` with no arguments to list the current ones. To find a key's code, run `cat`, press the key, then `Ctrl+C`. Open a new terminal or run `source ~/.zshrc` to apply. Environment variables and `PATH` go in `~/.zshenv`, so apps started from niri see them too.
 
 ## Dependencies
 
-The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`packages-aur.txt`](packages-aur.txt) (AUR) and [`packages-pipx.txt`](packages-pipx.txt) (Python tools, installed with pipx). They only hold what a CachyOS install with the niri desktop doesn't already have.
+The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`packages-aur.txt`](packages-aur.txt) (AUR) and [`packages-pipx.txt`](packages-pipx.txt) (Python tools, installed with pipx). They only hold what a CachyOS install with the niri desktop doesn't already have. To add a package, put its name on its own line in the right list and run `install-packages.sh` again.
 
-**Already installed by CachyOS** (and used by these configs): `niri`, `noctalia` (from `cachyos-niri-noctalia`), `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `wl-clipboard`, `gnome-keyring`, `sddm`, `networkmanager`, `bluez`, `bluez-utils`, `pipewire-pulse`, `wireplumber`, `pavucontrol`, `power-profiles-daemon`, `xdg-user-dirs`, `noto-fonts`, `noto-fonts-emoji`, `cantarell-fonts`, `zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fzf`, `git`, `base-devel`, `python`, `ripgrep`, `unzip`, `unrar` and `firefox`.
+**Already installed by CachyOS** (and used by these configs): `niri`, `noctalia` (from `cachyos-niri-noctalia`), `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `wl-clipboard`, `gnome-keyring`, `sddm`, `networkmanager`, `bluez`, `bluez-utils`, `pipewire-pulse`, `wireplumber`, `pavucontrol`, `power-profiles-daemon`, `xdg-user-dirs`, `noto-fonts`, `noto-fonts-emoji`, `cantarell-fonts`, `zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fzf`, `git`, `base-devel`, `python`, `ripgrep`, `unzip`, `unrar`, `alacritty` and `firefox`.
 
 **Installed from this repo:**
 
 | Group | Packages | Used by |
 |---|---|---|
 | AUR helper | `paru` (in the CachyOS repo) | `packages-aur.txt`, `paru -Syu` |
+| Python tools | `python-pipx`; pipx: `trustsight` | `packages-pipx.txt`. TrustSight risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
 | Keyring | `libsecret`, `seahorse` | Saved passwords for Thunderbird, browsers, git; `seahorse` to manage them |
 | Scripts | `jq` | `Mod+Shift+Q` force-kill |
-| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons) | Noctalia, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
+| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons); AUR: `ttf-symbola` (Emacs's fallback for symbols) | Noctalia, GTK. CatV, Feather and Grape Nuts aren't packaged, so they're in `home/.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gnome-themes-extra`; AUR: `sunity-cursors-git`, `gtk-engine-murrine` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
 | Shell | `starship`, `eza`, `bat`, `zoxide`, `pyenv`, `yt-dlp` | `.zshrc` aliases and prompt |
 | Archives | `7zip`, `cabextract`, `cpio` | The `extract` function |
-| Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
+| Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
-| AUR safety | `python-pipx`; pipx: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts and the launcher |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts and the launcher |
 
-
-Not packaged, so install these by hand:
-- **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 4 of the [manual install](#23-manual-install); `setup-dotfiles.sh` does it for you).
-- **Doom Emacs** (step 5 of the manual install; `setup-dotfiles.sh` does it for you).
+Not packaged, so `setup-desktop.sh` (themes) and `setup-editors.sh` (Doom) download them, or see the [manual install](#23-manual-install):
+- **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`**, from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme).
+- **Qt theme `rose-pine-foam`**, from [rose-pine/kvantum](https://github.com/rose-pine/kvantum).
+- **Doom Emacs**, from [doomemacs/doomemacs](https://github.com/doomemacs/doomemacs).
 
 ## Installation
 
 The guide has four parts. If CachyOS is already installed with the niri desktop, skip to [Part 2](#part-2--install-the-dotfiles).
 
 1. [Install CachyOS](#part-1--install-cachyos-encrypted-with-niri), with the whole system encrypted and the niri desktop.
-2. [Install the dotfiles](#part-2--install-the-dotfiles), with one script or step by step.
-3. [First login](#part-3--first-login): monitors and a checklist.
+2. [Install the dotfiles](#part-2--install-the-dotfiles), with the scripts or step by step.
+3. [Check the install and first login](#part-3--check-the-install-and-first-login): `verify.sh`, monitors and a checklist.
 4. [Keeping it up to date](#part-4--keeping-it-up-to-date).
 
 You can also [test everything in a virtual machine first](#testing-in-a-virtual-machine-first).
@@ -301,11 +383,11 @@ You can also [test everything in a virtual machine first](#testing-in-a-virtual-
      Replace `/dev/sdX` with the stick, not a partition like `/dev/sdb1`. Double-check it: `dd` overwrites whatever you point it at.
 
 #### 1.3 Firmware (UEFI) settings
-The computer must boot the USB stick in **UEFI** mode. In Legacy/CSM mode the installer asks where to put the bootloader ("MBR of the drive" or a partition), and with an encrypted disk both GRUB and Limine fail to install there, or install but don't boot.
+The computer must boot the USB stick in **UEFI** mode. In Legacy/CSM mode the installer asks where to put the bootloader ("MBR of the drive" or a partition), and with an encrypted disk both GRUB and Limine fail to install there, or install but don't boot without the USB stick.
 
 **ThinkPad T480:** press **Enter** at the red ThinkPad logo, then **F1**:
 1. **Startup → UEFI/Legacy Boot:** `UEFI Only`. CSM Support then disappears, or set it to `No`.
-2. **Security → Secure Boot → Secure Boot:** `Disabled`. If the Secure Boot keys were cleared, choose **Restore Factory Keys** first, then check it's still `Disabled`.
+2. **Security → Secure Boot → Secure Boot:** `Disabled`. If the Secure Boot keys were cleared, choose **Restore Factory Keys** first, then check it's still `Disabled`. Cleared keys don't stop Linux from booting while Secure Boot is off; restoring them keeps the option to turn it on later.
 3. **Startup → Boot Order Lock:** `Disabled`, so the installer can add its boot entry.
 4. Press **F10** to save. To boot the stick, press **Enter** at the logo, then **F12**, and pick the USB stick.
 
@@ -331,10 +413,10 @@ Connect to the network (Wi-Fi is in the panel), then choose **Launch installer**
    The installer keeps the small EFI partition unencrypted (the firmware has to read it) and encrypts the rest.
 5. **Desktop:** `Niri`. It installs niri, the SDDM login screen and the Noctalia shell, which this setup uses.
 6. **Packages:** leave the defaults. **Firefox** is ticked, which is the browser `Mod+W` opens. Add **Printing-Support** if you have a printer.
-7. **Users:** your name, username and password. This password also unlocks the keyring at login.
+7. **Users:** your name, username and password. This password also unlocks the keyring at login and the lock screen.
 8. **Summary:** check the disk, encryption and user, then **Install**. When it finishes, restart and remove the USB stick.
 
-What CachyOS sets up, so the dotfiles don't have to: the GPU driver (`chwd` detects it, NVIDIA included), NetworkManager, Bluetooth, PipeWire audio, the firewall, zram swap and the SDDM login screen.
+What CachyOS sets up, so the dotfiles don't have to: the GPU driver (`chwd` detects it, NVIDIA included), NetworkManager, Bluetooth, PipeWire audio, the firewall, zram swap and the SDDM login screen. It also makes **fish** your login shell; `setup-desktop.sh` switches it to zsh.
 
 #### 1.5 First boot
 1. Type the **disk passphrase** and press Enter. Nothing shows while you type; that's normal.
@@ -342,20 +424,23 @@ What CachyOS sets up, so the dotfiles don't have to: the GPU driver (`chwd` dete
 3. Open a terminal with `Mod+Return` (Alacritty, from CachyOS's default niri config). For **Wi-Fi**, run `nmtui`, choose "Activate a connection" and pick your network.
 
 #### 1.6 Protect the encryption
-**If you forget the disk passphrase, the data can't be recovered.** Do these now:
-1. Find the encrypted partition. It's the one marked `crypto_LUKS`, for example `/dev/nvme0n1p2`:
+**If you forget the disk passphrase, the data can't be recovered.** Do these now (`verify.sh` reminds you if you don't):
+1. Find the encrypted partition. It's the one marked `crypto_LUKS`, for example `/dev/sda2` on a SATA SSD or `/dev/nvme0n1p2` on an NVMe one:
    ```sh
    lsblk -f
    ```
 2. Add a second, backup passphrase. Keep it somewhere safe outside this computer, for example in KeePassXC on another device:
    ```sh
-   sudo cryptsetup luksAddKey /dev/nvme0n1p2
+   sudo cryptsetup luksAddKey /dev/sda2
    ```
+   It asks for the current passphrase first, then the new one twice. Either passphrase unlocks the disk at boot.
 3. Back up the encryption header. If that part of the disk gets damaged, this copy can save the data:
    ```sh
-   sudo cryptsetup luksHeaderBackup /dev/nvme0n1p2 --header-backup-file luks-header.img
+   sudo cryptsetup luksHeaderBackup /dev/sda2 --header-backup-file luks-header.img
    ```
    Copy `luks-header.img` off the computer (to another drive or a USB stick), then delete it here.
+
+Use your partition's name from `lsblk -f` in both commands.
 
 #### 1.7 Update the firmware (ThinkPad T480, optional)
 Older T480 firmware has known Thunderbolt and charging bugs. Lenovo publishes its updates through LVFS:
@@ -367,12 +452,13 @@ fwupdmgr refresh && fwupdmgr update
 ### Part 2 — Install the dotfiles
 
 #### 2.1 Before you start
-- **On a system you've already been using:** back up your home folder to another drive. The installer also moves every file it replaces into `~/.dotfiles-backup/<date>/`, including CachyOS's default niri and Noctalia configs.
+- **On a system you've already been using:** back up your home folder to another drive. `setup-dotfiles.sh` also moves every file it replaces into `~/.dotfiles-backup/<date>/`, including CachyOS's default niri and Noctalia configs.
 - **Space:** keep about 10 GB free on `/`. Doom Emacs, LibreOffice and the language servers are large.
+- **Time:** the slowest step is Doom Emacs, which downloads and compiles its packages; expect 10–20 minutes for the whole run.
 - Log in as your normal user, not root.
 
 #### 2.2 Install with the scripts (recommended)
-There are two scripts: `install-packages.sh` installs the packages, and `setup-dotfiles.sh` puts the files in your home folder. Run them from Alacritty (`Mod+Return` in CachyOS's default niri config) or from a text console (`Ctrl+Alt+F2`).
+`install-packages.sh` installs the packages, `setup-dotfiles.sh` links the files into your home folder, `setup-desktop.sh` sets up the themes and the system bits, `setup-editors.sh` installs Doom Emacs and the Neovim plugins, and `verify.sh` checks the result. Run them from Alacritty (`Mod+Return` in CachyOS's default niri config) or from a text console (`Ctrl+Alt+F2`). [The scripts in detail](#the-scripts-in-detail) has the full list of what each one does.
 
 **1. Clone the repo:**
 ```sh
@@ -388,43 +474,48 @@ It asks for your sudo password once, then pacman and paru ask you to confirm. Ac
 2. installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning;
 3. installs the Python tools in `packages-pipx.txt` with pipx, each in its own environment.
 
-**3. Look at the files first (optional):** everything the next step puts in your home folder is in `~/dotfiles/home/`, laid out the same way. Hidden files start with a dot, so use `ls -la ~/dotfiles/home`. The only things not in the repo are the themes, which the next step downloads.
+**3. Look at the files first (optional):** everything the next step puts in your home folder is in `~/dotfiles/home/`, laid out the same way. Hidden files start with a dot, so use `ls -la ~/dotfiles/home`. The only things not in the repo are the themes and Doom Emacs, which steps 5 and 6 download.
 
-**4. Put the dotfiles in place:**
+**4. Link the dotfiles:**
 ```sh
 ~/dotfiles/setup-dotfiles.sh
 ```
-`chsh` asks for your password, and `sudo` may too. It:
+It only links and copies; it downloads nothing and doesn't need sudo. It:
 1. symlinks every config from `~/dotfiles/home/` into `~`. Anything already there, such as CachyOS's niri and Noctalia configs and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/` first;
-2. copies the bundled fonts;
-3. installs the GTK, Qt, icon and cursor themes, then applies them with `gsettings`;
-4. creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
-5. enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
-6. makes zsh your login shell instead of CachyOS's default, fish;
-7. installs Doom Emacs, the Neovim plugins, treesitter parsers and language servers, and builds Telescope's fzf extension;
-8. checks the niri and Noctalia configs with `niri validate` and `noctalia config validate`.
+2. copies the bundled fonts and refreshes the font cache.
 
-Read the output of both scripts. Anything in yellow `!!` lines failed; the message says what to run to retry it. Both are safe to run again: finished steps are skipped or redone harmlessly.
+**5. Set up the desktop:**
+```sh
+~/dotfiles/setup-desktop.sh
+```
+`sudo` and `chsh` ask for your password. It:
+1. downloads and installs the GTK, Qt, icon and cursor themes, then applies them with `gsettings`;
+2. creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
+3. enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
+4. makes zsh your login shell instead of CachyOS's default, fish;
+5. checks the niri and Noctalia configs with `niri validate` and `noctalia config validate`.
 
-**5. Check the result:**
+**6. Install the editors:**
+```sh
+~/dotfiles/setup-editors.sh
+```
+It installs Doom Emacs, then the Neovim plugins, treesitter parsers and language servers, and builds Telescope's fzf extension. This is the slow step: Doom downloads and compiles its packages. It needs step 4 first, because it uses the linked `~/.config/doom` and `~/.config/nvim`. If you don't use one of the editors, you can skip this step.
+
+Read the output of every script. Anything in a yellow `!!` line failed; the message says what to run to retry it. A failed step doesn't stop the later ones. All the scripts are safe to run again: finished steps are skipped or redone harmlessly.
+
+**7. Check the result:**
 ```sh
 ~/dotfiles/verify.sh
 ```
-It prints a ✓ or ✗ for each check, and changes nothing:
-- packages, pipx tools, linked configs and copied fonts;
-- `niri validate` and `noctalia config validate`, showing their errors if a config is broken;
-- zsh as login shell, the services, themes and fonts, Doom Emacs and the Neovim plugins;
-- UEFI boot, the boot entry, the bootloader config, the encrypted partition and its backup passphrase.
+It prints a ✓ or ✗ for each check and changes nothing. See [3.1](#31-run-verifysh) for what each line means.
 
-It asks for sudo once, only to read the boot partition and the encryption header; `verify.sh --no-sudo` skips those checks. Most ✗ lines say what to run. Run it again after fixing something, and once more inside the niri session after you log in.
-
-Then reboot and log in from the SDDM login screen with the **niri** session:
+**8. Log in to the new setup:** reboot, then log in from the SDDM login screen with the **niri** session:
 ```sh
 sudo reboot
 ```
 
 #### 2.3 Manual install
-The same steps as the two scripts, one at a time.
+The same steps as the scripts, one at a time.
 
 **1. Clone the repo:**
 ```sh
@@ -515,19 +606,57 @@ make -C ~/.local/share/nvim/lazy/telescope-fzf-native.nvim
 :Mason
 ```
 
-**8. Set up Python (optional):**
+**8. Set up Python (optional):** CachyOS already has a current Python. For other versions, pyenv compiles them from source, which takes several minutes:
 ```sh
 pyenv install 3.13
 pyenv global 3.13
 ```
 
-**9. Start niri:** reboot, then log in from SDDM with the **niri** session. Continue with [Part 3](#part-3--first-login).
+**9. Check and start:** run `~/dotfiles/verify.sh`, then reboot and log in from SDDM with the **niri** session. Continue with [Part 3](#part-3--check-the-install-and-first-login).
 
-### Part 3 — First login
+### Part 3 — Check the install and first login
 
 Log in from SDDM with the **niri** session: niri starts with the wallpaper and Noctalia's bar. `Ctrl+Alt+F2` and up give you a plain text console, which is handy if something goes wrong.
 
-#### 3.1 Monitors
+#### 3.1 Run verify.sh
+```sh
+~/dotfiles/verify.sh
+```
+It checks everything the install scripts do, plus the boot setup, and prints one line per check:
+- `✓` passed;
+- `✗` failed (most ✗ lines say what to run);
+- `-` skipped, because the check can't run here (for example without sudo).
+
+It ends with a count such as `30 passed, 0 failed, 0 skipped` and exits with an error if anything failed. It changes nothing. It asks for your sudo password once, only to read the boot partition and the encryption header; `./verify.sh --no-sudo` skips those two checks. Run it inside the niri session: a few checks, like the applied GTK theme, read your desktop settings.
+
+What each section checks, and what to do when a line shows ✗:
+
+| Section | Checks | If it shows ✗ |
+|---|---|---|
+| Packages | Everything in `packages.txt`, `packages-aur.txt` and `packages-pipx.txt` is installed | The line lists what's missing; run `install-packages.sh` again |
+| Dotfiles linked | Every path from `home/` is linked into `~`, no links into the repo are broken, the bundled fonts are copied | Run `setup-dotfiles.sh` again. A broken link usually means a file was renamed or removed in the repo |
+| Configs | `niri validate` and `noctalia config validate` | The error from the tool is printed under the ✗ line, with the file and line number |
+| Login shell and services | zsh is your login shell; `sddm`, `NetworkManager`, `bluetooth`, `power-profiles-daemon` are enabled, plus `pipewire.socket`, `wireplumber` and `gnome-keyring-daemon.socket` for your user | For the shell: `chsh -s /usr/bin/zsh`, then log out and in. For a service: `sudo systemctl enable --now <name>` (add `--user` and drop `sudo` for user services) |
+| Themes and fonts | GTK, icon, Qt and cursor themes are installed; `gsettings` applies `Rosepine-Dark`; JetBrains Mono and Iosevka Nerd Fonts are present | Run `setup-desktop.sh` again for the themes, or `setup-dotfiles.sh` for the bundled fonts; for the Nerd Fonts, `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are there |
+| Editors and tools | `trustsight` runs; Doom Emacs and its packages, the Neovim plugins, Telescope's fzf extension and the Mason language servers are installed | Run `setup-editors.sh` again, or the commands in [Troubleshooting](#troubleshooting) |
+| Boot and encryption | Booted in UEFI mode; which firmware entry this boot came from; a LUKS-encrypted partition; the bootloader's config in `/boot`; at least two passphrases on the encrypted partition | See [3.2](#32-the-boot-setup) and [1.6](#16-protect-the-encryption) |
+
+#### 3.2 The boot setup
+`verify.sh` shows the firmware entry this boot came from, for example `Boot0001: Limine`. To see all of them:
+```sh
+efibootmgr
+```
+In a working install:
+- `BootCurrent` is the entry the laptop booted from, and it's the one called **Limine** (or **Linux Boot Manager** for systemd-boot), pointing at `\EFI\limine\limine_x64.efi` on your EFI partition;
+- that entry is first in `BootOrder`, so the laptop boots it without the USB stick.
+
+Other entries are normal:
+- **ThinkPad's built-in entries** (Setup, Boot Menu, Diagnostics, USB, NVMe, PCI LAN…) belong to the firmware.
+- A **Windows Boot Manager** entry is left over if the disk had Windows before; the installer erased Windows, but the firmware still lists it. If `lsblk` shows no other disk with Windows on it, nothing can boot from it. It's harmless, and you can remove it with `sudo efibootmgr -b 0000 -B`, using the number `efibootmgr` shows for it.
+
+The real test: reboot **with the USB stick removed**. You should get the passphrase prompt, then the SDDM login screen.
+
+#### 3.3 Monitors
 Open a terminal (`Mod+Return`) and list the screens:
 ```sh
 niri msg outputs
@@ -541,26 +670,24 @@ output "eDP-1" {
 ```
 niri applies it as soon as you save.
 
-#### 3.2 Check that everything works
-Run `~/dotfiles/verify.sh` first; it should end with `0 failed`. Then check by hand what a script can't:
-
-- [ ] `Mod+Return` opens Alacritty, and `Mod+D` opens Noctalia's launcher.
+#### 3.4 Check by hand what a script can't
+- [ ] `Mod+Return` opens Alacritty with the starship prompt, and `Mod+D` opens Noctalia's launcher.
 - [ ] The bar shows the launcher, battery, CPU, RAM, disk, workspaces, keyboard layout, network, Bluetooth, volume, power profile and clock, in Tokyo Night colors.
 - [ ] `Mod+Ctrl+Space` switches between Spanish and English, and the bar shows the layout.
-- [ ] The volume, mic-mute, brightness and media keys work.
-- [ ] The tray shows one network icon and one Bluetooth icon.
+- [ ] The volume, mic-mute, brightness and media keys work and show a popup.
 - [ ] `notify-send hi` shows a notification.
 - [ ] `Mod+Escape` locks the screen, and your password unlocks it.
-- [ ] `Ctrl+Alt+P` saves a screenshot to `~/Pictures/Screenshots`, and `Mod+V` opens the clipboard history.
+- [ ] `Ctrl+Alt+P` saves a screenshot to `~/Pictures/Screenshots`.
+- [ ] `Mod+V` opens the clipboard history, and `Mod+S` the control center.
 - [ ] `Mod+W` opens Firefox, its file dialogs open, and nothing asks for a keyring password.
-- [ ] `Mod+S` opens the control center, and `Mod+V` the clipboard history.
 - [ ] GTK apps (Thunderbird) and Qt apps (`Mod+P` KeePassXC, `Mod+N` Double Commander) use the Rose Pine theme.
 - [ ] In the terminal, `z <dir>` jumps to a directory, `ls` shows eza output, and Tab completes.
 - [ ] `nvim` opens. In it:
-  - `:checkhealth` shows no errors.
+  - `:checkhealth` shows no errors (warnings about optional tools are fine).
   - `Space ff` opens Telescope.
   - `:LspInfo` lists a server on a `.lua`, `.py` or `.ts` file.
 - [ ] `Mod+E` opens Emacs.
+- [ ] After a reboot without the USB stick, the passphrase prompt and SDDM appear.
 
 ### Part 4 — Keeping it up to date
 - **System and AUR packages:** check pending AUR updates with TrustSight first, then update everything:
@@ -574,49 +701,156 @@ Run `~/dotfiles/verify.sh` first; it should end with `0 failed`. Then check by h
   ```sh
   pipx upgrade-all
   ```
-- **Dotfiles:** pull the latest version and run `setup-dotfiles.sh` again, which is safe to repeat:
+- **Dotfiles:** pull the latest version and run `setup-dotfiles.sh` again, which links any new files. Then check with `verify.sh`:
   ```sh
-  cd ~/dotfiles && git pull && ./setup-dotfiles.sh
+  cd ~/dotfiles && git pull && ./setup-dotfiles.sh && ./verify.sh
   ```
-  New packages in `packages.txt` or `packages-aur.txt` need `./install-packages.sh`, which is also safe to re-run.
-- **Neovim plugins:** `:Lazy sync`, then `:TSUpdate` and `:MasonUpdate`.
-- **Doom Emacs:**
+  Run `setup-desktop.sh` again to update the themes, and `setup-editors.sh` after changes to the Doom or Neovim setup. All of them are safe to repeat.
+  New packages in any of the three lists need `./install-packages.sh`, which is also safe to re-run. Packages removed from a list stay installed until you remove them with `sudo pacman -Rns <name>` (or `pipx uninstall <name>`).
+- **Doom Emacs:** after a pull that changed `~/.config/doom/init.el` or `packages.el`, run `doom sync`. To update Doom and its packages:
   ```sh
   doom upgrade
   ```
+- **Neovim plugins:** `:Lazy sync`, then `:TSUpdate` and `:MasonUpdate`.
+- **Firmware:** `fwupdmgr refresh && fwupdmgr update` now and then (T480).
 
-### Testing in a virtual machine first
+## The scripts in detail
+
+All of them run as your normal user (they refuse to run as root) and are safe to run again. Run them in this order: `install-packages.sh`, `setup-dotfiles.sh`, then `setup-desktop.sh` and `setup-editors.sh` (those two in either order).
+
+### install-packages.sh
+1. Asks for sudo once and keeps it alive while AUR packages build.
+2. `sudo pacman -Syu`, then installs `packages.txt` with `--needed`. Names not in the repos are listed with a warning and skipped, instead of making pacman refuse the whole list.
+3. `paru -S --needed` for `packages-aur.txt`. If that fails, it retries each package on its own and warns about the ones that still fail.
+4. `pipx install` for each tool in `packages-pipx.txt` that isn't installed yet.
+
+It never removes packages.
+
+### setup-dotfiles.sh
+Links and copies, nothing else: no downloads, no sudo, no services.
+1. Links every path from `home/` into `~`. Existing files are moved to `~/.dotfiles-backup/<date>/` first, and paths already linked are left alone. `.config/gtk-2.0`, `gtk-3.0`, `gtk-4.0`, `Kvantum` and `xdg-desktop-portal` are linked file by file, because themes and apps add their own files there.
+2. Copies the bundled fonts, keeping fonts already there, and refreshes the font cache.
+
+### setup-desktop.sh
+1. Stops before changing anything if `git` or `sassc` is missing (run `install-packages.sh` first).
+2. Downloads and installs the Rose Pine GTK theme and icons, the Sunity cursors (only if the AUR package isn't installed), and the Rose Pine Kvantum theme. Each failure is a warning; run the script again later.
+3. Creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`, and applies the theme with `gsettings`.
+4. Enables `power-profiles-daemon` (with sudo) and the GNOME keyring socket, and switches your login shell to zsh if `/usr/bin/zsh` is in `/etc/shells`.
+5. Runs `niri validate` and `noctalia config validate`.
+
+### setup-editors.sh
+1. Stops before changing anything if `git`, `emacs`, `nvim` or `make` is missing, or if `~/.config/doom` or `~/.config/nvim` isn't there yet (run `setup-dotfiles.sh` first).
+2. Installs Doom Emacs, or runs `doom sync` if it's already installed. An existing `~/.config/emacs` that isn't Doom is left alone. Then runs `doom doctor`.
+3. Installs the Neovim plugins with lazy.nvim, builds Telescope's fzf extension, installs the treesitter parsers from `ts_parsers.lua`, and the language servers through Mason.
+
+### verify.sh
+See [3.1](#31-run-verifysh). Options: `--no-sudo` skips the checks that need sudo; `--help` shows the usage.
+
+### What the scripts change outside your home folder
+- **Packages:** installed or upgraded, never removed.
+- **Services:** `power-profiles-daemon` is enabled (`setup-desktop.sh`).
+- **Login shell:** set to zsh with `chsh` (`setup-desktop.sh`).
+
+Nothing touches the bootloader, the boot image, `/etc`, the PAM login settings or SDDM, so the scripts can't stop the computer from booting or block the passphrase prompt.
+
+## Testing in a virtual machine first
 To try everything without touching your computer, use VirtualBox (free):
 1. Create a VM: type Linux, version Arch Linux (64-bit), 4 GB of RAM or more, 2–4 CPUs, **Enable EFI** ticked, and an **80 GB** disk. **Enable EFI** matters: without it the installer runs in Legacy mode and the bootloader fails, as in 1.3.
 2. **Settings → Display:** Graphics Controller **VMSVGA**, **Enable 3D Acceleration** ticked, Video Memory at the maximum. niri needs 3D acceleration in a VM.
 3. Follow Part 1 using the CachyOS ISO as the VM's optical drive. Skip 1.2, 1.3 and 1.7. CachyOS's hardware detection normally installs the VirtualBox guest tools; if `systemctl status vboxservice` says the unit doesn't exist, run `sudo pacman -S virtualbox-guest-utils` and `sudo systemctl enable --now vboxservice`.
 4. After the first boot, take a snapshot (**Machine → Tools → Snapshots → Take**) so you can roll back.
-5. Follow Part 2.
+5. Follow Part 2 and Part 3.
 
 VirtualBox quirks:
 - Its **Host key** is Right Ctrl: use Left Ctrl for shortcuts, and `Right Ctrl+F2` to switch to tty2.
 - Turn on **File → Preferences → Input → Auto Capture Keyboard** and click inside the VM, so the Super key reaches niri.
 - Windows keeps `Win+L` for itself.
 
-### Going back to your old setup
+## Going back to your old setup
 - Every file `setup-dotfiles.sh` replaced is in `~/.dotfiles-backup/<date>/`. Copy the ones you want back over the links.
-- Your other packages aren't removed. To get CachyOS's default niri and Noctalia setup back, move `~/.config/niri` and `~/.config/noctalia` back from the backup folder, or copy them from `/etc/skel/.config/`.
+- Your packages aren't removed. To get CachyOS's default niri and Noctalia setup back, move `~/.config/niri` and `~/.config/noctalia` back from the backup folder, or copy them from `/etc/skel/.config/`.
+- To go back to fish: `chsh -s /usr/bin/fish`.
 
 ## Troubleshooting
-- **The disk passphrase isn't accepted at boot:** try typing it as if on an English (US) keyboard. If that works, the boot screen isn't using the Spanish layout; check that `/etc/vconsole.conf` says `KEYMAP=es`, then rebuild the boot image with `sudo limine-mkinitcpio` (Limine) or `sudo mkinitcpio -P` (systemd-boot). You can always unlock with the backup passphrase from 1.6.
-- **niri doesn't start, or the screen stays black:** press `Ctrl+Alt+F2`, log in, then run `niri validate` and `journalctl --user -b -u niri --no-pager | tail -40`.
-- **No network after installing:** run `nmtui`. If it says NetworkManager isn't running: `sudo systemctl enable --now NetworkManager`.
-- **Telescope says fzf isn't built:** run `make -C ~/.local/share/nvim/lazy/telescope-fzf-native.nvim`, then restart nvim.
+
+### Installing and booting
 - **The bootloader fails to install, or the system only boots with the USB stick in:** the installer ran in Legacy/CSM mode. Set the firmware to UEFI only (see 1.3), check with `ls /sys/firmware/efi`, and install again.
+- **The disk passphrase isn't accepted at boot:** try typing it as if on an English (US) keyboard. If that works, the boot screen isn't using the Spanish layout; check that `/etc/vconsole.conf` says `KEYMAP=es`, then rebuild the boot image with `sudo limine-mkinitcpio` (Limine) or `sudo mkinitcpio -P` (systemd-boot). You can always unlock with the backup passphrase from 1.6.
+- **`verify.sh` says there's only 1 passphrase:** add the backup passphrase from 1.6: `sudo cryptsetup luksAddKey /dev/sda2` (your partition's name is in the ✗ line).
+- **`efibootmgr` lists a Windows Boot Manager you don't have:** it's left over from before the install; see 3.2.
+
+### Logging in and the desktop
+- **niri doesn't start, or the screen stays black:** press `Ctrl+Alt+F2`, log in, then run `niri validate` and `journalctl --user -b -u niri --no-pager | tail -40`.
 - **SDDM logs you straight back out:** press `Ctrl+Alt+F2`, log in, and run `niri validate`. Check that SDDM's session menu says **niri**.
+- **niri ignores your config and uses its defaults:** a duplicate keybinding or a typo stops niri loading `config.kdl`. Run `niri validate` to see the line.
+- **No bar after logging in:** run `noctalia config validate` to find errors in `~/.config/noctalia/config.toml`, then start it by hand with `noctalia` to see its log. If a setting from the file seems ignored, it was probably changed in Noctalia's Settings window; check `~/.local/state/noctalia/settings.toml`.
+- **The lock screen crashed and the screen stays locked (red or blank):** niri keeps the session locked on purpose. Press `Ctrl+Alt+F3`, log in, and run `loginctl terminate-user $USER`. That logs you out everywhere (unsaved work in open apps is lost); go back to the login screen with `Ctrl+Alt+F1` or `F2` and log in again.
+- **Apps keep asking for a keyring password:** the login unlock isn't working. Check that `grep pam_gnome_keyring /etc/pam.d/sddm` shows the `auth` and `session` lines. If the keyring was created with a different password, delete `~/.local/share/keyrings/login.keyring` and log in again.
+- **`Mod+º` does nothing:** run `wev`, press the º key and check the keysym it prints. If it isn't `masculine`, use that name in the two workspace-10 binds.
+- **No network after installing:** run `nmtui`. If it says NetworkManager isn't running: `sudo systemctl enable --now NetworkManager`.
 - **No sound:** run `systemctl --user status wireplumber`.
+
+### Themes and fonts
 - **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 4 of the manual install again, or pick the theme in `nwg-look`.
 - **Qt apps look unthemed:** check `echo $QT_QPA_PLATFORMTHEME` shows `qt5ct:qt6ct` inside niri, and that `ls ~/.config/Kvantum` lists `rose-pine-foam`. Open `qt6ct` (or `qt5ct` for Double Commander) and check that Style is `kvantum`.
-- **niri ignores your config and uses its defaults:** a duplicate keybinding or a typo stops niri loading `config.kdl`. Run `niri validate` to see the line.
-- **`Mod+º` does nothing:** run `wev`, press the º key and check the keysym it prints. If it isn't `masculine`, use that name in the two workspace-10 binds.
-- **Apps keep asking for a keyring password:** the login unlock isn't working. Check that `grep pam_gnome_keyring /etc/pam.d/sddm` shows the `auth` and `session` lines. If the keyring was created with a different password, delete `~/.local/share/keyrings/login.keyring` and log in again.
-- **Neovim says nvim-treesitter needs a newer version:** the `main` branch needs Neovim 0.12+. Check with `nvim --version`.
-- **The lock screen crashed and the screen stays locked (red or blank):** niri keeps the session locked on purpose. Press `Ctrl+Alt+F3`, log in, and run `loginctl terminate-user $USER`. That logs you out everywhere (unsaved work in open apps is lost); go back to the login screen with `Ctrl+Alt+F1` or `F2` and log in again.
-- **No bar after logging in:** run `noctalia config validate` to find errors in `~/.config/noctalia/config.toml`, then start it by hand with `noctalia` to see its log. If a setting from the file seems ignored, it was probably changed in Noctalia's Settings window; check `~/.local/state/noctalia/settings.toml`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
+- **A font is reported missing:** `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are installed, and `fc-list : family | grep -i "nerd font"` whether fontconfig sees them. Run `fc-cache -f` if it doesn't.
+
+### Editors
+- **Telescope says fzf isn't built:** run `make -C ~/.local/share/nvim/lazy/telescope-fzf-native.nvim`, then restart nvim.
+- **Neovim says nvim-treesitter needs a newer version:** the `main` branch needs Neovim 0.12+. Check with `nvim --version`.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
+- **Doom Emacs complains about missing packages after a pull:** run `doom sync`, then restart Emacs. `doom doctor` lists anything else it needs.
+- **`doom doctor` says `Cannot open load file … straight`, or `doom sync` fails with `unknown revision` or `ambiguous argument 'HEAD'`:** some of Doom's package downloads are broken. Follow [Debugging Doom Emacs packages](#debugging-doom-emacs-packages).
+- **`doom doctor` warns that Symbola is missing:** install the AUR package with `paru -S ttf-symbola` (it's in `packages-aur.txt`), then restart Emacs.
+
+### Debugging Doom Emacs packages
+Doom downloads each package as a git repository into `~/.config/emacs/.local/straight/repos/` and builds it into `~/.config/emacs/.local/straight/build-*/`. If `doom install` or `doom sync` is interrupted (a network drop, closing the terminal, a reboot), it can leave a repository folder whose download never finished. Doom then thinks the package is there and fails when it tries to use it.
+
+**Symptoms:**
+- `doom doctor` reports `Cannot open load file` … `straight`.
+- `doom sync` or `doom upgrade` stops with `The package manager threw an error`, and the log shows `git rev-parse HEAD` failing in a package's folder:
+  ```
+  $ cd ~/.config/emacs/.local/straight/repos/auto-minor-mode/
+  $ git rev-parse HEAD
+  fatal: ambiguous argument 'HEAD': unknown revision or path not in the working tree.
+  ```
+- `doom sync` says `No packages need attention` but Emacs still can't load a package.
+
+These folders are only downloaded copies. Deleting them loses nothing of yours; your config is in `~/.config/doom`, which none of this touches.
+
+**1. List the broken downloads.** This changes nothing; it prints each package folder without a finished download:
+```sh
+cd ~/.config/emacs/.local/straight/repos
+for d in */; do git -C "$d" rev-parse -q --verify HEAD >/dev/null 2>&1 || echo "${d%/}"; done
+```
+
+**2. Delete them**, together with their half-built copies:
+```sh
+cd ~/.config/emacs/.local/straight/repos
+for d in */; do
+  d="${d%/}"
+  if ! git -C "$d" rev-parse -q --verify HEAD >/dev/null 2>&1; then
+    rm -rf "$d" ../build*/"$d"
+    echo "removed $d"
+  fi
+done
+```
+
+**3. Download them again and check:**
+```sh
+doom sync
+doom doctor
+```
+Use `doom sync` once Doom is installed. `doom install` is only for the first setup; running it again just repeats the same sync.
+
+**If that doesn't fix it,** for example when step 1 lists dozens of packages or `doom sync` keeps failing on another one, delete all downloaded packages and fetch everything fresh. It takes longer, since every package is downloaded and compiled again, but it leaves nothing half-done:
+```sh
+rm -rf ~/.config/emacs/.local/straight
+doom sync
+```
+
+**Where to look for more:**
+- `doom sync` prints the last lines of straight's error log, which name the package and the git command that failed.
+- The full logs are in `~/.config/emacs/.local/state/logs/`; the newest file is the last run.
+- Run `doom sync` again once the network is stable: a download that failed because of the network usually works the second time.

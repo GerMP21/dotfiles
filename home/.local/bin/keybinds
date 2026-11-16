@@ -1,0 +1,193 @@
+#!/usr/bin/env python3
+"""Show every niri keybinding in columns. Mod+Shift+Escape opens it.
+
+Reads the binds { } block of ~/.config/niri/config.kdl, so new binds show up
+without editing this script:
+- A comment right after a blank line starts a section ("// Apps"); the text
+  before the first ":", "(", "." or "," is the heading. Comments right after
+  a bind are notes and are skipped.
+- A bind's description is its hotkey-overlay-title, or else its action
+  ("focus-column-left" becomes "Focus column left").
+- Keys with the same description are shown together, and runs like
+  Mod+1 … Mod+9 are shortened to one line.
+
+Usage: keybinds [config.kdl]. Any key closes it.
+"""
+import os
+import re
+import shutil
+import sys
+import termios
+import tty
+
+CONFIG = os.path.expanduser(sys.argv[1] if len(sys.argv) > 1 else "~/.config/niri/config.kdl")
+
+BOLD, BLUE, YELLOW, DIM, RESET = "\033[1m", "\033[1;34m", "\033[33m", "\033[2m", "\033[0m"
+
+# Friendlier names for xkb key names
+KEY_NAMES = {
+    "Return": "Enter", "masculine": "º", "grave": "`", "Minus": "-", "Plus": "+",
+    "Equal": "=", "Comma": ",", "Period": ".", "Slash": "/", "Space": "Space",
+    "WheelScrollDown": "Scroll↓", "WheelScrollUp": "Scroll↑",
+    "WheelScrollLeft": "Scroll←", "WheelScrollRight": "Scroll→",
+    "Left": "←", "Right": "→", "Up": "↑", "Down": "↓",
+    "XF86AudioRaiseVolume": "Vol+", "XF86AudioLowerVolume": "Vol−",
+    "XF86AudioMute": "Mute", "XF86AudioMicMute": "MicMute",
+    "XF86AudioPlay": "Play", "XF86AudioPause": "Pause",
+    "XF86AudioNext": "Next", "XF86AudioPrev": "Prev",
+    "XF86MonBrightnessUp": "Bright+", "XF86MonBrightnessDown": "Bright−",
+}
+
+BIND = re.compile(r'^\s*(?P<key>[A-Za-z0-9+_]+)(?P<props>(?:\s+[\w-]+=(?:"[^"]*"|\S+))*)\s*\{\s*(?P<action>.*?)\s*;?\s*\}\s*$')
+TITLE = re.compile(r'hotkey-overlay-title="([^"]*)"')
+
+
+def pretty_key(key):
+    return "+".join(KEY_NAMES.get(part, part) for part in key.split("+"))
+
+
+def describe(action):
+    """'set-column-width "-10%"' -> 'Set column width -10%'."""
+    name, _, args = action.partition(" ")
+    words = name.replace("-", " ")
+    args = re.sub(r'r?#*"([^"]*)"#*', r"\1", args).strip()
+    text = f"{words} {args}".strip()
+    return text[:1].upper() + text[1:]
+
+
+def read_sections(path):
+    with open(path, encoding="utf-8") as f:
+        text = f.read()
+    start = text.find("binds {")
+    if start < 0:
+        sys.exit(f"No binds {{ }} block in {path}")
+    sections, current, prev_blank = [], None, True
+    for line in text[start + len("binds {"):].splitlines():
+        stripped = line.strip()
+        if stripped == "}" and not line.startswith(" "):
+            break  # end of the binds block
+        if not stripped:
+            prev_blank = True
+            continue
+        if stripped.startswith("//"):
+            if prev_blank:
+                heading = re.split(r"[:(.,]", stripped.lstrip("/ ").strip(), maxsplit=1)[0].strip()
+                current = [heading, []]
+                sections.append(current)
+            prev_blank = False
+            continue
+        prev_blank = False
+        m = BIND.match(line)
+        if not m:
+            continue
+        title = TITLE.search(m["props"] or "")
+        desc = title.group(1) if title else describe(m["action"])
+        if current is None:
+            current = ["General", []]
+            sections.append(current)
+        current[1].append((m["key"], desc))
+    return [(h, merge(entries)) for h, entries in sections if entries]
+
+
+def merge(entries):
+    """Join keys with the same description, then shorten numbered runs."""
+    joined = {}
+    for key, desc in entries:
+        joined.setdefault(desc, []).append(pretty_key(key))
+    rows = [(" / ".join(keys), desc) for desc, keys in joined.items()]
+
+    out, i = [], 0
+    while i < len(rows):
+        km = re.fullmatch(r"(.*?)(\d)", rows[i][0])
+        dm = re.fullmatch(r"(.*?)(\d+)", rows[i][1])
+        j = i
+        if km and dm:
+            while j + 1 < len(rows):
+                k2 = re.fullmatch(r"(.*?)(\d)", rows[j + 1][0])
+                d2 = re.fullmatch(r"(.*?)(\d+)", rows[j + 1][1])
+                if (k2 and d2 and k2[1] == km[1] and d2[1] == dm[1]
+                        and int(k2[2]) == int(km[2]) + (j + 1 - i)):
+                    j += 1
+                else:
+                    break
+        if j - i >= 2:
+            last_k = re.fullmatch(r"(.*?)(\d)", rows[j][0])[2]
+            last_d = re.fullmatch(r"(.*?)(\d+)", rows[j][1])[2]
+            out.append((f"{km[1]}{km[2]}…{last_k}", f"{dm[1]}{dm[2]}–{last_d}"))
+        else:
+            out.extend(rows[i:j + 1])
+        i = j + 1
+    return out
+
+
+def render(sections, width, height):
+    # Each section is a block of lines; blocks aren't split across columns
+    blocks = [[("head", h)] + [("row", r) for r in rows] for h, rows in sections]
+    total = sum(len(b) + 1 for b in blocks)
+    ncols = 2 if width >= 90 else 1
+    if ncols == 2 and total / 2 > height - 2 and width >= 150:
+        ncols = 3
+    target = total / ncols
+    columns, col, count = [], [], 0
+    for b in blocks:
+        if col and count + len(b) > target and len(columns) < ncols - 1:
+            columns.append(col)
+            col, count = [], 0
+        col.extend(b + [("blank", "")])
+        count += len(b) + 1
+    columns.append(col)
+
+    colw = width // len(columns) - 2
+    keyw = min(max((len(r[0]) for c in columns for kind, r in c if kind == "row"), default=10), colw // 2)
+
+    def cell(item):
+        kind, val = item
+        if kind == "head":
+            text, shown = f"{BLUE}{val}{RESET}", val
+        elif kind == "row":
+            key, desc = val
+            key = key if len(key) <= keyw else key[:keyw - 1] + "…"
+            room = colw - keyw - 2
+            desc = desc if len(desc) <= room else desc[:room - 1] + "…"
+            text = f"{YELLOW}{key.ljust(keyw)}{RESET}  {desc}"
+            shown = f"{key.ljust(keyw)}  {desc}"
+        else:
+            text = shown = ""
+        return text + " " * (colw - len(shown))
+
+    lines = []
+    for i in range(max(len(c) for c in columns)):
+        lines.append("  ".join(cell(c[i]) if i < len(c) else " " * colw for c in columns))
+    return lines
+
+
+def wait_for_key():
+    if not sys.stdin.isatty():
+        return
+    fd = sys.stdin.fileno()
+    old = termios.tcgetattr(fd)
+    try:
+        tty.setraw(fd)
+        os.read(fd, 1)
+    finally:
+        termios.tcsetattr(fd, termios.TCSADRAIN, old)
+
+
+def main():
+    try:
+        sections = read_sections(CONFIG)
+    except OSError as e:
+        print(f"Can't read {CONFIG}: {e}")
+        wait_for_key()
+        return 1
+    size = shutil.get_terminal_size((160, 50))
+    print(f"{BOLD}niri keybindings{RESET}  {DIM}(Mod is Super; from {CONFIG}){RESET}\n")
+    for line in render(sections, size.columns, size.lines):
+        print(line.rstrip())
+    print(f"{DIM}Press any key to close.{RESET}", end="", flush=True)
+    wait_for_key()
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
