@@ -90,6 +90,8 @@ docker
 docker-buildx
 docker-compose
 geany
+# VSCodium (Mod+C), from the CachyOS repo (prebuilt, no AUR build)
+vscodium
 mysql-workbench
 mariadb-libs
 # Rust toolchains (rustup default stable after installing)

@@ -3,8 +3,6 @@
 # Names confirmed via AUR search results (Nov 2026).
 
 goodvibes
-# VSCodium (Mod+C), the prebuilt release; the plain vscodium package compiles from source
-vscodium-bin
 # Claude Desktop (Mod+X): Anthropic's official Linux build, from downloads.claude.ai.
 # Pulls in QEMU, which Cowork uses to run tasks in a local virtual machine.
 claude-desktop
