@@ -139,7 +139,7 @@ dotfiles/
 | `Mod+R` | Goodvibes (radio) |
 | `Mod+Shift+T` | TuxGuitar |
 | `Mod+Shift+S` | Discord |
-| `Mod+Shift+D` | Audacity |
+| `Mod+Shift+I` | Audacity |
 | `Mod+S` | Steam |
 | `Mod+Y` | YGO Omega (from `~/Documents/Games/YGO Omega`) |
 
