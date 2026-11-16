@@ -1,6 +1,6 @@
 # Environment for every zsh (login, interactive and scripts).
-# niri inherits this from the tty1 login shell, so apps launched from
-# fuzzel or keybinds see the same PATH and EDITOR as your terminal.
+# niri-session starts niri through a zsh login shell, so apps launched
+# from fuzzel or keybinds see the same PATH and EDITOR as your terminal.
 typeset -U path PATH   # no duplicate PATH entries
 
 export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"

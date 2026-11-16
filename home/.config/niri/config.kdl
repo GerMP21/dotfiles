@@ -1,0 +1,201 @@
+// niri config — https://github.com/YaLTeR/niri/wiki/Configuration:-Introduction
+input {
+    keyboard {
+        // Spanish first (the default), English second. Mod+Ctrl+Space switches.
+        xkb { layout "es,us"; }
+        numlock
+    }
+    touchpad { tap; natural-scroll; dwt; }
+    focus-follows-mouse max-scroll-amount="0%"
+}
+
+// Run `niri msg outputs` and add output blocks here, e.g.:
+// output "eDP-1" { scale 1.0; }
+
+layout {
+    gaps 8
+    center-focused-column "never"
+    preset-column-widths {
+        proportion 0.33333
+        proportion 0.5
+        proportion 0.66667
+    }
+    default-column-width { proportion 0.5; }
+    focus-ring {
+        width 2
+        active-color "#7aa2f7"
+        inactive-color "#444b6a"
+    }
+    border { off; }
+}
+
+// Noctalia: bar, launcher, clipboard, notifications, lock, idle, wallpaper.
+// Its config is ~/.config/noctalia/config.toml.
+spawn-at-startup "noctalia"
+spawn-at-startup "emacs" "--daemon"
+
+// Lets Noctalia's notification buttons focus the app that sent them
+debug {
+    honor-xdg-activation-with-invalid-serial
+}
+
+// Flat Tokyo Night background in the overview (Mod+Tab)
+overview {
+    backdrop-color "#1a1b26"
+}
+
+prefer-no-csd
+
+cursor {
+    xcursor-theme "Sunity-cursors"
+    xcursor-size 24
+}
+screenshot-path "~/Pictures/Screenshots/%Y-%m-%d_%H-%M-%S.png"
+
+environment {
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+    // Wayland, falling back to X11 (xwayland-satellite) for Qt apps without the plugin
+    QT_QPA_PLATFORM "wayland;xcb"
+    // qt5ct for Qt 5 apps, qt6ct for Qt 6; both use the Kvantum Rose Pine theme
+    QT_QPA_PLATFORMTHEME "qt5ct:qt6ct"
+}
+
+window-rule {
+    geometry-corner-radius 6
+    clip-to-geometry true
+}
+// Noctalia's settings window (Mod+Shift+S)
+window-rule {
+    match app-id="dev.noctalia.Noctalia"
+    open-floating true
+    default-column-width { fixed 1080; }
+    default-window-height { fixed 920; }
+}
+
+binds {
+    Mod+Shift+Escape { show-hotkey-overlay; }
+
+    // Apps
+    Mod+Return { spawn "alacritty"; }
+    Mod+E      { spawn "emacsclient" "-c" "-a" "emacs"; }
+    Mod+W      { spawn "firefox"; }
+    Mod+O      { spawn "libreoffice"; }
+    Mod+G      { spawn "gimp"; }
+    Mod+N      { spawn "doublecmd"; }
+    Mod+P      { spawn "keepassxc"; }
+    Mod+R      { spawn "goodvibes"; }
+
+    // Noctalia
+    Mod+D       { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
+    Mod+V       { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
+    Mod+S       { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
+    Mod+Shift+S { spawn "noctalia" "msg" "settings-toggle"; }
+    Mod+Escape  { spawn "noctalia" "msg" "session" "lock"; }
+
+    // Media and brightness, through Noctalia so its popups show
+    XF86AudioRaiseVolume  allow-when-locked=true { spawn "noctalia" "msg" "volume-up"; }
+    XF86AudioLowerVolume  allow-when-locked=true { spawn "noctalia" "msg" "volume-down"; }
+    XF86AudioMute         allow-when-locked=true { spawn "noctalia" "msg" "volume-mute"; }
+    XF86AudioMicMute      allow-when-locked=true { spawn "noctalia" "msg" "mic-mute"; }
+    XF86AudioPlay         allow-when-locked=true { spawn "noctalia" "msg" "media" "toggle"; }
+    XF86AudioPause        allow-when-locked=true { spawn "noctalia" "msg" "media" "toggle"; }
+    XF86AudioNext         allow-when-locked=true { spawn "noctalia" "msg" "media" "next"; }
+    XF86AudioPrev         allow-when-locked=true { spawn "noctalia" "msg" "media" "previous"; }
+    XF86MonBrightnessUp   allow-when-locked=true { spawn "noctalia" "msg" "brightness-up"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "noctalia" "msg" "brightness-down"; }
+
+    // Windows
+    Mod+Q       { close-window; }
+    // Force-kill the focused window's process (for frozen apps)
+    Mod+Shift+Q { spawn-sh r#"pid=$(niri msg --json focused-window | jq -r '.pid // empty'); [ -n "$pid" ] && kill -9 "$pid""#; }
+    Mod+F       { maximize-column; }
+    Mod+Shift+F { fullscreen-window; }
+    Mod+Ctrl+F  { expand-column-to-available-width; }
+    Mod+T       { toggle-window-floating; }
+    Mod+Tab     { toggle-overview; }
+    // Gets your shortcuts back when a fullscreen app or a VM has grabbed the keyboard
+    Mod+Ctrl+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
+
+    // Focus (vim keys, or arrows)
+    Mod+H     { focus-column-left; }
+    Mod+L     { focus-column-right; }
+    Mod+J     { focus-window-or-workspace-down; }
+    Mod+K     { focus-window-or-workspace-up; }
+    Mod+Left  { focus-column-left; }
+    Mod+Right { focus-column-right; }
+    Mod+Down  { focus-window-or-workspace-down; }
+    Mod+Up    { focus-window-or-workspace-up; }
+    Mod+Home  { focus-column-first; }
+    Mod+End   { focus-column-last; }
+
+    // Move (vim keys, or arrows)
+    Mod+Alt+H     { move-column-left; }
+    Mod+Alt+L     { move-column-right; }
+    Mod+Alt+J     { move-window-down-or-to-workspace-down; }
+    Mod+Alt+K     { move-window-up-or-to-workspace-up; }
+    Mod+Alt+Left  { move-column-left; }
+    Mod+Alt+Right { move-column-right; }
+    Mod+Alt+Down  { move-window-down-or-to-workspace-down; }
+    Mod+Alt+Up    { move-window-up-or-to-workspace-up; }
+    Mod+Ctrl+Home { move-column-to-first; }
+    Mod+Ctrl+End  { move-column-to-last; }
+
+    // Columns
+    // Move the window into the column on the left/right, or out of its column
+    Mod+Ctrl+H       { consume-or-expel-window-left; }
+    Mod+Ctrl+L       { consume-or-expel-window-right; }
+    Mod+Ctrl+Left    { consume-or-expel-window-left; }
+    Mod+Ctrl+Right   { consume-or-expel-window-right; }
+    Mod+Comma        { consume-window-into-column; }
+    Mod+Period       { expel-window-from-column; }
+    Mod+Space        { switch-preset-column-width; }
+    Mod+C            { center-column; }
+
+    // Keyboard layout: toggle Spanish (es) <-> English (us)
+    Mod+Ctrl+Space   { switch-layout "next"; }
+
+    // Sizes. + has its own key on the Spanish layout (Plus); on English it's
+    // Shift+= (Equal), so both are bound.
+    Mod+Minus       { set-column-width "-10%"; }
+    Mod+Plus        { set-column-width "+10%"; }
+    Mod+Equal       { set-column-width "+10%"; }
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Plus  { set-window-height "+10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+
+    // Workspaces
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+    // Workspace 10 is the key left of 1: º on the Spanish layout, ` on English.
+    // niri tries the current layout's key first, so both binds are needed.
+    Mod+masculine { focus-workspace 10; }
+    Mod+grave     { focus-workspace 10; }
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+    Mod+Shift+masculine { move-column-to-workspace 10; }
+    Mod+Shift+grave     { move-column-to-workspace 10; }
+    Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp   cooldown-ms=150 { focus-workspace-up; }
+
+    // Screenshots (Ctrl+Alt+P kept from sxhkd)
+    Ctrl+Alt+P  { screenshot; }
+    Print       { screenshot-screen; }
+    Alt+Print   { screenshot-window; }
+
+    Mod+Alt+Q   { quit; }
+    Mod+Shift+P { power-off-monitors; }
+}
