@@ -359,7 +359,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | Development | `docker`, `docker-buildx`, `docker-compose`, `geany`, `mysql-workbench`, `mariadb-libs`, `rustup`, `uv`; AUR: `postman-bin`, `pyenv-virtualenv` | Containers, editor, MySQL/MariaDB client, Rust and Python toolchains, API client |
 | Network | `wireguard-tools`, `qbittorrent`; AUR: `wireguird` | WireGuard VPN (and its GUI), torrents |
-| Media and writing | `audacity`, `discord`; AUR: `tuxguitar`, `trelby` | Audio editing, chat, guitar tabs, screenwriting |
+| Media and writing | `audacity`, `discord`, `calibre`; AUR: `tuxguitar`, `trelby` | Audio editing, chat, e-books, guitar tabs, screenwriting |
 | Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+A` |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `vscodium-bin`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
 
