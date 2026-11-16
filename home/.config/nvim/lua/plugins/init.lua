@@ -72,10 +72,5 @@ require("lazy").setup({
     config = function() require("plugins.config.undotree") end,
   },
   { "andrewferrier/wrapping.nvim", opts = {} },
-  {
-    "lervag/vimtex",
-    lazy = false, -- vimtex must not be lazy-loaded
-    init = function() require("plugins.config.tex") end,
-  },
   { "vimwiki/vimwiki" },
 })

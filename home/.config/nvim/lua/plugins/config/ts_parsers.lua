@@ -1,5 +1,5 @@
--- Treesitter parsers to install (used by treesitter.lua and full-install.sh)
+-- Treesitter parsers to install (used by treesitter.lua and setup-dotfiles.sh)
 return {
-  "latex", "bash", "lua", "python", "javascript", "typescript", "rust", "c",
+  "bash", "lua", "python", "javascript", "typescript", "rust", "c",
   "markdown", "markdown_inline", "vim", "vimdoc", "query",
 }
