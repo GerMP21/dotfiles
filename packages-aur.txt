@@ -23,5 +23,5 @@ airshipper
 # Screenwriting
 trelby
 # Audacity 3, built from the official repo's audacity3 branch (compiles,
-# takes a while); replaces the official audacity package (Mod+Shift+A)
+# takes a while); replaces the official audacity package (Mod+Shift+D)
 audacity3-git

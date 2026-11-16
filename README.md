@@ -90,10 +90,10 @@ dotfiles/
   - Bar left: launcher, battery, CPU, RAM, disk.
   - Bar center: niri workspaces.
   - Bar right: keyboard layout (`es` / `us`), network, Bluetooth, volume, power profile, clock, tray, notifications, control center, session menu.
-  - Clicking network, Bluetooth or volume opens its panel. The control center (`Mod+S`) has Wi-Fi, Bluetooth, audio and power settings in one place.
+  - Clicking network, Bluetooth or volume opens its panel. The control center (`Mod+A`) has Wi-Fi, Bluetooth, audio and power settings in one place.
   - Launcher (`Mod+D`) with a calculator (`/calc`) and emoji (`/emo`), and clipboard history (`Mod+V`).
   - Popups for volume and brightness changes, and password prompts when an app needs admin rights.
-  - Changes made in its Settings window (`Mod+Shift+S`) are saved to `~/.local/state/noctalia/settings.toml` and override `config.toml`.
+  - Changes made in its Settings window (`Mod+Shift+A`) are saved to `~/.local/state/noctalia/settings.toml` and override `config.toml`.
 - **Idle:** Noctalia locks after 10 minutes, turns monitors off after 15, and suspends after 5 hours (`[idle.behavior.*]` in `config.toml`). It locks before any suspend, including closing the lid, which suspends right away (systemd's default). The lock screen takes your login password.
 - **Login:** the SDDM login screen starts the niri session. Your login password unlocks the GNOME keyring, so apps can save passwords. `.zprofile` also unblocks Wi-Fi.
 - **Terminal:** Alacritty with CachyOS's config (translucent, Nord colors), which the CachyOS install put in `~/.config/alacritty/alacritty.toml`.
@@ -138,9 +138,9 @@ dotfiles/
 | `Mod+X` | Claude Desktop |
 | `Mod+R` | Goodvibes (radio) |
 | `Mod+Shift+T` | TuxGuitar |
-| `Mod+Shift+A` | Discord |
+| `Mod+Shift+S` | Discord |
 | `Mod+Shift+D` | Audacity |
-| `Mod+A` | Steam |
+| `Mod+S` | Steam |
 | `Mod+Y` | YGO Omega (from `~/Documents/Games/YGO Omega`) |
 
 Thunderbird and Inkscape have no key; open them from the launcher.
@@ -150,8 +150,8 @@ Thunderbird and Inkscape have no key; open them from the launcher.
 |---|---|
 | `Mod+D` | Launcher (apps; `/calc`, `/emo` for the calculator and emoji) |
 | `Mod+V` | Clipboard history |
-| `Mod+S` | Control center |
-| `Mod+Shift+S` | Noctalia settings |
+| `Mod+A` | Control center |
+| `Mod+Shift+A` | Noctalia settings |
 | `Mod+Escape` | Lock screen |
 | Volume, mic-mute, brightness and media keys | Change the value and show a popup (also on the lock screen) |
 
@@ -277,7 +277,7 @@ binds {
 
 ### Noctalia
 - **Settings:** `~/.config/noctalia/config.toml` sets the theme, wallpaper, idle timeouts and bar layout. Its comments say what each part does; every option is documented at [docs.noctalia.dev](https://docs.noctalia.dev). Check it with `noctalia config validate`.
-- **Settings window:** changes made in Noctalia's Settings window (`Mod+Shift+S`) go to `~/.local/state/noctalia/settings.toml`, not the repo, and win over `config.toml`. If an edit to `config.toml` seems ignored, look there.
+- **Settings window:** changes made in Noctalia's Settings window (`Mod+Shift+A`) go to `~/.local/state/noctalia/settings.toml`, not the repo, and win over `config.toml`. If an edit to `config.toml` seems ignored, look there.
 - **Bar widgets:** the `start`, `center` and `end` lists in `[bar.default]` pick and order them. Bar clicks are set per widget; see the [bar actions docs](https://docs.noctalia.dev/noctalia/bar/actions/).
 - **Keys:** Noctalia's panels use fixed keys (arrows, Enter, Escape), set in the `[keybinds]` section. Anything Noctalia can do from a key is a `noctalia msg` command, which you bind in niri; `noctalia msg --help` lists them:
   ```kdl
@@ -360,7 +360,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Development | `docker`, `docker-buildx`, `docker-compose`, `geany`, `vscodium` (CachyOS repo), `mysql-workbench`, `mariadb-libs`, `rustup`, `uv`; AUR: `postman-bin`, `pyenv-virtualenv` | Containers, editor, MySQL/MariaDB client, Rust and Python toolchains, API client |
 | Network | `wireguard-tools`, `qbittorrent`; AUR: `wireguird` | WireGuard VPN (and its GUI), torrents |
 | Media and writing | `discord`, `calibre`; AUR: `audacity3-git`, `tuxguitar`, `trelby` | Audio editing, chat, e-books, guitar tabs, screenwriting |
-| Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+A` |
+| Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+S` |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
 
 Not packaged, so `setup-desktop.sh` (themes) and `setup-editors.sh` (Doom) download them, or see the [manual install](#23-manual-install):
@@ -719,7 +719,7 @@ Or replace `system/sddm/tokyo-night/background.jpg` and `system/sddm/avatar.jpg`
 - [ ] `notify-send hi` shows a notification.
 - [ ] `Mod+Escape` locks the screen, and your password unlocks it.
 - [ ] `Ctrl+Alt+P` saves a screenshot to `~/Pictures/Screenshots`.
-- [ ] `Mod+V` opens the clipboard history, and `Mod+S` the control center.
+- [ ] `Mod+V` opens the clipboard history, and `Mod+A` the control center.
 - [ ] `Mod+W` opens Firefox, its file dialogs open, and nothing asks for a keyring password.
 - [ ] GTK apps (Thunderbird) and Qt apps (`Mod+P` KeePassXC, `Mod+N` Double Commander) use the Rose Pine theme.
 - [ ] In the terminal, `z <dir>` jumps to a directory, `ls` shows eza output, and Tab completes.

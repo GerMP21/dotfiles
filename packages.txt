@@ -76,7 +76,7 @@ gimp
 inkscape
 keepassxc
 obsidian
-# Steam (Mod+A), from multilib, which CachyOS enables
+# Steam (Mod+S), from multilib, which CachyOS enables
 steam
 doublecmd-qt5
 # Second file manager (Mod+M); gvfs adds trash and USB drive mounting,
