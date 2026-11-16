@@ -4,5 +4,7 @@
 
 goodvibes
 sunity-cursors-git
+# Emacs's fallback font for symbols other fonts lack; doom doctor warns without it
+ttf-symbola
 # GTK 2 theme engine for Rose Pine (moved from the official repos to the AUR in 2025)
 gtk-engine-murrine

@@ -324,7 +324,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Python tools | `python-pipx`; pipx: `trustsight` | `packages-pipx.txt`. TrustSight risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
 | Keyring | `libsecret`, `seahorse` | Saved passwords for Thunderbird, browsers, git; `seahorse` to manage them |
 | Scripts | `jq` | `Mod+Shift+Q` force-kill |
-| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons) | Noctalia, GTK. CatV, Feather and Grape Nuts aren't packaged, so they're in `home/.local/share/fonts/` |
+| Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons); AUR: `ttf-symbola` (Emacs's fallback for symbols) | Noctalia, GTK. CatV, Feather and Grape Nuts aren't packaged, so they're in `home/.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gnome-themes-extra`; AUR: `sunity-cursors-git`, `gtk-engine-murrine` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
 | Shell | `starship`, `eza`, `bat`, `zoxide`, `pyenv`, `yt-dlp` | `.zshrc` aliases and prompt |
@@ -612,7 +612,7 @@ What each section checks, and what to do when a line shows ✗:
 | Configs | `niri validate` and `noctalia config validate` | The error from the tool is printed under the ✗ line, with the file and line number |
 | Login shell and services | zsh is your login shell; `sddm`, `NetworkManager`, `bluetooth`, `power-profiles-daemon` are enabled, plus `pipewire.socket`, `wireplumber` and `gnome-keyring-daemon.socket` for your user | For the shell: `chsh -s /usr/bin/zsh`, then log out and in. For a service: `sudo systemctl enable --now <name>` (add `--user` and drop `sudo` for user services) |
 | Themes and fonts | GTK, icon, Qt and cursor themes are installed; `gsettings` applies `Rosepine-Dark`; JetBrains Mono and Iosevka Nerd Fonts are present | Run `setup-dotfiles.sh` again; for fonts, `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are there |
-| Editors and tools | `trustsight` runs; Doom Emacs, the Neovim plugins, Telescope's fzf extension and the Mason language servers are installed | Run `setup-dotfiles.sh` again, or the commands in [Troubleshooting](#troubleshooting) |
+| Editors and tools | `trustsight` runs; Doom Emacs and its packages, the Neovim plugins, Telescope's fzf extension and the Mason language servers are installed | Run `setup-dotfiles.sh` again, or the commands in [Troubleshooting](#troubleshooting) |
 | Boot and encryption | Booted in UEFI mode; which firmware entry this boot came from; a LUKS-encrypted partition; the bootloader's config in `/boot`; at least two passphrases on the encrypted partition | See [3.2](#32-the-boot-setup) and [1.6](#16-protect-the-encryption) |
 
 #### 3.2 The boot setup
@@ -767,3 +767,5 @@ VirtualBox quirks:
 - **Neovim says nvim-treesitter needs a newer version:** the `main` branch needs Neovim 0.12+. Check with `nvim --version`.
 - **Treesitter errors in Neovim:** check that `tree-sitter --version` works, then run `:TSUpdate`.
 - **Doom Emacs complains about missing packages after a pull:** run `doom sync`, then restart Emacs. `doom doctor` lists anything else it needs.
+- **`doom doctor` says `Cannot open load file … straight`:** Doom's packages were never installed, usually because `doom install` stopped partway (a network drop or an interrupted run). Run `~/.config/emacs/bin/doom sync`, which downloads what's missing. If it fails again, the error at the end of its output says which package or download broke; run it again once the network is fine.
+- **`doom doctor` warns that Symbola is missing:** install the AUR package with `paru -S ttf-symbola` (it's in `packages-aur.txt`), then restart Emacs.

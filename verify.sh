@@ -128,7 +128,15 @@ fi
 
 section "Editors and tools"
 check "trustsight runs"                  trustsight --version
-check "Doom Emacs installed"             test -x "$HOME/.config/emacs/bin/doom"
+# The doom command alone isn't enough: its packages come from straight.el,
+# which only exists once doom install / doom sync finished
+if [ ! -x "$HOME/.config/emacs/bin/doom" ]; then
+  bad "Doom Emacs isn't installed (run setup-dotfiles.sh)"
+elif [ -n "$(find "$HOME/.config/emacs/.local" -maxdepth 5 -type d -name straight.el -print -quit 2>/dev/null)" ]; then
+  ok "Doom Emacs and its packages installed"
+else
+  bad "Doom Emacs packages aren't installed (run: ~/.config/emacs/bin/doom sync)"
+fi
 check "Neovim plugins installed"         test -d "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/telescope.nvim"
 check "Telescope fzf extension built"    test -f "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/telescope-fzf-native.nvim/build/libfzf.so"
 if compgen -G "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/mason/bin/*" >/dev/null; then ok "Mason language servers installed"; else bad "Mason language servers installed (:Mason in nvim)"; fi
@@ -151,10 +159,15 @@ if [ "$USE_SUDO" -eq 1 ] && has sudo && sudo -v; then
   # The boot partition is readable by root only, so look for each
   # bootloader's own files there
   found=""
-  sudo sh -c 'ls /boot/limine.conf /boot/EFI/limine/limine.conf /boot/limine/limine.conf' >/dev/null 2>&1 && found="Limine"
-  [ -z "$found" ] && sudo test -d /boot/loader/entries && found="systemd-boot"
-  [ -z "$found" ] && sudo sh -c 'ls /boot/grub/grub.cfg /boot/efi/grub/grub.cfg' >/dev/null 2>&1 && found="GRUB"
-  if [ -n "$found" ]; then ok "bootloader: $found, config found in /boot"; else bad "no Limine, systemd-boot or GRUB config in /boot"; fi
+  # Test each path on its own: ls with several paths fails if any is missing
+  for f in /boot/limine.conf /boot/EFI/limine/limine.conf /boot/limine/limine.conf /boot/efi/limine.conf; do
+    [ -z "$found" ] && sudo test -f "$f" && found="Limine ($f)"
+  done
+  [ -z "$found" ] && sudo test -d /boot/loader/entries && found="systemd-boot (/boot/loader/entries)"
+  for f in /boot/grub/grub.cfg /boot/efi/grub/grub.cfg; do
+    [ -z "$found" ] && sudo test -f "$f" && found="GRUB ($f)"
+  done
+  if [ -n "$found" ]; then ok "bootloader config: $found"; else bad "no Limine, systemd-boot or GRUB config in /boot"; fi
   if [ -n "$luks" ]; then
     # LUKS2 lists "  0: luks2", LUKS1 lists "Key Slot 0: ENABLED"
     dump="$(sudo cryptsetup luksDump "$luks" 2>/dev/null)"
