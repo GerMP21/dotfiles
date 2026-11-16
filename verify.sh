@@ -116,7 +116,7 @@ check "icon theme Rose-Pine-Moon"   test -d "$HOME/.local/share/icons/Rose-Pine-
 check "Qt theme rose-pine-foam"     test -d "$HOME/.config/Kvantum/rose-pine-foam"
 if [ -d /usr/share/icons/Sunity-cursors ] || [ -d "$HOME/.icons/Sunity-cursors" ]; then ok "cursor theme Sunity-cursors"; else bad "cursor theme Sunity-cursors"; fi
 if has gsettings && theme="$(gsettings get org.gnome.desktop.interface gtk-theme 2>/dev/null)"; then
-  if [ "$theme" = "'Rosepine-Dark'" ]; then ok "gsettings applies Rosepine-Dark"; else bad "gsettings theme is $theme (run setup-dotfiles.sh)"; fi
+  if [ "$theme" = "'Rosepine-Dark'" ]; then ok "gsettings applies Rosepine-Dark"; else bad "gsettings theme is $theme (run setup-desktop.sh)"; fi
 else
   skip "gsettings not readable here (run this inside the niri session)"
 fi
@@ -132,7 +132,7 @@ check "trustsight runs"                  trustsight --version
 # The doom command alone isn't enough: its packages come from straight.el,
 # which only exists once doom install / doom sync finished
 if [ ! -x "$HOME/.config/emacs/bin/doom" ]; then
-  bad "Doom Emacs isn't installed (run setup-dotfiles.sh)"
+  bad "Doom Emacs isn't installed (run setup-editors.sh)"
 elif [ -n "$(find "$HOME/.config/emacs/.local" -maxdepth 5 -type d -name straight.el -print -quit 2>/dev/null)" ]; then
   ok "Doom Emacs and its packages installed"
 else

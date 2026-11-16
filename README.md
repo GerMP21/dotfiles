@@ -6,14 +6,16 @@ On top of what CachyOS installs, it adds:
 - a niri config with Spanish/English keyboard layouts and vim-style keys;
 - Noctalia (the shell CachyOS ships) set up to match: bar, launcher, notifications, lock screen and idle;
 - zsh with starship, Neovim, Doom Emacs, and Rose Pine GTK/Qt themes;
-- three scripts: install the packages, put the files in place, and check the result.
+- scripts that install the packages, link the files, set up the desktop and the editors, and check the result.
 
 **Quick start**, on a fresh CachyOS install with the niri desktop (details in [Installation](#installation)):
 ```sh
 git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
-~/dotfiles/install-packages.sh
-~/dotfiles/setup-dotfiles.sh
-~/dotfiles/verify.sh
+~/dotfiles/install-packages.sh   # packages
+~/dotfiles/setup-dotfiles.sh     # link the configs into ~, copy the fonts
+~/dotfiles/setup-desktop.sh      # themes, folders, services, zsh as login shell
+~/dotfiles/setup-editors.sh      # Doom Emacs and Neovim plugins (the slow one)
+~/dotfiles/verify.sh             # check everything
 ```
 
 ## Contents
@@ -47,11 +49,13 @@ dotfiles/
 ├── packages-aur.txt        packages from the AUR (paru)
 ├── packages-pipx.txt       Python tools (pipx)
 ├── install-packages.sh     installs the three lists
-├── setup-dotfiles.sh       links home/ into ~, installs themes, Doom, Neovim plugins
+├── setup-dotfiles.sh       links home/ into ~ and copies the fonts; nothing else
+├── setup-desktop.sh        themes, folders, services, zsh as login shell
+├── setup-editors.sh        Doom Emacs, Neovim plugins, parsers and language servers
 └── verify.sh               checks all of the above, plus the boot setup; changes nothing
 ```
 
-`home/.config/niri` becomes `~/.config/niri`, and so on. `setup-dotfiles.sh` **symlinks** everything from `home/` into `~`, so editing a file in `~/.config` edits it in the repo, and `git diff` shows your changes. Only the fonts are **copied**. The themes and Doom Emacs aren't in the repo: `setup-dotfiles.sh` downloads them.
+`home/.config/niri` becomes `~/.config/niri`, and so on. `setup-dotfiles.sh` **symlinks** everything from `home/` into `~`, so editing a file in `~/.config` edits it in the repo, and `git diff` shows your changes. Only the fonts are **copied**. That's all `setup-dotfiles.sh` does: no downloads, no sudo. The themes and Doom Emacs aren't in the repo; `setup-desktop.sh` and `setup-editors.sh` download them.
 
 ## What you get
 
@@ -300,7 +304,7 @@ Doom keys: Doom uses Evil (vim keys), and `SPC` is the leader. Add bindings with
   - Restart Neovim after editing.
 - **Plugins:** listed in `~/.config/nvim/lua/plugins/init.lua`. Add or remove an entry, then run `:Lazy sync`.
 - **Treesitter parsers:** listed in `~/.config/nvim/lua/plugins/config/ts_parsers.lua`: bash, lua, python, javascript, typescript, rust, c, markdown, vim, vimdoc and query. Each one compiles when installed; add a language there and run `:TSUpdate`.
-- **Language servers:** `setup-dotfiles.sh` installs bash, Python, TypeScript, Rust and Lua servers through Mason. Add more with `:Mason`.
+- **Language servers:** `setup-editors.sh` installs bash, Python, TypeScript, Rust and Lua servers through Mason. Add more with `:Mason`.
 
 ### Alacritty
 Alacritty reads `~/.config/alacritty/alacritty.toml`, which CachyOS created; it isn't in this repo. That file already has a `[keyboard]` section, so add your keys to its `bindings` list rather than writing a second `[keyboard]` (that would be an error):
@@ -344,7 +348,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts and the launcher |
 
-Not packaged, so `setup-dotfiles.sh` downloads them (or see the [manual install](#23-manual-install)):
+Not packaged, so `setup-desktop.sh` (themes) and `setup-editors.sh` (Doom) download them, or see the [manual install](#23-manual-install):
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`**, from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme).
 - **Qt theme `rose-pine-foam`**, from [rose-pine/kvantum](https://github.com/rose-pine/kvantum).
 - **Doom Emacs**, from [doomemacs/doomemacs](https://github.com/doomemacs/doomemacs).
@@ -412,7 +416,7 @@ Connect to the network (Wi-Fi is in the panel), then choose **Launch installer**
 7. **Users:** your name, username and password. This password also unlocks the keyring at login and the lock screen.
 8. **Summary:** check the disk, encryption and user, then **Install**. When it finishes, restart and remove the USB stick.
 
-What CachyOS sets up, so the dotfiles don't have to: the GPU driver (`chwd` detects it, NVIDIA included), NetworkManager, Bluetooth, PipeWire audio, the firewall, zram swap and the SDDM login screen. It also makes **fish** your login shell; `setup-dotfiles.sh` switches it to zsh.
+What CachyOS sets up, so the dotfiles don't have to: the GPU driver (`chwd` detects it, NVIDIA included), NetworkManager, Bluetooth, PipeWire audio, the firewall, zram swap and the SDDM login screen. It also makes **fish** your login shell; `setup-desktop.sh` switches it to zsh.
 
 #### 1.5 First boot
 1. Type the **disk passphrase** and press Enter. Nothing shows while you type; that's normal.
@@ -454,7 +458,7 @@ fwupdmgr refresh && fwupdmgr update
 - Log in as your normal user, not root.
 
 #### 2.2 Install with the scripts (recommended)
-`install-packages.sh` installs the packages, `setup-dotfiles.sh` puts the files in your home folder, and `verify.sh` checks the result. Run them from Alacritty (`Mod+Return` in CachyOS's default niri config) or from a text console (`Ctrl+Alt+F2`). [The scripts in detail](#the-scripts-in-detail) has the full list of what each one does.
+`install-packages.sh` installs the packages, `setup-dotfiles.sh` links the files into your home folder, `setup-desktop.sh` sets up the themes and the system bits, `setup-editors.sh` installs Doom Emacs and the Neovim plugins, and `verify.sh` checks the result. Run them from Alacritty (`Mod+Return` in CachyOS's default niri config) or from a text console (`Ctrl+Alt+F2`). [The scripts in detail](#the-scripts-in-detail) has the full list of what each one does.
 
 **1. Clone the repo:**
 ```sh
@@ -470,31 +474,42 @@ It asks for your sudo password once, then pacman and paru ask you to confirm. Ac
 2. installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning;
 3. installs the Python tools in `packages-pipx.txt` with pipx, each in its own environment.
 
-**3. Look at the files first (optional):** everything the next step puts in your home folder is in `~/dotfiles/home/`, laid out the same way. Hidden files start with a dot, so use `ls -la ~/dotfiles/home`. The only things not in the repo are the themes and Doom Emacs, which the next step downloads.
+**3. Look at the files first (optional):** everything the next step puts in your home folder is in `~/dotfiles/home/`, laid out the same way. Hidden files start with a dot, so use `ls -la ~/dotfiles/home`. The only things not in the repo are the themes and Doom Emacs, which steps 5 and 6 download.
 
-**4. Put the dotfiles in place:**
+**4. Link the dotfiles:**
 ```sh
 ~/dotfiles/setup-dotfiles.sh
 ```
-It stops before changing anything if the packages from step 2 aren't installed. `chsh` asks for your password, and `sudo` may too. It:
+It only links and copies; it downloads nothing and doesn't need sudo. It:
 1. symlinks every config from `~/dotfiles/home/` into `~`. Anything already there, such as CachyOS's niri and Noctalia configs and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/` first;
-2. copies the bundled fonts;
-3. installs the GTK, Qt, icon and cursor themes, then applies them with `gsettings`;
-4. creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
-5. enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
-6. makes zsh your login shell instead of CachyOS's default, fish;
-7. installs Doom Emacs, the Neovim plugins, treesitter parsers and language servers, and builds Telescope's fzf extension;
-8. checks the niri and Noctalia configs with `niri validate` and `noctalia config validate`.
+2. copies the bundled fonts and refreshes the font cache.
 
-Read the output of both scripts. Anything in a yellow `!!` line failed; the message says what to run to retry it. A failed step doesn't stop the later ones. Both scripts are safe to run again: finished steps are skipped or redone harmlessly.
+**5. Set up the desktop:**
+```sh
+~/dotfiles/setup-desktop.sh
+```
+`sudo` and `chsh` ask for your password. It:
+1. downloads and installs the GTK, Qt, icon and cursor themes, then applies them with `gsettings`;
+2. creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
+3. enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
+4. makes zsh your login shell instead of CachyOS's default, fish;
+5. checks the niri and Noctalia configs with `niri validate` and `noctalia config validate`.
 
-**5. Check the result:**
+**6. Install the editors:**
+```sh
+~/dotfiles/setup-editors.sh
+```
+It installs Doom Emacs, then the Neovim plugins, treesitter parsers and language servers, and builds Telescope's fzf extension. This is the slow step: Doom downloads and compiles its packages. It needs step 4 first, because it uses the linked `~/.config/doom` and `~/.config/nvim`. If you don't use one of the editors, you can skip this step.
+
+Read the output of every script. Anything in a yellow `!!` line failed; the message says what to run to retry it. A failed step doesn't stop the later ones. All the scripts are safe to run again: finished steps are skipped or redone harmlessly.
+
+**7. Check the result:**
 ```sh
 ~/dotfiles/verify.sh
 ```
 It prints a ✓ or ✗ for each check and changes nothing. See [3.1](#31-run-verifysh) for what each line means.
 
-**6. Log in to the new setup:** reboot, then log in from the SDDM login screen with the **niri** session:
+**8. Log in to the new setup:** reboot, then log in from the SDDM login screen with the **niri** session:
 ```sh
 sudo reboot
 ```
@@ -622,8 +637,8 @@ What each section checks, and what to do when a line shows ✗:
 | Dotfiles linked | Every path from `home/` is linked into `~`, no links into the repo are broken, the bundled fonts are copied | Run `setup-dotfiles.sh` again. A broken link usually means a file was renamed or removed in the repo |
 | Configs | `niri validate` and `noctalia config validate` | The error from the tool is printed under the ✗ line, with the file and line number |
 | Login shell and services | zsh is your login shell; `sddm`, `NetworkManager`, `bluetooth`, `power-profiles-daemon` are enabled, plus `pipewire.socket`, `wireplumber` and `gnome-keyring-daemon.socket` for your user | For the shell: `chsh -s /usr/bin/zsh`, then log out and in. For a service: `sudo systemctl enable --now <name>` (add `--user` and drop `sudo` for user services) |
-| Themes and fonts | GTK, icon, Qt and cursor themes are installed; `gsettings` applies `Rosepine-Dark`; JetBrains Mono and Iosevka Nerd Fonts are present | Run `setup-dotfiles.sh` again; for fonts, `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are there |
-| Editors and tools | `trustsight` runs; Doom Emacs and its packages, the Neovim plugins, Telescope's fzf extension and the Mason language servers are installed | Run `setup-dotfiles.sh` again, or the commands in [Troubleshooting](#troubleshooting) |
+| Themes and fonts | GTK, icon, Qt and cursor themes are installed; `gsettings` applies `Rosepine-Dark`; JetBrains Mono and Iosevka Nerd Fonts are present | Run `setup-desktop.sh` again for the themes, or `setup-dotfiles.sh` for the bundled fonts; for the Nerd Fonts, `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are there |
+| Editors and tools | `trustsight` runs; Doom Emacs and its packages, the Neovim plugins, Telescope's fzf extension and the Mason language servers are installed | Run `setup-editors.sh` again, or the commands in [Troubleshooting](#troubleshooting) |
 | Boot and encryption | Booted in UEFI mode; which firmware entry this boot came from; a LUKS-encrypted partition; the bootloader's config in `/boot`; at least two passphrases on the encrypted partition | See [3.2](#32-the-boot-setup) and [1.6](#16-protect-the-encryption) |
 
 #### 3.2 The boot setup
@@ -686,10 +701,11 @@ niri applies it as soon as you save.
   ```sh
   pipx upgrade-all
   ```
-- **Dotfiles:** pull the latest version and run `setup-dotfiles.sh` again, which is safe to repeat. Then check with `verify.sh`:
+- **Dotfiles:** pull the latest version and run `setup-dotfiles.sh` again, which links any new files. Then check with `verify.sh`:
   ```sh
   cd ~/dotfiles && git pull && ./setup-dotfiles.sh && ./verify.sh
   ```
+  Run `setup-desktop.sh` again to update the themes, and `setup-editors.sh` after changes to the Doom or Neovim setup. All of them are safe to repeat.
   New packages in any of the three lists need `./install-packages.sh`, which is also safe to re-run. Packages removed from a list stay installed until you remove them with `sudo pacman -Rns <name>` (or `pipx uninstall <name>`).
 - **Doom Emacs:** after a pull that changed `~/.config/doom/init.el` or `packages.el`, run `doom sync`. To update Doom and its packages:
   ```sh
@@ -700,7 +716,7 @@ niri applies it as soon as you save.
 
 ## The scripts in detail
 
-All three run as your normal user (they refuse to run as root) and are safe to run again.
+All of them run as your normal user (they refuse to run as root) and are safe to run again. Run them in this order: `install-packages.sh`, `setup-dotfiles.sh`, then `setup-desktop.sh` and `setup-editors.sh` (those two in either order).
 
 ### install-packages.sh
 1. Asks for sudo once and keeps it alive while AUR packages build.
@@ -711,22 +727,29 @@ All three run as your normal user (they refuse to run as root) and are safe to r
 It never removes packages.
 
 ### setup-dotfiles.sh
-1. Stops before changing anything if `git`, `zsh`, `nvim`, `emacs`, `niri`, `noctalia` or `fc-cache` is missing (run `install-packages.sh` first).
-2. Links every path from `home/` into `~`. Existing files are moved to `~/.dotfiles-backup/<date>/` first, and paths already linked are left alone.
-3. Copies the bundled fonts, keeping fonts already there.
-4. Downloads and installs the Rose Pine GTK theme and icons, the Sunity cursors (only if the AUR package isn't installed), and the Rose Pine Kvantum theme. Each failure is a warning; run the script again later.
-5. Refreshes the font cache, creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`, and applies the theme with `gsettings`.
-6. Enables `power-profiles-daemon` (with sudo) and the GNOME keyring socket, and switches your login shell to zsh if `/usr/bin/zsh` is in `/etc/shells`.
-7. Installs Doom Emacs (or runs `doom sync` if it's there; an existing `~/.config/emacs` that isn't Doom is left alone), then the Neovim plugins, parsers and language servers.
-8. Runs `niri validate` and `noctalia config validate`.
+Links and copies, nothing else: no downloads, no sudo, no services.
+1. Links every path from `home/` into `~`. Existing files are moved to `~/.dotfiles-backup/<date>/` first, and paths already linked are left alone. `.config/gtk-2.0`, `gtk-3.0`, `gtk-4.0`, `Kvantum` and `xdg-desktop-portal` are linked file by file, because themes and apps add their own files there.
+2. Copies the bundled fonts, keeping fonts already there, and refreshes the font cache.
+
+### setup-desktop.sh
+1. Stops before changing anything if `git` or `sassc` is missing (run `install-packages.sh` first).
+2. Downloads and installs the Rose Pine GTK theme and icons, the Sunity cursors (only if the AUR package isn't installed), and the Rose Pine Kvantum theme. Each failure is a warning; run the script again later.
+3. Creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`, and applies the theme with `gsettings`.
+4. Enables `power-profiles-daemon` (with sudo) and the GNOME keyring socket, and switches your login shell to zsh if `/usr/bin/zsh` is in `/etc/shells`.
+5. Runs `niri validate` and `noctalia config validate`.
+
+### setup-editors.sh
+1. Stops before changing anything if `git`, `emacs`, `nvim` or `make` is missing, or if `~/.config/doom` or `~/.config/nvim` isn't there yet (run `setup-dotfiles.sh` first).
+2. Installs Doom Emacs, or runs `doom sync` if it's already installed. An existing `~/.config/emacs` that isn't Doom is left alone. Then runs `doom doctor`.
+3. Installs the Neovim plugins with lazy.nvim, builds Telescope's fzf extension, installs the treesitter parsers from `ts_parsers.lua`, and the language servers through Mason.
 
 ### verify.sh
 See [3.1](#31-run-verifysh). Options: `--no-sudo` skips the checks that need sudo; `--help` shows the usage.
 
 ### What the scripts change outside your home folder
 - **Packages:** installed or upgraded, never removed.
-- **Services:** `power-profiles-daemon` is enabled.
-- **Login shell:** set to zsh with `chsh`.
+- **Services:** `power-profiles-daemon` is enabled (`setup-desktop.sh`).
+- **Login shell:** set to zsh with `chsh` (`setup-desktop.sh`).
 
 Nothing touches the bootloader, the boot image, `/etc`, the PAM login settings or SDDM, so the scripts can't stop the computer from booting or block the passphrase prompt.
 
