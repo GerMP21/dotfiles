@@ -93,6 +93,7 @@ binds {
     Mod+P hotkey-overlay-title="KeePassXC" { spawn "keepassxc"; }
     Mod+I hotkey-overlay-title="Obsidian" { spawn "obsidian"; }
     Mod+R hotkey-overlay-title="Goodvibes (radio)" { spawn "goodvibes"; }
+    Mod+Y hotkey-overlay-title="YGO Omega" { spawn-sh r#"cd "$HOME/Documents/Games/YGO Omega" && exec "./YGO Omega.x86_64""#; }
 
     // Noctalia
     Mod+D hotkey-overlay-title="Launcher" { spawn "noctalia" "msg" "panel-toggle" "launcher"; }

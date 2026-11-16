@@ -52,6 +52,8 @@ dotfiles/
 ├── setup-dotfiles.sh       links home/ into ~ and copies the fonts; nothing else
 ├── setup-desktop.sh        themes, folders, services, zsh as login shell
 ├── setup-editors.sh        Doom Emacs, Neovim plugins, parsers and language servers
+├── setup-login-screen.sh   optional: SDDM login theme, background and profile picture
+├── system/sddm/            the login theme (tokyo-night/), background and avatar.jpg
 └── verify.sh               checks all of the above, plus the boot setup; changes nothing
 ```
 
@@ -64,7 +66,7 @@ dotfiles/
 |---|---|---|
 | Window manager | niri (scrollable tiling) | `home/.config/niri/config.kdl` |
 | Shell | [Noctalia](https://docs.noctalia.dev) (installed by CachyOS): bar, launcher, clipboard history, notifications, volume/brightness popups, control center, lock screen, idle, wallpaper, password prompts | `home/.config/noctalia/config.toml` |
-| Login screen | SDDM (installed by CachyOS) | not in this repo |
+| Login screen | SDDM (installed by CachyOS) with a Tokyo Night theme: background, square profile picture, clock | `system/sddm/`, installed by `setup-login-screen.sh` (optional) |
 | Wallpaper | Raphael's *The School of Athens* (public domain), shown by Noctalia | `home/.local/share/backgrounds/wallpaper.jpg` |
 | Terminal | Alacritty (installed by CachyOS, with CachyOS's config) | `~/.config/alacritty/alacritty.toml`, not in this repo |
 | Shell | zsh + starship | `home/.zshenv` (environment, PATH), `home/.zprofile` (login), `home/.zshrc` (interactive), `home/.config/starship.toml` |
@@ -132,6 +134,7 @@ dotfiles/
 | `Mod+P` | KeePassXC |
 | `Mod+I` | Obsidian (notes) |
 | `Mod+R` | Goodvibes (radio) |
+| `Mod+Y` | YGO Omega (from `~/Documents/Games/YGO Omega`) |
 
 Thunderbird and Inkscape have no key; open them from the launcher.
 
@@ -670,7 +673,33 @@ output "eDP-1" {
 ```
 niri applies it as soon as you save.
 
-#### 3.4 Check by hand what a script can't
+#### 3.4 Login screen (optional)
+SDDM, the login screen, runs before you log in, so its files live outside your home folder and the main scripts leave it alone. `setup-login-screen.sh` installs a small Tokyo Night theme from `system/sddm/tokyo-night/` with the background and profile picture from `system/sddm/`:
+```sh
+~/dotfiles/setup-login-screen.sh
+```
+It asks for sudo and writes three things:
+- `/usr/share/sddm/themes/tokyo-night-dotfiles/`: the theme and the background;
+- `/usr/share/sddm/faces/<you>.face.icon`: your profile picture. SDDM can't read your home folder, which CachyOS keeps private, so `~/.face.icon` wouldn't work;
+- `/etc/sddm.conf.d/10-dotfiles-theme.conf`: selects the theme, leaving `/etc/sddm.conf` alone.
+
+Preview it without logging out:
+```sh
+sddm-greeter-qt6 --test-mode --theme /usr/share/sddm/themes/tokyo-night-dotfiles
+```
+The real login screen changes the next time SDDM starts (log out or reboot).
+
+**Other images:** pass your own, in any format Qt reads (JPG, PNG…). A square picture works best for the profile picture:
+```sh
+~/dotfiles/setup-login-screen.sh --background ~/Pictures/login.jpg --avatar ~/Pictures/me.png
+```
+Or replace `system/sddm/tokyo-night/background.jpg` and `system/sddm/avatar.jpg` and run the script again.
+
+**Tweaks:** `system/sddm/tokyo-night/theme.conf` sets the font and where the login card sits (`cardPosition`: 0.5 is centered, 0.68 keeps it over the night sky in the default background). The layout and colors are in `Main.qml`. Run the script again after editing.
+
+**Undo:** `sudo rm /etc/sddm.conf.d/10-dotfiles-theme.conf`, and SDDM goes back to its previous theme.
+
+#### 3.5 Check by hand what a script can't
 - [ ] `Mod+Return` opens Alacritty with the starship prompt, and `Mod+D` opens Noctalia's launcher.
 - [ ] The bar shows the launcher, battery, CPU, RAM, disk, workspaces, keyboard layout, network, Bluetooth, volume, power profile and clock, in Tokyo Night colors.
 - [ ] `Mod+Ctrl+Space` switches between Spanish and English, and the bar shows the layout.
@@ -743,6 +772,9 @@ Links and copies, nothing else: no downloads, no sudo, no services.
 2. Installs Doom Emacs, or runs `doom sync` if it's already installed. An existing `~/.config/emacs` that isn't Doom is left alone. Then runs `doom doctor`.
 3. Installs the Neovim plugins with lazy.nvim, builds Telescope's fzf extension, installs the treesitter parsers from `ts_parsers.lua`, and the language servers through Mason.
 
+### setup-login-screen.sh
+Optional; see [3.4](#34-login-screen-optional). Installs the theme from `system/sddm/tokyo-night/`, the background (`--background FILE` to use another) and the profile picture (`--avatar FILE`), then selects the theme with a drop-in in `/etc/sddm.conf.d/`. It warns if `/etc/sddm.conf` sets its own theme, since that file wins over drop-ins.
+
 ### verify.sh
 See [3.1](#31-run-verifysh). Options: `--no-sudo` skips the checks that need sudo; `--help` shows the usage.
 
@@ -750,8 +782,9 @@ See [3.1](#31-run-verifysh). Options: `--no-sudo` skips the checks that need sud
 - **Packages:** installed or upgraded, never removed.
 - **Services:** `power-profiles-daemon` is enabled (`setup-desktop.sh`).
 - **Login shell:** set to zsh with `chsh` (`setup-desktop.sh`).
+- **Login screen (optional):** `setup-login-screen.sh` adds the SDDM theme and your picture under `/usr/share/sddm/` and one file in `/etc/sddm.conf.d/`, which is the only thing any script writes in `/etc`.
 
-Nothing touches the bootloader, the boot image, `/etc`, the PAM login settings or SDDM, so the scripts can't stop the computer from booting or block the passphrase prompt.
+Nothing touches the bootloader, the boot image or the PAM login settings, so the scripts can't stop the computer from booting or block the passphrase prompt. If the login theme ever fails to load, SDDM falls back to its built-in theme; deleting the `/etc/sddm.conf.d` file undoes it.
 
 ## Testing in a virtual machine first
 To try everything without touching your computer, use VirtualBox (free):
