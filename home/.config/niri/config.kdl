@@ -83,6 +83,7 @@ binds {
     Mod+G      { spawn "gimp"; }
     Mod+N      { spawn "doublecmd"; }
     Mod+P      { spawn "keepassxc"; }
+    Mod+I      { spawn "obsidian"; }
     Mod+R      { spawn "goodvibes"; }
 
     // Noctalia

@@ -124,6 +124,7 @@ dotfiles/
 | `Mod+G` | GIMP |
 | `Mod+N` | Double Commander |
 | `Mod+P` | KeePassXC |
+| `Mod+I` | Obsidian (notes) |
 | `Mod+R` | Goodvibes (radio) |
 
 Thunderbird and Inkscape have no key; open them from the launcher.
@@ -331,7 +332,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Archives | `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts and the launcher |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts and the launcher |
 
 Not packaged, so `setup-dotfiles.sh` downloads them (or see the [manual install](#23-manual-install)):
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`**, from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme).

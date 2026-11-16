@@ -75,4 +75,5 @@ libreoffice-fresh
 gimp
 inkscape
 keepassxc
+obsidian
 doublecmd-qt5
