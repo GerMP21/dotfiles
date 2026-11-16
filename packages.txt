@@ -84,3 +84,29 @@ doublecmd-qt5
 thunar
 gvfs
 tumbler
+
+# --- Development ---
+docker
+docker-buildx
+docker-compose
+geany
+mysql-workbench
+mariadb-libs
+# Rust toolchains (rustup default stable after installing)
+rustup
+# Python versions and environments (pyenv-virtualenv is in the AUR list)
+uv
+
+# --- Network ---
+wireguard-tools
+qbittorrent
+
+# --- More apps ---
+# The official build; the AUR's audacity3-git compiles all of Audacity
+audacity
+discord
+
+# --- Games (Steam is with the apps above) ---
+0ad
+# Cataclysm: Dark Days Ahead, the graphical (tiles) build
+cataclysm-dda-tiles

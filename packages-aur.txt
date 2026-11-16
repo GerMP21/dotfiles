@@ -13,3 +13,14 @@ sunity-cursors-git
 ttf-symbola
 # GTK 2 theme engine for Rose Pine (moved from the official repos to the AUR in 2025)
 gtk-engine-murrine
+# WireGuard VPN GUI (builds with Go)
+wireguird
+# Guitar tablature editor (builds with Java/Maven, a few minutes)
+tuxguitar
+# API client, prebuilt
+postman-bin
+pyenv-virtualenv
+# Veloren launcher
+airshipper
+# Screenwriting
+trelby
