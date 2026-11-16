@@ -131,6 +131,7 @@ dotfiles/
 | `Mod+O` | LibreOffice |
 | `Mod+G` | GIMP |
 | `Mod+N` | Double Commander |
+| `Mod+M` | Thunar (second file manager) |
 | `Mod+P` | KeePassXC |
 | `Mod+I` | Obsidian (notes) |
 | `Mod+C` | VSCodium |
@@ -352,7 +353,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Archives | `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `steam`, `doublecmd-qt5`; AUR: `goodvibes`, `vscodium-bin` | `Mod+` app shortcuts and the launcher |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `steam`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `vscodium-bin` | `Mod+` app shortcuts and the launcher |
 
 Not packaged, so `setup-desktop.sh` (themes) and `setup-editors.sh` (Doom) download them, or see the [manual install](#23-manual-install):
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`**, from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme).

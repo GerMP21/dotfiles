@@ -79,3 +79,8 @@ obsidian
 # Steam (Mod+A), from multilib, which CachyOS enables
 steam
 doublecmd-qt5
+# Second file manager (Mod+M); gvfs adds trash and USB drive mounting,
+# tumbler thumbnails
+thunar
+gvfs
+tumbler

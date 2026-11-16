@@ -96,6 +96,7 @@ binds {
     Mod+O hotkey-overlay-title="LibreOffice" { spawn "libreoffice"; }
     Mod+G hotkey-overlay-title="GIMP" { spawn "gimp"; }
     Mod+N hotkey-overlay-title="Double Commander" { spawn "doublecmd"; }
+    Mod+M hotkey-overlay-title="Thunar (files)" { spawn "thunar"; }
     Mod+P hotkey-overlay-title="KeePassXC" { spawn "keepassxc"; }
     Mod+I hotkey-overlay-title="Obsidian" { spawn "obsidian"; }
     Mod+C hotkey-overlay-title="VSCodium" { spawn "codium"; }
