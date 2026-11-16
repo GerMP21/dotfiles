@@ -54,7 +54,7 @@ Everything that goes into your home folder is in [`home/`](home), laid out as it
   - Treesitter.
   - Telescope with fzf and zoxide.
   - Harpoon, fugitive and undotree.
-  - VimTeX and VimWiki.
+  - VimWiki.
   - Kanagawa colorscheme.
 
 ## Keybindings
@@ -262,7 +262,6 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos) and [`p
 | Shell | `starship`, `eza`, `bat`, `zoxide`, `pyenv`, `yt-dlp` | `.zshrc` aliases and prompt |
 | Archives | `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
-| LaTeX | `texlive-basic`, `texlive-latex`, `texlive-latexrecommended`, `texlive-latexextra`, `texlive-binextra` (latexmk), `zathura`, `zathura-pdf-mupdf` | VimTeX compile and PDF viewer |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | AUR safety | AUR: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts and the launcher |
@@ -369,7 +368,7 @@ fwupdmgr refresh && fwupdmgr update
 
 #### 2.1 Before you start
 - **On a system you've already been using:** back up your home folder to another drive. The installer also moves every file it replaces into `~/.dotfiles-backup/<date>/`, including CachyOS's default niri and Noctalia configs.
-- **Space:** keep about 20 GB free on `/`. TeX Live, Doom Emacs, LibreOffice and the language servers are large.
+- **Space:** keep about 10 GB free on `/`. Doom Emacs, LibreOffice and the language servers are large.
 - Log in as your normal user, not root.
 
 #### 2.2 Install with the scripts (recommended)

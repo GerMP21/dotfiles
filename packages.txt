@@ -58,15 +58,6 @@ npm
 python-pip
 luarocks
 
-# --- LaTeX (vimtex) ---
-texlive-basic
-texlive-latex
-texlive-latexrecommended
-texlive-latexextra
-texlive-binextra
-zathura
-zathura-pdf-mupdf
-
 # --- Doom Emacs ---
 emacs-wayland
 aspell
