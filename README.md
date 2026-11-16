@@ -133,6 +133,7 @@ dotfiles/
 | `Mod+N` | Double Commander |
 | `Mod+P` | KeePassXC |
 | `Mod+I` | Obsidian (notes) |
+| `Mod+C` | VSCodium |
 | `Mod+R` | Goodvibes (radio) |
 | `Mod+Y` | YGO Omega (from `~/Documents/Games/YGO Omega`) |
 
@@ -169,7 +170,7 @@ Thunderbird and Inkscape have no key; open them from the launcher.
 | `Mod+,` / `Mod+.` | Pull the window on the right into this column / push the bottom window out |
 | `Mod+Space` | Cycle preset column widths |
 | `Mod+Ctrl+Space` | Switch keyboard layout: Spanish ↔ English |
-| `Mod+C` | Center column |
+| `Mod+Shift+C` | Center column |
 | `Mod+Ctrl+Escape` | Get your shortcuts back when a fullscreen app or a VM has grabbed the keyboard |
 
 `+` has its own key on the Spanish layout and is `Shift+=` on English; both are bound, so `Mod++` works on either.
@@ -240,7 +241,7 @@ binds {
     Mod+Ctrl+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
 
     // Built-in actions
-    Mod+C { center-column; }
+    Mod+Shift+C { center-column; }
 
     // Media keys, still working on the lock screen
     XF86AudioPlay allow-when-locked=true { spawn "noctalia" "msg" "media" "toggle"; }
@@ -349,7 +350,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Archives | `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts and the launcher |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`; AUR: `goodvibes`, `vscodium-bin` | `Mod+` app shortcuts and the launcher |
 
 Not packaged, so `setup-desktop.sh` (themes) and `setup-editors.sh` (Doom) download them, or see the [manual install](#23-manual-install):
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`**, from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme).
