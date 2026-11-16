@@ -362,7 +362,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | Development | `docker`, `docker-buildx`, `docker-compose`, `geany`, `vscodium` (CachyOS repo), `mysql-workbench`, `mariadb-libs`, `rustup`, `uv`; AUR: `postman-bin`, `pyenv-virtualenv` | Containers, editor, MySQL/MariaDB client, Rust and Python toolchains, API client |
 | Network | `wireguard-tools`, `qbittorrent`; AUR: `wireguird` | WireGuard VPN (and its GUI), torrents |
-| Audio production | groups `pro-audio`, `lv2-plugins`, `vst-plugins` (about 290 packages, ~6 GB); `zam-plugins-*` in every format; `x42-plugins`, `lsp-plugins`, `cardinal`, `distrho-ports`, `dragonfly-reverb`, `wolf-shaper`, `sfizz`, `geonkick`, `drumgizmo`, `helm`, `stochas`, `yoshimi`, `soundfont-fluid`; `ardour` with `pipewire-jack`; AUR: `vcvrack-bin`, `airwindows-lv2`, `neural-amp-modeler-lv2`, `sooperlooper`, `paulxstretch`, `vital-synth`. `audacity` is left out (`!audacity`) for `audacity3-git` | DAWs (Ardour, LMMS, Reaper…), synths (Surge XT, Dexed, ZynAddSubFX…), effects (Calf, LSP, x42, ZAM, Guitarix…), patchbay (`qpwgraph`), plugin host (`carla`), Windows plugins (`yabridge`) |
+| Audio production | groups `pro-audio`, `lv2-plugins`, `vst-plugins` (about 290 packages, ~6 GB); `zam-plugins-*` in every format; `x42-plugins`, `lsp-plugins`, `cardinal`, `distrho-ports`, `dragonfly-reverb`, `wolf-shaper`, `sfizz`, `geonkick`, `drumgizmo`, `helm`, `stochas`, `yoshimi`, `soundfont-fluid`; `ardour` with `pipewire-jack`; AUR: `vcvrack-bin`, `airwindows-lv2`, `neural-amp-modeler-lv2`, `sooperlooper`, `paulxstretch`. Vitalium, Vital's open-source build, comes with `distrho-ports`. `audacity` is left out (`!audacity`) for `audacity3-git` | DAWs (Ardour, LMMS, Reaper…), synths (Surge XT, Dexed, ZynAddSubFX…), effects (Calf, LSP, x42, ZAM, Guitarix…), patchbay (`qpwgraph`), plugin host (`carla`), Windows plugins (`yabridge`) |
 | Media and writing | `discord`, `calibre`; AUR: `audacity3-git`, `tuxguitar`, `trelby` | Audio editing and recording, chat, e-books, guitar tabs, screenwriting |
 | Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+S` |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
@@ -854,13 +854,6 @@ VirtualBox quirks:
   "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font"
   ```
   The prompt's icons are Nerd Fonts 3 codes; icons from Nerd Fonts 2 configs (codes `U+F500`–`U+FD46`) show as boxes with Nerd Fonts 3.
-- **`vital-synth` fails to install:** the AUR can't mirror Vital's installer, so it has to be downloaded by hand. Log in at vital.audio (a free account), download `VitalInstaller.deb`, then build it with that file next to the package:
-  ```sh
-  paru -G vital-synth && cd vital-synth
-  cp ~/Downloads/VitalInstaller.deb .
-  makepkg -si
-  ```
-  Vitalium, Vital's open-source build, is already installed through `distrho-ports`.
 - **A font is reported missing:** `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are installed, and `fc-list : family | grep -i "nerd font"` whether fontconfig sees them. Run `fc-cache -f` if it doesn't.
 
 ### Editors

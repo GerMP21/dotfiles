@@ -37,7 +37,3 @@ neural-amp-modeler-lv2
 sooperlooper
 # Extreme time-stretching (builds from source, a few minutes)
 paulxstretch
-# Vital wavetable synth. Needs VitalInstaller.deb downloaded by hand from
-# vital.audio (the AUR can't mirror it), so the scripts only warn without it;
-# see the README. distrho-ports already includes Vitalium, its open-source build.
-vital-synth
