@@ -105,6 +105,8 @@ qbittorrent
 # The official build; the AUR's audacity3-git compiles all of Audacity
 audacity
 discord
+# E-book library and reader
+calibre
 
 # --- Games (Steam is with the apps above) ---
 0ad
