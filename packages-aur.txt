@@ -25,3 +25,15 @@ trelby
 # Audacity 3, built from the official repo's audacity3 branch (compiles,
 # takes a while); replaces the official audacity package (Mod+Shift+I)
 audacity3-git
+
+# --- Audio plugins and tools not in the repos ---
+# VCV Rack modular synth, prebuilt
+vcvrack-bin
+# Airwindows effects (LV2)
+airwindows-lv2
+# Neural Amp Modeler for guitar (LV2)
+neural-amp-modeler-lv2
+# Live looper (builds from source, a few minutes)
+sooperlooper
+# Extreme time-stretching (builds from source, a few minutes)
+paulxstretch

@@ -29,11 +29,23 @@ has()     { command -v "$1" >/dev/null 2>&1; }
 # check "<description>" <command...>: ✓ if the command succeeds
 check()   { local d="$1"; shift; if "$@" >/dev/null 2>&1; then ok "$d"; else bad "$d"; fi; }
 pkglist() { grep -v '^\s*#' "$1" | grep -v '^\s*$'; }
+# expand_packages FILE: the package names in FILE, one per line. A line that
+# names a pacman group (like pro-audio) becomes that group's members; a line
+# "!name" leaves that package out, even when a group includes it.
+expand_packages() {
+  local groups line
+  groups="$(pacman -Sg 2>/dev/null | awk '{print $1}' | sort -u)"
+  {
+    pkglist "$1" | grep -v '^!' | while read -r line; do
+      if grep -qxF -- "$line" <<<"$groups"; then pacman -Sgq "$line"; else echo "$line"; fi
+    done
+  } | sort -u | comm -23 - <(pkglist "$1" | sed -n 's/^!//p' | sort -u)
+}
 
 section "Packages"
 if has pacman; then
   for list in packages.txt packages-aur.txt; do
-    mapfile -t missing < <(pacman -T $(pkglist "$DOTS/$list") 2>/dev/null)
+    mapfile -t missing < <(pacman -T $(expand_packages "$DOTS/$list") 2>/dev/null)
     if [ "${#missing[@]}" -eq 0 ]; then
       ok "everything in $list is installed"
     else
