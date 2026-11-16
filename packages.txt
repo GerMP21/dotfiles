@@ -1,6 +1,6 @@
 # Packages from the CachyOS and Arch repos that a CachyOS install with the
 # niri desktop doesn't already have. Install with:
-#   sudo pacman -S --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
+#   ./install-packages.sh (it expands the group names below and skips "!" lines)
 #
 # Already installed by CachyOS, so not listed here: niri, noctalia, xwayland-satellite,
 # xdg-desktop-portal-gnome/-gtk, wl-clipboard, gnome-keyring, sddm,
@@ -117,3 +117,20 @@ calibre
 0ad
 # Cataclysm: Dark Days Ahead, the graphical (tiles) build
 cataclysm-dda-tiles
+
+# --- Audio production: plugins and tools ---
+# Pacman groups; install-packages.sh installs every member. pro-audio is the
+# big one (DAWs, synths, effects, qpwgraph, carla, yabridge...); calf is in
+# lv2-plugins. About 290 packages, roughly 6 GB plus dependencies.
+pro-audio
+lv2-plugins
+vst-plugins
+# ZAM plugins in every format (lv2 and vst also come with the groups above)
+zam-plugins-clap
+zam-plugins-ladspa
+zam-plugins-lv2
+zam-plugins-standalone
+zam-plugins-vst
+zam-plugins-vst3
+# pro-audio includes audacity, which conflicts with audacity3-git (AUR list)
+!audacity

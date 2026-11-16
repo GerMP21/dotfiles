@@ -341,6 +341,8 @@ Run `bindkey` with no arguments to list the current ones. To find a key's code, 
 
 The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`packages-aur.txt`](packages-aur.txt) (AUR) and [`packages-pipx.txt`](packages-pipx.txt) (Python tools, installed with pipx). They only hold what a CachyOS install with the niri desktop doesn't already have. To add a package, put its name on its own line in the right list and run `install-packages.sh` again.
 
+`packages.txt` can also name a **pacman group**, like `pro-audio`: `install-packages.sh` installs all its members (`pacman -Sg pro-audio` lists them). A line starting with `!`, like `!audacity`, leaves that package out even when a group includes it. `verify.sh` checks the members the same way.
+
 **Already installed by CachyOS** (and used by these configs): `niri`, `noctalia` (from `cachyos-niri-noctalia`), `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `wl-clipboard`, `gnome-keyring`, `sddm`, `networkmanager`, `bluez`, `bluez-utils`, `pipewire-pulse`, `wireplumber`, `pavucontrol`, `power-profiles-daemon`, `xdg-user-dirs`, `noto-fonts`, `noto-fonts-emoji`, `cantarell-fonts`, `zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fzf`, `git`, `base-devel`, `python`, `ripgrep`, `unzip`, `unrar`, `alacritty` and `firefox`.
 
 **Installed from this repo:**
@@ -360,7 +362,8 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | Development | `docker`, `docker-buildx`, `docker-compose`, `geany`, `vscodium` (CachyOS repo), `mysql-workbench`, `mariadb-libs`, `rustup`, `uv`; AUR: `postman-bin`, `pyenv-virtualenv` | Containers, editor, MySQL/MariaDB client, Rust and Python toolchains, API client |
 | Network | `wireguard-tools`, `qbittorrent`; AUR: `wireguird` | WireGuard VPN (and its GUI), torrents |
-| Media and writing | `discord`, `calibre`, `ardour` with `pipewire-jack`; AUR: `audacity3-git`, `tuxguitar`, `trelby` | Audio editing and recording, chat, e-books, guitar tabs, screenwriting |
+| Audio production | groups `pro-audio`, `lv2-plugins`, `vst-plugins` (about 290 packages, ~6 GB); `zam-plugins-*` in every format; `ardour` with `pipewire-jack`. `audacity` is left out (`!audacity`) for `audacity3-git` | DAWs (Ardour, LMMS, Reaper…), synths (Surge XT, Dexed, ZynAddSubFX…), effects (Calf, LSP, x42, ZAM, Guitarix…), patchbay (`qpwgraph`), plugin host (`carla`), Windows plugins (`yabridge`) |
+| Media and writing | `discord`, `calibre`; AUR: `audacity3-git`, `tuxguitar`, `trelby` | Audio editing and recording, chat, e-books, guitar tabs, screenwriting |
 | Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+S` |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
 
@@ -541,9 +544,10 @@ cd ~/dotfiles
 
 **2. Install the packages** (`paru` comes from the CachyOS repo with the rest):
 ```sh
-sudo pacman -Syu --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
+sudo pacman -Syu --needed - < <(grep -v -e '^#' -e '^$' -e '^!' packages.txt)
 paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
 ```
+pacman asks which members of each group to install. Press Enter for all, except in `pro-audio`, where you leave out `audacity` because it conflicts with `audacity3-git`. `install-packages.sh` does that for you.
 
 If pacman stops with `target not found: <name>`, that package has left the repos (often for the AUR). Remove it from `packages.txt` and run the command again; `install-packages.sh` skips such names automatically.
 

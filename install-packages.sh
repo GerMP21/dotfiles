@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Installs the packages these dotfiles need on CachyOS with the niri desktop:
-# packages.txt from the repos with pacman (paru and pipx included),
+# packages.txt from the repos with pacman (paru and pipx included; group
+# names expand to their members, "!name" lines leave one out),
 # packages-aur.txt from the AUR with paru, then packages-pipx.txt with pipx.
 # pipx installs into ~/.local/bin, which .zshenv puts on PATH.
 #
@@ -14,6 +15,18 @@ DOTS="$(cd "$(dirname "$0")" && pwd)"
 step() { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
 warn() { printf '\033[1;33m!! %s\033[0m\n' "$*"; }
 pkglist() { grep -v '^\s*#' "$1" | grep -v '^\s*$'; }
+# expand_packages FILE: the package names in FILE, one per line. A line that
+# names a pacman group (like pro-audio) becomes that group's members; a line
+# "!name" leaves that package out, even when a group includes it.
+expand_packages() {
+  local groups line
+  groups="$(pacman -Sg 2>/dev/null | awk '{print $1}' | sort -u)"
+  {
+    pkglist "$1" | grep -v '^!' | while read -r line; do
+      if grep -qxF -- "$line" <<<"$groups"; then pacman -Sgq "$line"; else echo "$line"; fi
+    done
+  } | sort -u | comm -23 - <(pkglist "$1" | sed -n 's/^!//p' | sort -u)
+}
 
 if [ "$EUID" -eq 0 ]; then
   echo "Run this as your normal user, not root (makepkg refuses to run as root)." >&2
@@ -32,7 +45,7 @@ step "1/3 Repo packages (including paru and pipx)"
 sudo pacman -Syu
 # Skip names that aren't in the repos (e.g. moved to the AUR) instead
 # of letting one unknown name make pacman refuse the whole list
-mapfile -t WANTED < <(pkglist "$DOTS/packages.txt" | sort -u)
+mapfile -t WANTED < <(expand_packages "$DOTS/packages.txt")
 mapfile -t MISSING < <(comm -23 <(printf '%s\n' "${WANTED[@]}") <(pacman -Slq | sort -u))
 mapfile -t PKGS < <(comm -12 <(printf '%s\n' "${WANTED[@]}") <(pacman -Slq | sort -u))
 if [ "${#MISSING[@]}" -gt 0 ]; then
