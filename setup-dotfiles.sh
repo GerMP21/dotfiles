@@ -70,6 +70,7 @@ done
 put link .config/starship.toml
 put link .local/share/goodvibes/stations.xml
 put link .local/share/backgrounds/wallpaper.jpg
+put link .local/bin/keybinds
 
 step "Fonts"
 # Copied, not linked, so fontconfig picks them up reliably

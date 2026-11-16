@@ -41,7 +41,8 @@ dotfiles/
 │   ├── .icons/default/     default cursor theme
 │   ├── .config/            niri, noctalia, nvim, doom, gtk-*, Kvantum, qt5ct, qt6ct,
 │   │                       xdg-desktop-portal, starship.toml
-│   └── .local/share/       fonts (copied), wallpaper, goodvibes radio stations
+│   └── .local/            share/: fonts (copied), wallpaper, goodvibes radio stations
+│                           bin/keybinds: the Mod+Shift+Escape cheat sheet
 ├── packages.txt            packages from the CachyOS/Arch repos (pacman)
 ├── packages-aur.txt        packages from the AUR (paru)
 ├── packages-pipx.txt       Python tools (pipx)
@@ -78,6 +79,7 @@ dotfiles/
   - Preset column widths (1/3, 1/2, 2/3).
   - A flat Tokyo Night background in the overview (`Mod+Tab`).
   - Starts Noctalia and the Emacs daemon at login.
+  - `Mod+Shift+Escape` shows a two-column cheat sheet of every binding, read live from the config.
 - **Noctalia** (Tokyo Night palette, JetBrains Mono font):
   - Bar left: launcher, battery, CPU, RAM, disk.
   - Bar center: niri workspaces.
@@ -112,7 +114,7 @@ dotfiles/
 
 ## Keybindings
 
-`Mod` is the Super key. `Mod+Shift+Escape` shows every binding.
+`Mod` is the Super key. `Mod+Shift+Escape` opens a cheat sheet with every niri binding in two columns (any key closes it). It reads `~/.config/niri/config.kdl` each time, so it always matches your config.
 
 ### Apps
 | Key | Action |
@@ -248,7 +250,15 @@ binds {
 - **Removing a bind:** delete the line.
 - **All actions:** `niri msg action --help` lists them, and the [niri wiki](https://github.com/YaLTeR/niri/wiki/Configuration:-Key-Bindings) documents them.
 - **Using Alt as Mod:** add `mod-key "Alt"` to the `input { }` block. That's useful when running niri nested inside another session.
-- **Hotkey overlay:** `Mod+Shift+Escape` shows the bindings. Add `hotkey-overlay-title="My title"` after the key to give a bind a readable name in it.
+- **Cheat sheet (`Mod+Shift+Escape`):** the script `~/.local/bin/keybinds` reads the `binds { }` block and shows it in columns, so new binds appear in it without changes:
+  - a comment after a blank line starts a section, and the text before the first `:`, `(`, `.` or `,` is its heading (`// Apps`, `// Media and brightness, …`); comments right after a bind are notes and are skipped;
+  - a bind's description is its `hotkey-overlay-title`, or else its action (`focus-column-left` → "Focus column left"):
+    ```kdl
+    Mod+B hotkey-overlay-title="Browser" { spawn "firefox"; }
+    ```
+  - keys with the same description share a line, and runs like `Mod+1` … `Mod+9` become one.
+
+  It opens in a floating Alacritty window (the `keybinds` window rule in `config.kdl`). Run `keybinds` in any terminal to see it there. niri's own overlay is no longer bound; `niri msg action show-hotkey-overlay` still opens it.
 
 ### Noctalia
 - **Settings:** `~/.config/noctalia/config.toml` sets the theme, wallpaper, idle timeouts and bar layout. Its comments say what each part does; every option is documented at [docs.noctalia.dev](https://docs.noctalia.dev). Check it with `noctalia config validate`.
