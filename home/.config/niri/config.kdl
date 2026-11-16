@@ -103,8 +103,8 @@ binds {
     Mod+X hotkey-overlay-title="Claude" { spawn "claude-desktop"; }
     Mod+R hotkey-overlay-title="Goodvibes (radio)" { spawn "goodvibes"; }
     Mod+Shift+T hotkey-overlay-title="TuxGuitar" { spawn "tuxguitar"; }
-    Mod+Shift+D hotkey-overlay-title="Discord" { spawn "discord"; }
-    Mod+Shift+A hotkey-overlay-title="Audacity" { spawn "audacity"; }
+    Mod+Shift+A hotkey-overlay-title="Discord" { spawn "discord"; }
+    Mod+Shift+D hotkey-overlay-title="Audacity" { spawn "audacity"; }
     Mod+A hotkey-overlay-title="Steam" { spawn "steam"; }
     Mod+Y hotkey-overlay-title="YGO Omega" { spawn-sh r#"cd "$HOME/Documents/Games/YGO Omega" && exec "./YGO Omega.x86_64""#; }
 

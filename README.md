@@ -138,8 +138,8 @@ dotfiles/
 | `Mod+X` | Claude Desktop |
 | `Mod+R` | Goodvibes (radio) |
 | `Mod+Shift+T` | TuxGuitar |
-| `Mod+Shift+D` | Discord |
-| `Mod+Shift+A` | Audacity |
+| `Mod+Shift+A` | Discord |
+| `Mod+Shift+D` | Audacity |
 | `Mod+A` | Steam |
 | `Mod+Y` | YGO Omega (from `~/Documents/Games/YGO Omega`) |
 
