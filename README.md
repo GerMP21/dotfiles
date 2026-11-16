@@ -262,8 +262,8 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos) and [`p
 
 
 Not packaged, so install these by hand:
-- **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 4 below).
-- **Doom Emacs** (step 5 below).
+- **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`** (step 4 of the [manual install](#23-manual-install); `setup-dotfiles.sh` does it for you).
+- **Doom Emacs** (step 5 of the manual install; `setup-dotfiles.sh` does it for you).
 
 ## Installation
 
@@ -365,28 +365,43 @@ fwupdmgr refresh && fwupdmgr update
 - **Space:** keep about 20 GB free on `/`. TeX Live, Doom Emacs, LibreOffice and the language servers are large.
 - Log in as your normal user, not root.
 
-#### 2.2 Quick install (recommended)
+#### 2.2 Install with the scripts (recommended)
+There are two scripts: `install-packages.sh` installs the packages, and `setup-dotfiles.sh` puts the files in your home folder. Run them from Alacritty (`Mod+Return` in CachyOS's default niri config) or from a text console (`Ctrl+Alt+F2`).
+
+**1. Clone the repo:**
 ```sh
 git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
 ```
+
+**2. Install the packages:**
 ```sh
-~/dotfiles/full-install.sh
+~/dotfiles/install-packages.sh
 ```
-It runs every step of the [manual install](#23-manual-install) in order. It asks for your sudo password once at the start, `chsh` asks for your password again, and pacman and paru ask you to confirm packages. Accept the defaults, including replace prompts such as `7zip` replacing `p7zip`. The whole run takes a while.
+It asks for your sudo password once, then pacman and paru ask you to confirm. Accept the defaults, including replace prompts such as `7zip` replacing `p7zip`. It:
+1. updates the system and installs the packages in `packages.txt`, `paru` included. Names that aren't in the repos are skipped with a warning;
+2. installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning.
 
-Run it from Alacritty (`Mod+Return` in CachyOS's default niri config) or from a text console (`Ctrl+Alt+F2`).
+**3. Look at the files first (optional):**
+```sh
+~/dotfiles/setup-dotfiles.sh --preview
+```
+This copies everything the next step would link or copy into your home folder into `~/dotfiles/preview/`, laid out the same way, including the downloaded themes. `preview/MANIFEST.txt` lists every path and says whether a real run links, copies or downloads it, plus what else a real run changes. Nothing outside `preview/` is touched: no sudo, no services, no shell change. To use another folder: `setup-dotfiles.sh --preview ~/somewhere`. Hidden files start with a dot, so use `ls -la`. Delete the folder when you're done; git ignores it.
 
-What it does:
-1. Updates the system and installs the packages in `packages.txt`, `paru` included. Names that aren't in the repos are skipped with a warning.
-2. Installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning.
-3. Runs `install.sh`, which links the configs (replacing CachyOS's default niri and Noctalia configs), installs the fonts, enables the services and makes zsh your shell.
-4. Installs the GTK, Qt, icon and cursor themes and applies them.
-5. Installs Doom Emacs.
-6. Installs the Neovim plugins, treesitter parsers and language servers, and builds Telescope's fzf extension.
-7. Checks that the wallpaper is in place.
-8. Checks the niri and Noctalia configs with `niri validate` and `noctalia config validate`.
+**4. Put the dotfiles in place:**
+```sh
+~/dotfiles/setup-dotfiles.sh
+```
+`chsh` asks for your password, and `sudo` may too. It:
+1. symlinks every config into `~`. Anything already there, such as CachyOS's niri and Noctalia configs and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/` first;
+2. copies the bundled fonts;
+3. installs the GTK, Qt, icon and cursor themes, then applies them with `gsettings`;
+4. creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
+5. enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
+6. makes zsh your login shell instead of CachyOS's default, fish;
+7. installs Doom Emacs, the Neovim plugins, treesitter parsers and language servers, and builds Telescope's fzf extension;
+8. checks the niri and Noctalia configs with `niri validate` and `noctalia config validate`.
 
-At the end, read the output. Anything in yellow `!!` lines failed; the message says what to run to retry it. You can run the script again safely: finished steps are skipped or redone harmlessly.
+Read the output of both scripts. Anything in yellow `!!` lines failed; the message says what to run to retry it. Both are safe to run again: finished steps are skipped or redone harmlessly.
 
 Then reboot and log in from the SDDM login screen with the **niri** session:
 ```sh
@@ -394,7 +409,7 @@ sudo reboot
 ```
 
 #### 2.3 Manual install
-The same steps as `full-install.sh`, one at a time.
+The same steps as the two scripts, one at a time.
 
 **1. Clone the repo:**
 ```sh
@@ -408,20 +423,23 @@ sudo pacman -Syu --needed - < <(grep -v '^#' packages.txt | grep -v '^$')
 paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
 ```
 
-If pacman stops with `target not found: <name>`, that package has left the repos (often for the AUR). Remove it from `packages.txt` and run the command again; `full-install.sh` skips such names automatically.
+If pacman stops with `target not found: <name>`, that package has left the repos (often for the AUR). Remove it from `packages.txt` and run the command again; `install-packages.sh` skips such names automatically.
 
 This installs TrustSight from the AUR. From then on, run `trustsight` before `paru -Syu` to review pending AUR updates for risky changes.
 
-**3. Link the dotfiles:**
+**3. Link the dotfiles.** Run `./setup-dotfiles.sh --preview`; every `link` line in `preview/MANIFEST.txt` is a path to symlink from `~/dotfiles/<path>` to `~/<path>`, after moving whatever is already there out of the way. For example:
 ```sh
-./install.sh
+mv ~/.config/niri ~/.config/niri.bak
+ln -s ~/dotfiles/.config/niri ~/.config/niri
 ```
-This script:
-- symlinks every config into `~` (anything already there, such as CachyOS's niri and Noctalia configs and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/`);
-- installs the bundled fonts;
-- creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
-- enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
-- makes zsh your login shell instead of CachyOS's default, fish.
+Copy the fonts, create the folders the configs expect, enable the two services CachyOS doesn't, and switch to zsh:
+```sh
+mkdir -p ~/.local/share/fonts && cp ~/dotfiles/.local/share/fonts/* ~/.local/share/fonts/ && fc-cache -f
+xdg-user-dirs-update && mkdir -p ~/Pictures/Screenshots ~/Projects ~/org
+sudo systemctl enable --now power-profiles-daemon
+systemctl --user enable gnome-keyring-daemon.socket
+chsh -s /usr/bin/zsh
+```
 
 **4. Install the GTK and icon themes.** Both come from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme). It isn't in the AUR; `rose-pine-gtk-theme-full` there is a different theme.
 ```sh
@@ -530,11 +548,11 @@ niri applies it as soon as you save.
   ```sh
   paru -Syu
   ```
-- **Dotfiles:** pull the latest version and re-run the linker, which is safe to repeat:
+- **Dotfiles:** pull the latest version and run `setup-dotfiles.sh` again, which is safe to repeat:
   ```sh
-  cd ~/dotfiles && git pull && ./install.sh
+  cd ~/dotfiles && git pull && ./setup-dotfiles.sh
   ```
-  New packages in `packages.txt` need `full-install.sh`, which is also safe to re-run.
+  New packages in `packages.txt` or `packages-aur.txt` need `./install-packages.sh`, which is also safe to re-run.
 - **Neovim plugins:** `:Lazy sync`, then `:TSUpdate` and `:MasonUpdate`.
 - **Doom Emacs:**
   ```sh
@@ -555,7 +573,7 @@ VirtualBox quirks:
 - Windows keeps `Win+L` for itself.
 
 ### Going back to your old setup
-- Every file `install.sh` replaced is in `~/.dotfiles-backup/<date>/`. Copy the ones you want back over the links.
+- Every file `setup-dotfiles.sh` replaced is in `~/.dotfiles-backup/<date>/`. Copy the ones you want back over the links.
 - Your other packages aren't removed. To get CachyOS's default niri and Noctalia setup back, move `~/.config/niri` and `~/.config/noctalia` back from the backup folder, or copy them from `/etc/skel/.config/`.
 
 ## Troubleshooting
