@@ -132,6 +132,7 @@ dotfiles/
 | `Mod+P` | KeePassXC |
 | `Mod+I` | Obsidian (notes) |
 | `Mod+R` | Goodvibes (radio) |
+| `Mod+Y` | YGO Omega (from `~/Documents/Games/YGO Omega`) |
 
 Thunderbird and Inkscape have no key; open them from the launcher.
 
