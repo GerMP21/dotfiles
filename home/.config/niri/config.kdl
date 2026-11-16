@@ -61,10 +61,6 @@ environment {
 }
 
 window-rule {
-    match app-id="^foot$"
-    opacity 0.92
-}
-window-rule {
     geometry-corner-radius 6
     clip-to-geometry true
 }
@@ -80,7 +76,7 @@ binds {
     Mod+Shift+Escape { show-hotkey-overlay; }
 
     // Apps
-    Mod+Return { spawn "foot"; }
+    Mod+Return { spawn "alacritty"; }
     Mod+E      { spawn "emacsclient" "-c" "-a" "emacs"; }
     Mod+W      { spawn "firefox"; }
     Mod+O      { spawn "libreoffice"; }

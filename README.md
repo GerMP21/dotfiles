@@ -11,7 +11,7 @@ Everything that goes into your home folder is in [`home/`](home), laid out as it
 | Window manager | niri (scrollable tiling) | `home/.config/niri/config.kdl` |
 | Shell | [Noctalia](https://docs.noctalia.dev) (installed by CachyOS): bar, launcher, clipboard history, notifications, volume/brightness popups, control center, lock screen, idle, wallpaper, password prompts | `home/.config/noctalia/config.toml` |
 | Wallpaper | Raphael's *The School of Athens* (public domain), shown by Noctalia | `home/.local/share/backgrounds/wallpaper.jpg` |
-| Terminal | foot (its default config, no config file) | none |
+| Terminal | Alacritty (installed by CachyOS, with CachyOS's config) | `~/.config/alacritty/alacritty.toml`, not in this repo |
 | Shell | zsh + starship | `home/.zshenv` (environment, PATH), `home/.zprofile` (login), `home/.zshrc` (interactive), `home/.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `home/.config/nvim/`, `home/.config/doom/` |
 | GTK theme | GTK 2/3/4 settings | `home/.config/gtk-3.0/`, `home/.config/gtk-4.0/`, `home/.gtkrc-2.0`, `home/.icons/` |
@@ -26,7 +26,8 @@ Everything that goes into your home folder is in [`home/`](home), laid out as it
   - Touchpad tap-to-click, natural scrolling, and disable-while-typing.
   - Focus follows the mouse.
   - 8px gaps and a 2px Tokyo Night focus ring.
-  - Rounded corners and a translucent terminal (foot).
+  - Rounded corners.
+- **Terminal:** Alacritty with CachyOS's config (translucent, Nord colors), which the CachyOS install put in `~/.config/alacritty/alacritty.toml`.
   - Preset column widths (1/3, 1/2, 2/3).
 - **Autostart:** Noctalia and the Emacs daemon, from the niri config.
 - **File pickers:** "Open file" dialogs from portal-using apps (Flatpaks, Firefox-based browsers) use the GTK file chooser, because GNOME's portal would need Nautilus.
@@ -63,7 +64,7 @@ Everything that goes into your home folder is in [`home/`](home), laid out as it
 ### Apps
 | Key | Action |
 |---|---|
-| `Mod+Return` | foot (terminal) |
+| `Mod+Return` | Alacritty (terminal) |
 | `Mod+E` | Emacs (client) |
 | `Mod+W` | Firefox |
 | `Mod+O` | LibreOffice |
@@ -142,16 +143,17 @@ Leader is `Space`.
 | `C-Arrows` | Resize splits |
 | `<` / `>` (visual) | Indent and keep selection |
 
-### foot
-foot runs with its default keys; `man foot.ini` (section `key-bindings`) lists them all. The main ones:
+### Alacritty
+Alacritty's keys with CachyOS's config:
 
 | Key | Action |
 |---|---|
 | `Ctrl+Shift+C` / `Ctrl+Shift+V` | Copy / paste |
 | `Ctrl++` / `Ctrl+-` / `Ctrl+0` | Font bigger / smaller / reset |
-| `Shift+PageUp` / `Shift+PageDown` | Scroll back / forward |
-| `Ctrl+Shift+R` | Search the scrollback |
+| `Shift+PageUp` / `Shift+PageDown`, `Shift+Home` / `Shift+End` | Scroll back / forward, to the top / bottom |
+| `Ctrl+Shift+F` / `Ctrl+Shift+B` | Search the scrollback forward / backward |
 | `Ctrl+Shift+N` | New terminal in the same folder |
+| `Ctrl+Shift+Space` | Vi mode (select and copy with the keyboard) |
 
 ## Customizing keybindings
 
@@ -165,7 +167,7 @@ binds {
     Mod+B { spawn "firefox"; }
 
     // Arguments are separate strings
-    Mod+Ctrl+Return { spawn "foot" "btop"; }
+    Mod+Ctrl+Return { spawn "alacritty" "-e" "btop"; }
 
     // Shell syntax (pipes, $VARS, ~) needs sh -c
     Mod+Ctrl+S { spawn "sh" "-c" "grim -g \"$(slurp)\" - | wl-copy"; }
@@ -212,12 +214,16 @@ vim.keymap.set("n", "<leader>fb", require("telescope.builtin").buffers)
 - List everything with `:Telescope keymaps`.
 - Restart Neovim after editing.
 
-### foot
-foot has no config file here, so it uses its defaults. To change keys (or fonts and colors), create `~/.config/foot/foot.ini`, starting from the commented example at `/etc/xdg/foot/foot.ini`:
-```sh
-mkdir -p ~/.config/foot && cp /etc/xdg/foot/foot.ini ~/.config/foot/
+### Alacritty
+Alacritty reads `~/.config/alacritty/alacritty.toml`, which CachyOS created. That file already has a `[keyboard]` section, so add your keys to its `bindings` list rather than writing a second `[keyboard]` (that would be an error):
+```toml
+[keyboard]
+bindings = [
+  # ...the entries already there...
+  { key = "T", mods = "Control|Shift", action = "SpawnNewInstance" },
+]
 ```
-Keys go in the `[key-bindings]` section, for example `clipboard-copy=Control+Shift+c`. `man foot.ini` lists every action. Open a new foot window to apply changes.
+`man 5 alacritty` lists every action and option. Alacritty reloads the file as soon as you save it.
 
 ### Doom Emacs
 Doom uses Evil (vim keys), and `SPC` is the leader. Add bindings with `map!` in `~/.config/doom/config.el`, then run `SPC h r r` (or restart Emacs):
@@ -253,7 +259,6 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos) and [`p
 | Fonts | `ttf-jetbrains-mono-nerd`, `ttf-iosevka-nerd`, `ttf-nerd-fonts-symbols-mono` (Doom icons) | Noctalia, GTK. CatV, Feather and Grape Nuts aren't packaged, so they stay in `.local/share/fonts/` |
 | Qt theming | `kvantum`, `kvantum-qt5`, `qt5ct`, `qt6ct`, `qt5-wayland`, `qt6-wayland` | Same Rose Pine look and icons for Qt apps (Double Commander, KeePassXC) |
 | Theming | `nwg-look`, `sassc`, `gnome-themes-extra`; AUR: `sunity-cursors-git`, `gtk-engine-murrine` | GTK tools and theme build dependencies; cursor theme `Sunity-cursors` |
-| Terminal | `foot` | `Mod+Return`. Renders on the CPU, so it doesn't depend on the GPU driver |
 | Shell | `starship`, `eza`, `bat`, `zoxide`, `pyenv`, `yt-dlp` | `.zshrc` aliases and prompt |
 | Archives | `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
@@ -520,7 +525,7 @@ output "eDP-1" {
 niri applies it as soon as you save.
 
 #### 3.2 Check that everything works
-- [ ] `Mod+Return` opens foot, and `Mod+D` opens Noctalia's launcher.
+- [ ] `Mod+Return` opens Alacritty, and `Mod+D` opens Noctalia's launcher.
 - [ ] The bar shows the launcher, battery, CPU, RAM, disk, workspaces, keyboard layout, network, Bluetooth, volume, power profile and clock, in Tokyo Night colors.
 - [ ] `Mod+Ctrl+Space` switches between Spanish and English, and the bar shows the layout.
 - [ ] The volume, mic-mute, brightness and media keys work.

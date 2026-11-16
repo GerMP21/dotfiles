@@ -7,7 +7,7 @@
 # networkmanager, bluez, bluez-utils, pipewire-pulse, wireplumber, pavucontrol,
 # power-profiles-daemon, xdg-user-dirs, noto-fonts, noto-fonts-emoji,
 # cantarell-fonts, zsh, zsh-autosuggestions, zsh-syntax-highlighting, fzf,
-# git, base-devel, python, ripgrep, unzip, unrar, firefox.
+# git, base-devel, python, ripgrep, unzip, unrar, firefox, alacritty.
 
 # --- AUR helper (in the CachyOS repo, no build needed) ---
 paru
@@ -38,8 +38,6 @@ qt5-wayland
 qt6-wayland
 
 # --- Terminal & shell ---
-# Terminal (CPU-rendered, runs with its default config)
-foot
 starship
 eza
 bat
