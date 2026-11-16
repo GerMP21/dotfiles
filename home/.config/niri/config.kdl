@@ -47,7 +47,7 @@ overview {
 prefer-no-csd
 
 // niri shows its own key overlay at every login unless told not to.
-// Mod+Shift+Escape opens the cheat sheet (~/.local/bin/keybinds) instead.
+// Mod+Shift+H opens the cheat sheet (~/.local/bin/keybinds) instead.
 hotkey-overlay {
     skip-at-startup
 }
@@ -70,14 +70,14 @@ window-rule {
     geometry-corner-radius 6
     clip-to-geometry true
 }
-// Keybinding cheat sheet (Mod+Shift+Escape)
+// Keybinding cheat sheet (Mod+Shift+H)
 window-rule {
     match app-id="^keybinds$"
     open-floating true
     default-column-width { proportion 0.9; }
     default-window-height { proportion 0.9; }
 }
-// Noctalia's settings window (Mod+Shift+S)
+// Noctalia's settings window (Mod+Shift+A)
 window-rule {
     match app-id="dev.noctalia.Noctalia"
     open-floating true
@@ -87,7 +87,7 @@ window-rule {
 
 binds {
     // Help: a cheat sheet of every binding below, in columns (~/.local/bin/keybinds)
-    Mod+Shift+Escape hotkey-overlay-title="Show all keybindings" { spawn-sh "alacritty --class keybinds -o font.size=10 -e ~/.local/bin/keybinds"; }
+    Mod+Shift+H hotkey-overlay-title="Show all keybindings" { spawn-sh "alacritty --class keybinds -o font.size=10 -e ~/.local/bin/keybinds"; }
 
     // Apps
     Mod+Return hotkey-overlay-title="Terminal (Alacritty)" { spawn "alacritty"; }
@@ -103,16 +103,16 @@ binds {
     Mod+X hotkey-overlay-title="Claude" { spawn "claude-desktop"; }
     Mod+R hotkey-overlay-title="Goodvibes (radio)" { spawn "goodvibes"; }
     Mod+Shift+T hotkey-overlay-title="TuxGuitar" { spawn "tuxguitar"; }
-    Mod+Shift+D hotkey-overlay-title="Discord" { spawn "discord"; }
-    Mod+Shift+A hotkey-overlay-title="Audacity" { spawn "audacity"; }
-    Mod+A hotkey-overlay-title="Steam" { spawn "steam"; }
+    Mod+Shift+S hotkey-overlay-title="Discord" { spawn "discord"; }
+    Mod+Shift+I hotkey-overlay-title="Audacity" { spawn "audacity"; }
+    Mod+S hotkey-overlay-title="Steam" { spawn "steam"; }
     Mod+Y hotkey-overlay-title="YGO Omega" { spawn-sh r#"cd "$HOME/Documents/Games/YGO Omega" && exec "./YGO Omega.x86_64""#; }
 
     // Noctalia
     Mod+D hotkey-overlay-title="Launcher" { spawn "noctalia" "msg" "panel-toggle" "launcher"; }
     Mod+V hotkey-overlay-title="Clipboard history" { spawn "noctalia" "msg" "panel-toggle" "clipboard"; }
-    Mod+S hotkey-overlay-title="Control center" { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
-    Mod+Shift+S hotkey-overlay-title="Noctalia settings" { spawn "noctalia" "msg" "settings-toggle"; }
+    Mod+A hotkey-overlay-title="Control center" { spawn "noctalia" "msg" "panel-toggle" "control-center"; }
+    Mod+Shift+A hotkey-overlay-title="Noctalia settings" { spawn "noctalia" "msg" "settings-toggle"; }
     Mod+Escape hotkey-overlay-title="Lock screen" { spawn "noctalia" "msg" "session" "lock"; }
 
     // Media and brightness, through Noctalia so its popups show
