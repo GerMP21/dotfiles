@@ -1,0 +1,6 @@
+# Python command-line tools, each installed into its own environment with
+# pipx (from python-pipx in packages.txt). Install with:
+#   grep -v '^#' packages-pipx.txt | grep -v '^$' | xargs -n1 pipx install
+
+# Vets AUR package updates before you install them
+trustsight

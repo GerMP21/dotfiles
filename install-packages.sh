@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # Installs the packages these dotfiles need on CachyOS with the niri desktop:
-# packages.txt from the repos with pacman (paru included), then
-# packages-aur.txt from the AUR with paru.
+# packages.txt from the repos with pacman (paru and pipx included),
+# packages-aur.txt from the AUR with paru, then packages-pipx.txt with pipx.
+# pipx installs into ~/.local/bin, which .zshenv puts on PATH.
 #
 # Run as your normal user:  ~/dotfiles/install-packages.sh
-# It asks for your sudo password. Safe to run again: --needed skips what's installed.
+# It asks for your sudo password. Safe to run again: what's installed is skipped.
 # Then run setup-dotfiles.sh.
 set -euo pipefail
 
@@ -27,7 +28,7 @@ fi
 sudo -v
 while true; do sudo -n true; sleep 50; kill -0 "$$" 2>/dev/null || exit; done 2>/dev/null &
 
-step "1/2 Repo packages (including paru)"
+step "1/3 Repo packages (including paru and pipx)"
 sudo pacman -Syu
 # Skip names that aren't in the repos (e.g. moved to the AUR) instead
 # of letting one unknown name make pacman refuse the whole list
@@ -40,7 +41,7 @@ if [ "${#MISSING[@]}" -gt 0 ]; then
 fi
 sudo pacman -S --needed "${PKGS[@]}"
 
-step "2/2 AUR packages"
+step "2/3 AUR packages"
 mapfile -t AUR < <(pkglist "$DOTS/packages-aur.txt")
 if ! paru -S --needed "${AUR[@]}"; then
   warn "Some AUR packages failed. Retrying them one by one."
@@ -48,5 +49,15 @@ if ! paru -S --needed "${AUR[@]}"; then
     paru -S --needed "$p" || warn "$p failed; install it later with: paru -S $p"
   done
 fi
+
+step "3/3 Python tools (pipx)"
+mapfile -t PIPX < <(pkglist "$DOTS/packages-pipx.txt")
+for p in "${PIPX[@]}"; do
+  if pipx list --short 2>/dev/null | grep -q "^$p "; then
+    echo "$p already installed (update with: pipx upgrade $p)"
+  else
+    pipx install "$p" || warn "$p failed; install it later with: pipx install $p"
+  fi
+done
 
 printf '\n\033[1;32mDone.\033[0m Next: %s/setup-dotfiles.sh. The files it puts in ~ are in %s/home.\n' "$DOTS" "$DOTS"

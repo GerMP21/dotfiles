@@ -245,7 +245,7 @@ Run `bindkey` with no arguments to list the current ones. To find a key's code, 
 
 ## Dependencies
 
-The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos) and [`packages-aur.txt`](packages-aur.txt) (AUR). They only hold what a CachyOS install with the niri desktop doesn't already have.
+The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`packages-aur.txt`](packages-aur.txt) (AUR) and [`packages-pipx.txt`](packages-pipx.txt) (Python tools, installed with pipx). They only hold what a CachyOS install with the niri desktop doesn't already have.
 
 **Already installed by CachyOS** (and used by these configs): `niri`, `noctalia` (from `cachyos-niri-noctalia`), `xwayland-satellite`, `xdg-desktop-portal-gnome`, `xdg-desktop-portal-gtk`, `wl-clipboard`, `gnome-keyring`, `sddm`, `networkmanager`, `bluez`, `bluez-utils`, `pipewire-pulse`, `wireplumber`, `pavucontrol`, `power-profiles-daemon`, `xdg-user-dirs`, `noto-fonts`, `noto-fonts-emoji`, `cantarell-fonts`, `zsh`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fzf`, `git`, `base-devel`, `python`, `ripgrep`, `unzip`, `unrar` and `firefox`.
 
@@ -263,7 +263,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos) and [`p
 | Archives | `7zip`, `cabextract`, `cpio` | The `extract` function |
 | Neovim | `neovim` (0.12+, needed by nvim-treesitter's main branch), `tree-sitter-cli`, `fd`, `nodejs`, `npm`, `python-pip`, `luarocks` | lazy.nvim, treesitter parsers, Telescope, telescope-fzf-native, Mason servers (`ts_ls`, `bashls`, `pylsp`, `lua_ls`, `rust_analyzer`) |
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
-| AUR safety | AUR: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
+| AUR safety | `python-pipx`; pipx: `trustsight` | Risk-scores AUR updates before you install them ([repo](https://github.com/emiliano-go/trustsight)) |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `doublecmd-qt5`; AUR: `goodvibes` | `Mod+` app shortcuts and the launcher |
 
 
@@ -384,8 +384,9 @@ git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
 ~/dotfiles/install-packages.sh
 ```
 It asks for your sudo password once, then pacman and paru ask you to confirm. Accept the defaults, including replace prompts such as `7zip` replacing `p7zip`. It:
-1. updates the system and installs the packages in `packages.txt`, `paru` included. Names that aren't in the repos are skipped with a warning;
-2. installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning.
+1. updates the system and installs the packages in `packages.txt`, `paru` and `pipx` included. Names that aren't in the repos are skipped with a warning;
+2. installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning;
+3. installs the Python tools in `packages-pipx.txt` with pipx, each in its own environment.
 
 **3. Look at the files first (optional):** everything the next step puts in your home folder is in `~/dotfiles/home/`, laid out the same way. Hidden files start with a dot, so use `ls -la ~/dotfiles/home`. The only things not in the repo are the themes, which the next step downloads.
 
@@ -427,7 +428,12 @@ paru -S --needed - < <(grep -v '^#' packages-aur.txt | grep -v '^$')
 
 If pacman stops with `target not found: <name>`, that package has left the repos (often for the AUR). Remove it from `packages.txt` and run the command again; `install-packages.sh` skips such names automatically.
 
-This installs TrustSight from the AUR. From then on, run `trustsight` before `paru -Syu` to review pending AUR updates for risky changes.
+Then install the Python tools in `packages-pipx.txt` with pipx (`~/.local/bin` is already on `PATH` through `.zshenv`):
+```sh
+grep -v '^#' packages-pipx.txt | grep -v '^$' | xargs -n1 pipx install
+```
+
+This installs TrustSight. From then on, run `trustsight` before `paru -Syu` to review pending AUR updates for risky changes.
 
 **3. Link the dotfiles.** Each file or folder in `~/dotfiles/home/` gets a symlink at the same path under `~`, after you move whatever is already there out of the way. `.config/gtk-2.0`, `gtk-3.0`, `gtk-4.0`, `Kvantum` and `xdg-desktop-portal` are linked file by file, because themes and apps add their own files there. For example:
 ```sh
@@ -549,6 +555,10 @@ niri applies it as soon as you save.
   ```
   ```sh
   paru -Syu
+  ```
+- **pipx tools (TrustSight):**
+  ```sh
+  pipx upgrade-all
   ```
 - **Dotfiles:** pull the latest version and run `setup-dotfiles.sh` again, which is safe to repeat:
   ```sh
