@@ -104,8 +104,6 @@ wireguard-tools
 qbittorrent
 
 # --- More apps ---
-# The official build; the AUR's audacity3-git compiles all of Audacity
-audacity
 discord
 # E-book library and reader
 calibre

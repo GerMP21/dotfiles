@@ -74,7 +74,7 @@ dotfiles/
 | GTK theme | Rose Pine (`Rosepine-Dark`, `Rose-Pine-Moon` icons, `Sunity-cursors`) | `home/.config/gtk-3.0/`, `home/.config/gtk-4.0/`, `home/.gtkrc-2.0`, `home/.icons/` |
 | Qt theme | Kvantum `rose-pine-foam` + qt5ct/qt6ct | `home/.config/Kvantum/`, `home/.config/qt5ct/`, `home/.config/qt6ct/` |
 | Portals | xdg-desktop-portal (file pickers through GTK, screencasting through GNOME) | `home/.config/xdg-desktop-portal/niri-portals.conf` |
-| Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled) | `home/.local/share/fonts/` |
+| Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled); the generic `monospace` font set to JetBrainsMono Nerd Font | `home/.local/share/fonts/`, `home/.config/fontconfig/fonts.conf` |
 
 ### Features
 - **niri**
@@ -359,7 +359,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | Development | `docker`, `docker-buildx`, `docker-compose`, `geany`, `vscodium` (CachyOS repo), `mysql-workbench`, `mariadb-libs`, `rustup`, `uv`; AUR: `postman-bin`, `pyenv-virtualenv` | Containers, editor, MySQL/MariaDB client, Rust and Python toolchains, API client |
 | Network | `wireguard-tools`, `qbittorrent`; AUR: `wireguird` | WireGuard VPN (and its GUI), torrents |
-| Media and writing | `audacity`, `discord`, `calibre`; AUR: `tuxguitar`, `trelby` | Audio editing, chat, e-books, guitar tabs, screenwriting |
+| Media and writing | `discord`, `calibre`; AUR: `audacity3-git`, `tuxguitar`, `trelby` | Audio editing, chat, e-books, guitar tabs, screenwriting |
 | Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+A` |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
 
@@ -839,6 +839,11 @@ VirtualBox quirks:
 - **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 4 of the manual install again, or pick the theme in `nwg-look`.
 - **Qt apps look unthemed:** check `echo $QT_QPA_PLATFORMTHEME` shows `qt5ct:qt6ct` inside niri, and that `ls ~/.config/Kvantum` lists `rose-pine-foam`. Open `qt6ct` (or `qt5ct` for Double Commander) and check that Style is `kvantum`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
+- **Boxes instead of icons in the prompt:** the terminal's font has no Nerd Font icons. `fc-match monospace` should print `JetBrainsMono Nerd Font` (from `~/.config/fontconfig/fonts.conf`); terminals set to `monospace`, like CachyOS's Alacritty config, then show them. Apps with their own font setting need it set there. For VSCodium's built-in terminal, add this to its settings (`Ctrl+Shift+P` → "Preferences: Open User Settings (JSON)"):
+  ```json
+  "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font"
+  ```
+  The prompt's icons are Nerd Fonts 3 codes; icons from Nerd Fonts 2 configs (codes `U+F500`–`U+FD46`) show as boxes with Nerd Fonts 3.
 - **A font is reported missing:** `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are installed, and `fc-list : family | grep -i "nerd font"` whether fontconfig sees them. Run `fc-cache -f` if it doesn't.
 
 ### Editors

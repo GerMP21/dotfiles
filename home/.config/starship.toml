@@ -28,7 +28,7 @@ error_symbol = "[✗](bold red)"
 #  
 # configure directory
 [directory]
-read_only = " "
+read_only = " 󰌾"
 truncation_length = 10
 truncate_to_repo = true # truncates directory to root folder if in github repo
 style = "bold italic blue"
@@ -40,7 +40,7 @@ disabled = false
 style = "bold italic red"
 
 #[directory]
-#read_only = " "
+#read_only = " 󰌾"
 
 [docker_context]
 symbol = " "
@@ -107,16 +107,16 @@ symbol = " "
 symbol = "λ "
 
 [memory_usage]
-symbol = " "
+symbol = "󰍛 "
 
 [nim]
-symbol = " "
+symbol = " "
 
 [nix_shell]
 symbol = " "
 
 [package]
-symbol = " "
+symbol = "󰏗 "
 
 [perl]
 symbol = " "
@@ -137,7 +137,7 @@ symbol = " "
 symbol = " "
 
 [swift]
-symbol = "ﯣ "
+symbol = " "
 
 [python]
 symbol = " "
@@ -151,6 +151,6 @@ detect_extensions = ["py"]
 version_format = "v${raw}"
 
 [nodejs]
-format = "via [ Node.js $version](bold green) "
+format = "via [ Node.js $version](bold green) "
 detect_files = ["package.json", ".node-version"]
 detect_folders = ["node_modules"]
