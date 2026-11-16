@@ -12,6 +12,9 @@
 # --- AUR helper (in the CachyOS repo, no build needed) ---
 paru
 
+# --- Python tools in their own environments (packages-pipx.txt) ---
+python-pipx
+
 # --- Desktop extras ---
 # The Noctalia shell (bar, launcher, notifications, lock, idle, wallpaper) and
 # niri come with CachyOS's niri desktop (package cachyos-niri-noctalia).
