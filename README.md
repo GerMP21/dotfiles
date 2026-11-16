@@ -94,7 +94,7 @@ dotfiles/
   - Launcher (`Mod+D`) with a calculator (`/calc`) and emoji (`/emo`), and clipboard history (`Mod+V`).
   - Popups for volume and brightness changes, and password prompts when an app needs admin rights.
   - Changes made in its Settings window (`Mod+Shift+S`) are saved to `~/.local/state/noctalia/settings.toml` and override `config.toml`.
-- **Idle:** Noctalia locks after 10 minutes, turns monitors off after 15, and locks before sleep (lid close or suspend). The lock screen takes your login password.
+- **Idle:** Noctalia locks after 10 minutes, turns monitors off after 15, and suspends after 5 hours (`[idle.behavior.*]` in `config.toml`). It locks before any suspend, including closing the lid, which suspends right away (systemd's default). The lock screen takes your login password.
 - **Login:** the SDDM login screen starts the niri session. Your login password unlocks the GNOME keyring, so apps can save passwords. `.zprofile` also unblocks Wi-Fi.
 - **Terminal:** Alacritty with CachyOS's config (translucent, Nord colors), which the CachyOS install put in `~/.config/alacritty/alacritty.toml`.
 - **Screenshots:** built into niri, saved to `~/Pictures/Screenshots`.
