@@ -360,7 +360,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | Development | `docker`, `docker-buildx`, `docker-compose`, `geany`, `vscodium` (CachyOS repo), `mysql-workbench`, `mariadb-libs`, `rustup`, `uv`; AUR: `postman-bin`, `pyenv-virtualenv` | Containers, editor, MySQL/MariaDB client, Rust and Python toolchains, API client |
 | Network | `wireguard-tools`, `qbittorrent`; AUR: `wireguird` | WireGuard VPN (and its GUI), torrents |
-| Media and writing | `discord`, `calibre`, `ardour`; AUR: `audacity3-git`, `tuxguitar`, `trelby` | Audio editing and recording, chat, e-books, guitar tabs, screenwriting |
+| Media and writing | `discord`, `calibre`, `ardour` with `pipewire-jack`; AUR: `audacity3-git`, `tuxguitar`, `trelby` | Audio editing and recording, chat, e-books, guitar tabs, screenwriting |
 | Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+S` |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
 
@@ -835,6 +835,11 @@ VirtualBox quirks:
 - **`Mod+º` does nothing:** run `wev`, press the º key and check the keysym it prints. If it isn't `masculine`, use that name in the two workspace-10 binds.
 - **No network after installing:** run `nmtui`. If it says NetworkManager isn't running: `sudo systemctl enable --now NetworkManager`.
 - **No sound:** run `systemctl --user status wireplumber`.
+- **Other apps go silent while Ardour is open:** Ardour is using its ALSA backend, or `jack2`, and either one takes the sound card for itself. Install `pipewire-jack` (it's in `packages.txt` and replaces `jack2`), restart the audio services, then pick **JACK** in Ardour's Audio/MIDI Setup (Window → Audio/MIDI Setup). Ardour then goes through PipeWire like every other app:
+  ```sh
+  sudo pacman -S pipewire-jack
+  systemctl --user restart pipewire pipewire-pulse wireplumber
+  ```
 
 ### Themes and fonts
 - **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 4 of the manual install again, or pick the theme in `nwg-look`.

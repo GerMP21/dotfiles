@@ -105,7 +105,10 @@ qbittorrent
 
 # --- More apps ---
 discord
-# Digital audio workstation (Mod+Shift+D)
+# Digital audio workstation (Mod+Shift+D). pipewire-jack gives it JACK
+# through PipeWire (instead of jack2, which takes the sound card for itself),
+# so other apps keep playing while Ardour runs. In Ardour: Audio System = JACK.
+pipewire-jack
 ardour
 # E-book library and reader
 calibre
