@@ -92,6 +92,7 @@ binds {
     Mod+N hotkey-overlay-title="Double Commander" { spawn "doublecmd"; }
     Mod+P hotkey-overlay-title="KeePassXC" { spawn "keepassxc"; }
     Mod+I hotkey-overlay-title="Obsidian" { spawn "obsidian"; }
+    Mod+C hotkey-overlay-title="VSCodium" { spawn "codium"; }
     Mod+R hotkey-overlay-title="Goodvibes (radio)" { spawn "goodvibes"; }
     Mod+Y hotkey-overlay-title="YGO Omega" { spawn-sh r#"cd "$HOME/Documents/Games/YGO Omega" && exec "./YGO Omega.x86_64""#; }
 
@@ -159,7 +160,7 @@ binds {
     Mod+Comma hotkey-overlay-title="Pull the next window into this column" { consume-window-into-column; }
     Mod+Period hotkey-overlay-title="Push the bottom window out of the column" { expel-window-from-column; }
     Mod+Space hotkey-overlay-title="Cycle column widths (1/3, 1/2, 2/3)" { switch-preset-column-width; }
-    Mod+C            { center-column; }
+    Mod+Shift+C      { center-column; }
 
     // Keyboard layout: toggle Spanish (es) <-> English (us)
     Mod+Ctrl+Space hotkey-overlay-title="Switch keyboard layout (es / us)" { switch-layout "next"; }

@@ -3,6 +3,8 @@
 # Names confirmed via AUR search results (Nov 2026).
 
 goodvibes
+# VSCodium (Mod+C), the prebuilt release; the plain vscodium package compiles from source
+vscodium-bin
 sunity-cursors-git
 # Emacs's fallback font for symbols other fonts lack; doom doctor warns without it
 ttf-symbola
