@@ -114,7 +114,9 @@ fc-cache -f
 command -v xdg-user-dirs-update >/dev/null && xdg-user-dirs-update
 mkdir -p "$HOME/Pictures/Screenshots" "$HOME/Projects" "$HOME/org"
 # GTK 4 / libadwaita apps ignore settings.ini on Wayland
-if gsettings list-schemas 2>/dev/null | grep -q org.gnome.desktop.interface; then
+# Saved first: with pipefail, a pipe into grep -q can fail even on a match
+schemas="$(gsettings list-schemas 2>/dev/null || true)"
+if grep -qx org.gnome.desktop.interface <<<"$schemas"; then
   gsettings set org.gnome.desktop.interface gtk-theme 'Rosepine-Dark'
   gsettings set org.gnome.desktop.interface icon-theme 'Rose-Pine-Moon'
   gsettings set org.gnome.desktop.interface cursor-theme 'Sunity-cursors'

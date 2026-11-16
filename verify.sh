@@ -44,8 +44,11 @@ else
   bad "pacman not found; this isn't CachyOS/Arch"
 fi
 if has pipx; then
+  # Save output before searching it: with pipefail, a pipe into grep -q can
+  # fail even on a match, because grep stops reading early
+  pipx_list="$(pipx list --short 2>/dev/null)"
   for p in $(pkglist "$DOTS/packages-pipx.txt"); do
-    if pipx list --short 2>/dev/null | grep -q "^$p "; then ok "pipx: $p"; else bad "pipx: $p isn't installed (pipx install $p)"; fi
+    if grep -q "^$p " <<<"$pipx_list"; then ok "pipx: $p"; else bad "pipx: $p isn't installed (pipx install $p)"; fi
   done
 else
   bad "pipx not found (python-pipx in packages.txt)"
@@ -117,8 +120,9 @@ else
   skip "gsettings not readable here (run this inside the niri session)"
 fi
 if has fc-list; then
+  families="$(fc-list : family 2>/dev/null)"
   for font in "JetBrainsMono Nerd Font" "Iosevka Nerd Font"; do
-    if fc-list : family | grep -qi "$font"; then ok "font: $font"; else bad "font: $font"; fi
+    if grep -qi "$font" <<<"$families"; then ok "font: $font"; else bad "font: $font"; fi
   done
 fi
 
@@ -131,25 +135,31 @@ if compgen -G "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/mason/bin/*" >/dev/null
 
 section "Boot and encryption"
 check "booted in UEFI mode"               test -d /sys/firmware/efi
-if has efibootmgr; then
-  if efibootmgr 2>/dev/null | grep -qiE 'limine|linux boot manager'; then ok "firmware has a Limine or systemd-boot entry"; else bad "no Limine or systemd-boot entry in the firmware (efibootmgr)"; fi
+# Which firmware entry this boot came from. Its name depends on how the
+# bootloader was installed (an own entry, or the disk's fallback path), so
+# it's only shown, not judged; the bootloader itself is checked below.
+if has efibootmgr && entries="$(efibootmgr 2>/dev/null)"; then
+  current="$(awk '/^BootCurrent:/ { print $2 }' <<<"$entries")"
+  name="$(grep "^Boot${current}\*\? " <<<"$entries" | sed -E 's/^Boot[0-9A-F]{4}\*? +//; s/\t.*//; s/ +(HD|PciRoot|VenHw|VenMsg|BBS|FvFile|FvVol|MAC|Uri|USB)\(.*//')"
+  if [ -n "$current" ]; then ok "booted from firmware entry Boot$current: ${name:-unnamed}"; else skip "efibootmgr shows no current boot entry"; fi
 else
-  skip "efibootmgr not installed; can't list the firmware boot entries"
+  skip "efibootmgr can't read the firmware boot entries"
 fi
 luks="$(lsblk -rno PATH,FSTYPE 2>/dev/null | awk '$2 == "crypto_LUKS" { print $1; exit }')"
 if [ -n "$luks" ]; then ok "encrypted partition: $luks"; else bad "no LUKS-encrypted partition found (lsblk -f)"; fi
 if [ "$USE_SUDO" -eq 1 ] && has sudo && sudo -v; then
-  if sudo test -f /boot/limine.conf; then
-    ok "Limine config /boot/limine.conf exists"
-  elif sudo test -d /boot/loader/entries; then
-    ok "systemd-boot entries exist in /boot/loader/entries"
-  else
-    bad "no bootloader config in /boot (limine.conf or loader/entries)"
-  fi
+  # The boot partition is readable by root only, so look for each
+  # bootloader's own files there
+  found=""
+  sudo sh -c 'ls /boot/limine.conf /boot/EFI/limine/limine.conf /boot/limine/limine.conf' >/dev/null 2>&1 && found="Limine"
+  [ -z "$found" ] && sudo test -d /boot/loader/entries && found="systemd-boot"
+  [ -z "$found" ] && sudo sh -c 'ls /boot/grub/grub.cfg /boot/efi/grub/grub.cfg' >/dev/null 2>&1 && found="GRUB"
+  if [ -n "$found" ]; then ok "bootloader: $found, config found in /boot"; else bad "no Limine, systemd-boot or GRUB config in /boot"; fi
   if [ -n "$luks" ]; then
     # LUKS2 lists "  0: luks2", LUKS1 lists "Key Slot 0: ENABLED"
-    slots="$(sudo cryptsetup luksDump "$luks" 2>/dev/null | grep -cE '^\s+[0-9]+: luks2|^Key Slot [0-9]+: ENABLED')"
-    if [ "$slots" -ge 2 ]; then ok "$slots passphrases on $luks (backup added)"; else bad "only $slots passphrase on $luks; add a backup (README 1.6)"; fi
+    dump="$(sudo cryptsetup luksDump "$luks" 2>/dev/null)"
+    slots="$(grep -cE '^\s+[0-9]+: luks2|^Key Slot [0-9]+: ENABLED' <<<"$dump")"
+    if [ "$slots" -ge 2 ]; then ok "$slots passphrases on $luks (backup added)"; else bad "only $slots passphrase on $luks; add a backup: sudo cryptsetup luksAddKey $luks (README 1.6)"; fi
   fi
 else
   skip "bootloader config and backup passphrase (need sudo)"
