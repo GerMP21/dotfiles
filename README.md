@@ -406,6 +406,18 @@ It asks for your sudo password once, then pacman and paru ask you to confirm. Ac
 
 Read the output of both scripts. Anything in yellow `!!` lines failed; the message says what to run to retry it. Both are safe to run again: finished steps are skipped or redone harmlessly.
 
+**5. Check the result:**
+```sh
+~/dotfiles/verify.sh
+```
+It prints a ✓ or ✗ for each check, and changes nothing:
+- packages, pipx tools, linked configs and copied fonts;
+- `niri validate` and `noctalia config validate`, showing their errors if a config is broken;
+- zsh as login shell, the services, themes and fonts, Doom Emacs and the Neovim plugins;
+- UEFI boot, the boot entry, the bootloader config, the encrypted partition and its backup passphrase.
+
+It asks for sudo once, only to read the boot partition and the encryption header; `verify.sh --no-sudo` skips those checks. Most ✗ lines say what to run. Run it again after fixing something, and once more inside the niri session after you log in.
+
 Then reboot and log in from the SDDM login screen with the **niri** session:
 ```sh
 sudo reboot
@@ -530,6 +542,8 @@ output "eDP-1" {
 niri applies it as soon as you save.
 
 #### 3.2 Check that everything works
+Run `~/dotfiles/verify.sh` first; it should end with `0 failed`. Then check by hand what a script can't:
+
 - [ ] `Mod+Return` opens Alacritty, and `Mod+D` opens Noctalia's launcher.
 - [ ] The bar shows the launcher, battery, CPU, RAM, disk, workspaces, keyboard layout, network, Bluetooth, volume, power profile and clock, in Tokyo Night colors.
 - [ ] `Mod+Ctrl+Space` switches between Spanish and English, and the bar shows the layout.
