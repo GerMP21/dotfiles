@@ -49,4 +49,4 @@ if ! paru -S --needed "${AUR[@]}"; then
   done
 fi
 
-printf '\n\033[1;32mDone.\033[0m Next: %s/setup-dotfiles.sh --preview to look at the files first, or %s/setup-dotfiles.sh to install them.\n' "$DOTS" "$DOTS"
+printf '\n\033[1;32mDone.\033[0m Next: %s/setup-dotfiles.sh. The files it puts in ~ are in %s/home.\n' "$DOTS" "$DOTS"

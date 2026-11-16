@@ -4,18 +4,20 @@
 
 ## Components
 
+Everything that goes into your home folder is in [`home/`](home), laid out as it is in `~`: `home/.config/niri` becomes `~/.config/niri`. `setup-dotfiles.sh` symlinks the configs from there (the fonts are copied).
+
 | Role | Tool | Config |
 |---|---|---|
-| Window manager | niri (scrollable tiling) | `.config/niri/config.kdl` |
-| Shell | [Noctalia](https://docs.noctalia.dev) (installed by CachyOS): bar, launcher, clipboard history, notifications, volume/brightness popups, control center, lock screen, idle, wallpaper, password prompts | `.config/noctalia/config.toml` |
-| Wallpaper | Raphael's *The School of Athens* (public domain), shown by Noctalia | `.local/share/backgrounds/wallpaper.jpg` |
+| Window manager | niri (scrollable tiling) | `home/.config/niri/config.kdl` |
+| Shell | [Noctalia](https://docs.noctalia.dev) (installed by CachyOS): bar, launcher, clipboard history, notifications, volume/brightness popups, control center, lock screen, idle, wallpaper, password prompts | `home/.config/noctalia/config.toml` |
+| Wallpaper | Raphael's *The School of Athens* (public domain), shown by Noctalia | `home/.local/share/backgrounds/wallpaper.jpg` |
 | Terminal | foot (its default config, no config file) | none |
-| Shell | zsh + starship | `.zshenv` (environment, PATH), `.zprofile` (login), `.zshrc` (interactive), `.config/starship.toml` |
-| Editors | Neovim (lazy.nvim), Doom Emacs | `.config/nvim/`, `.config/doom/` |
-| GTK theme | GTK 2/3/4 settings | `.config/gtk-3.0/`, `.config/gtk-4.0/`, `.gtkrc-2.0`, `.icons/` |
-| Qt theme | Kvantum + qt5ct/qt6ct | `.config/Kvantum/`, `.config/qt5ct/`, `.config/qt6ct/` |
-| Portals | xdg-desktop-portal (file pickers through GTK, screencasting through GNOME) | `.config/xdg-desktop-portal/niri-portals.conf` |
-| Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled) | `.local/share/fonts/` |
+| Shell | zsh + starship | `home/.zshenv` (environment, PATH), `home/.zprofile` (login), `home/.zshrc` (interactive), `home/.config/starship.toml` |
+| Editors | Neovim (lazy.nvim), Doom Emacs | `home/.config/nvim/`, `home/.config/doom/` |
+| GTK theme | GTK 2/3/4 settings | `home/.config/gtk-3.0/`, `home/.config/gtk-4.0/`, `home/.gtkrc-2.0`, `home/.icons/` |
+| Qt theme | Kvantum + qt5ct/qt6ct | `home/.config/Kvantum/`, `home/.config/qt5ct/`, `home/.config/qt6ct/` |
+| Portals | xdg-desktop-portal (file pickers through GTK, screencasting through GNOME) | `home/.config/xdg-desktop-portal/niri-portals.conf` |
+| Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled) | `home/.local/share/fonts/` |
 
 ## Features
 
@@ -381,18 +383,14 @@ It asks for your sudo password once, then pacman and paru ask you to confirm. Ac
 1. updates the system and installs the packages in `packages.txt`, `paru` included. Names that aren't in the repos are skipped with a warning;
 2. installs the AUR packages in `packages-aur.txt`. A failed one is retried on its own and then skipped with a warning.
 
-**3. Look at the files first (optional):**
-```sh
-~/dotfiles/setup-dotfiles.sh --preview
-```
-This copies everything the next step would link or copy into your home folder into `~/dotfiles/preview/`, laid out the same way, including the downloaded themes. `preview/MANIFEST.txt` lists every path and says whether a real run links, copies or downloads it, plus what else a real run changes. Nothing outside `preview/` is touched: no sudo, no services, no shell change. To use another folder: `setup-dotfiles.sh --preview ~/somewhere`. Hidden files start with a dot, so use `ls -la`. Delete the folder when you're done; git ignores it.
+**3. Look at the files first (optional):** everything the next step puts in your home folder is in `~/dotfiles/home/`, laid out the same way. Hidden files start with a dot, so use `ls -la ~/dotfiles/home`. The only things not in the repo are the themes, which the next step downloads.
 
 **4. Put the dotfiles in place:**
 ```sh
 ~/dotfiles/setup-dotfiles.sh
 ```
 `chsh` asks for your password, and `sudo` may too. It:
-1. symlinks every config into `~`. Anything already there, such as CachyOS's niri and Noctalia configs and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/` first;
+1. symlinks every config from `~/dotfiles/home/` into `~`. Anything already there, such as CachyOS's niri and Noctalia configs and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/` first;
 2. copies the bundled fonts;
 3. installs the GTK, Qt, icon and cursor themes, then applies them with `gsettings`;
 4. creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
@@ -427,14 +425,14 @@ If pacman stops with `target not found: <name>`, that package has left the repos
 
 This installs TrustSight from the AUR. From then on, run `trustsight` before `paru -Syu` to review pending AUR updates for risky changes.
 
-**3. Link the dotfiles.** Run `./setup-dotfiles.sh --preview`; every `link` line in `preview/MANIFEST.txt` is a path to symlink from `~/dotfiles/<path>` to `~/<path>`, after moving whatever is already there out of the way. For example:
+**3. Link the dotfiles.** Each file or folder in `~/dotfiles/home/` gets a symlink at the same path under `~`, after you move whatever is already there out of the way. `.config/gtk-2.0`, `gtk-3.0`, `gtk-4.0`, `Kvantum` and `xdg-desktop-portal` are linked file by file, because themes and apps add their own files there. For example:
 ```sh
 mv ~/.config/niri ~/.config/niri.bak
-ln -s ~/dotfiles/.config/niri ~/.config/niri
+ln -s ~/dotfiles/home/.config/niri ~/.config/niri
 ```
 Copy the fonts, create the folders the configs expect, enable the two services CachyOS doesn't, and switch to zsh:
 ```sh
-mkdir -p ~/.local/share/fonts && cp ~/dotfiles/.local/share/fonts/* ~/.local/share/fonts/ && fc-cache -f
+mkdir -p ~/.local/share/fonts && cp ~/dotfiles/home/.local/share/fonts/* ~/.local/share/fonts/ && fc-cache -f
 xdg-user-dirs-update && mkdir -p ~/Pictures/Screenshots ~/Projects ~/org
 sudo systemctl enable --now power-profiles-daemon
 systemctl --user enable gnome-keyring-daemon.socket
