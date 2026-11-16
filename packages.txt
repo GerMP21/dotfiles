@@ -105,6 +105,8 @@ qbittorrent
 
 # --- More apps ---
 discord
+# Digital audio workstation (Mod+Shift+D)
+ardour
 # E-book library and reader
 calibre
 
