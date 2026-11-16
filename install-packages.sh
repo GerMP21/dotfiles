@@ -52,8 +52,10 @@ fi
 
 step "3/3 Python tools (pipx)"
 mapfile -t PIPX < <(pkglist "$DOTS/packages-pipx.txt")
+# Saved first: with pipefail, a pipe into grep -q can fail even on a match
+pipx_list="$(pipx list --short 2>/dev/null || true)"
 for p in "${PIPX[@]}"; do
-  if pipx list --short 2>/dev/null | grep -q "^$p "; then
+  if grep -q "^$p " <<<"$pipx_list"; then
     echo "$p already installed (update with: pipx upgrade $p)"
   else
     pipx install "$p" || warn "$p failed; install it later with: pipx install $p"
