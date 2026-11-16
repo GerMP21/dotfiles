@@ -76,4 +76,6 @@ gimp
 inkscape
 keepassxc
 obsidian
+# Steam (Mod+A), from multilib, which CachyOS enables
+steam
 doublecmd-qt5

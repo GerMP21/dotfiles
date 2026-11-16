@@ -100,6 +100,7 @@ binds {
     Mod+I hotkey-overlay-title="Obsidian" { spawn "obsidian"; }
     Mod+C hotkey-overlay-title="VSCodium" { spawn "codium"; }
     Mod+R hotkey-overlay-title="Goodvibes (radio)" { spawn "goodvibes"; }
+    Mod+A hotkey-overlay-title="Steam" { spawn "steam"; }
     Mod+Y hotkey-overlay-title="YGO Omega" { spawn-sh r#"cd "$HOME/Documents/Games/YGO Omega" && exec "./YGO Omega.x86_64""#; }
 
     // Noctalia
