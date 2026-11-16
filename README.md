@@ -128,15 +128,18 @@ dotfiles/
 | `Mod+Return` | Alacritty (terminal) |
 | `Mod+E` | Emacs (client) |
 | `Mod+W` | Firefox |
-| `Mod+O` | LibreOffice |
+| `Mod+O` | Obsidian (notes) |
+| `Mod+Shift+O` | LibreOffice |
 | `Mod+G` | GIMP |
 | `Mod+N` | Double Commander |
 | `Mod+M` | Thunar (second file manager) |
 | `Mod+P` | KeePassXC |
-| `Mod+I` | Obsidian (notes) |
 | `Mod+C` | VSCodium |
 | `Mod+X` | Claude Desktop |
 | `Mod+R` | Goodvibes (radio) |
+| `Mod+Shift+T` | TuxGuitar |
+| `Mod+Shift+D` | Discord |
+| `Mod+Shift+A` | Audacity |
 | `Mod+A` | Steam |
 | `Mod+Y` | YGO Omega (from `~/Documents/Games/YGO Omega`) |
 
