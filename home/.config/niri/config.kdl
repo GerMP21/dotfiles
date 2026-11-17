@@ -77,6 +77,12 @@ window-rule {
     default-column-width { proportion 0.9; }
     default-window-height { proportion 0.9; }
 }
+// Ardour's own X server (Mod+Shift+D, ~/.local/bin/ardour-x): maximized, and
+// the X screen inside takes the window's size
+window-rule {
+    match app-id=r#"^org\.freedesktop\.Xwayland$"#
+    open-maximized true
+}
 // Noctalia's settings window (Mod+Shift+A)
 window-rule {
     match app-id="dev.noctalia.Noctalia"
@@ -105,7 +111,7 @@ binds {
     Mod+Shift+T hotkey-overlay-title="TuxGuitar" { spawn "tuxguitar"; }
     Mod+Shift+S hotkey-overlay-title="Discord" { spawn "discord"; }
     Mod+Shift+I hotkey-overlay-title="Audacity" { spawn "audacity"; }
-    // Ardour in its own full-screen X server, where its dropdown menus work
+    // Ardour in its own X server window, where its dropdown menus work
     // (through xwayland-satellite they pick the wrong item); see ardour-x
     Mod+Shift+D hotkey-overlay-title="Ardour" { spawn-sh "~/.local/bin/ardour-x"; }
     Mod+S hotkey-overlay-title="Steam" { spawn "steam"; }

@@ -124,7 +124,7 @@ discord
 pipewire-jack
 ardour
 # Mod+Shift+D starts Ardour in its own X server (~/.local/bin/ardour-x), a
-# full-screen Xwayland window with Openbox inside to arrange Ardour's windows.
+# maximized Xwayland window with Openbox inside to arrange Ardour's windows.
 # Through xwayland-satellite, Ardour's dropdown menus pick the wrong item.
 xorg-xwayland
 openbox

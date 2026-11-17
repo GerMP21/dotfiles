@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Starts Ardour in its own X server: a full-screen Xwayland window with
-# Openbox inside to manage Ardour's windows (~/.config/ardour-x/rc.xml).
+# Starts Ardour in its own X server: an Xwayland window, which niri opens
+# maximized (window rule in config.kdl), with Openbox inside to manage Ardour's windows (~/.config/ardour-x/rc.xml).
 # Normally niri runs X11 apps through xwayland-satellite, which places
 # Ardour's dropdown menus away from where Ardour thinks they are, so clicks
 # pick an item several rows off. In its own X server the menus work.
@@ -24,7 +24,10 @@ command -v Xwayland >/dev/null || fail "Xwayland isn't installed (pacman -S xorg
 d=12
 while [ -e "/tmp/.X11-unix/X$d" ] || [ -e "/tmp/.X$d-lock" ]; do d=$((d + 1)); done
 
-Xwayland ":$d" -fullscreen -noreset &
+# A plain window, not -fullscreen: the X screen takes the size niri gives the
+# window, while -fullscreen can come up at 640x480. No -decorate either,
+# which would add a title bar and take its height from the screen.
+Xwayland ":$d" -noreset &
 xserver=$!
 wm="" ready=""
 trap 'kill $wm $xserver 2>/dev/null; rm -f "$ready"' EXIT
