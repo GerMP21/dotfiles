@@ -84,6 +84,13 @@ doublecmd-qt5
 thunar
 gvfs
 tumbler
+# Extract and create archives from Thunar's right-click menu: the plugin adds
+# the menu items, File Roller (GNOME's archive manager) does the work and
+# opens archives on double-click. It uses 7zip, unrar, unzip and cpio for the
+# formats libarchive doesn't cover; zip creates .zip files.
+thunar-archive-plugin
+file-roller
+zip
 # Image viewer (GNOME's Loupe) and video player, the defaults for opening
 # pictures and videos (setup-desktop.sh). vlc alone is only the player window;
 # vlc-plugins-all has the codecs and streaming support.

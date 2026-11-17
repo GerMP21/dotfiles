@@ -133,7 +133,7 @@ else
   skip "gsettings not readable here (run this inside the niri session)"
 fi
 if has xdg-mime; then
-  for pair in image/png:org.gnome.Loupe.desktop image/jpeg:org.gnome.Loupe.desktop video/mp4:vlc.desktop video/x-matroska:vlc.desktop; do
+  for pair in image/png:org.gnome.Loupe.desktop image/jpeg:org.gnome.Loupe.desktop video/mp4:vlc.desktop video/x-matroska:vlc.desktop application/zip:org.gnome.FileRoller.desktop; do
     type="${pair%%:*}" app="${pair#*:}"
     current="$(xdg-mime query default "$type" 2>/dev/null)"
     if [ "$current" = "$app" ]; then ok "$type opens with $app"; else bad "$type opens with ${current:-nothing}, not $app (run setup-desktop.sh)"; fi
