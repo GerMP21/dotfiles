@@ -58,7 +58,7 @@ dotfiles/
 └── verify.sh               checks all of the above, plus the boot setup; changes nothing
 ```
 
-`home/.config/niri` becomes `~/.config/niri`, and so on. `setup-dotfiles.sh` **symlinks** everything from `home/` into `~`, so editing a file in `~/.config` edits it in the repo, and `git diff` shows your changes. Only the fonts are **copied**. That's all `setup-dotfiles.sh` does: no downloads, no sudo. The themes and Doom Emacs aren't in the repo; `setup-desktop.sh` and `setup-editors.sh` download them.
+`home/.config/niri` becomes `~/.config/niri`, and so on. `setup-dotfiles.sh` **symlinks** everything from `home/` into `~`, so editing a file in `~/.config` edits it in the repo, and `git diff` shows your changes. Only the fonts and GTK 2's file dialog settings (`.config/gtk-2.0/gtkfilechooser.ini`, which GTK 2 rewrites itself) are **copied**. That's all `setup-dotfiles.sh` does: no downloads, no sudo. The themes and Doom Emacs aren't in the repo; `setup-desktop.sh` and `setup-editors.sh` download them.
 
 ## What you get
 
@@ -73,6 +73,7 @@ dotfiles/
 | Shell | zsh + starship | `home/.zshenv` (environment, PATH), `home/.zprofile` (login), `home/.zshrc` (interactive), `home/.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `home/.config/nvim/`, `home/.config/doom/` |
 | GTK theme | Rose Pine (`Rosepine-Dark`, `Rose-Pine-Moon` icons, `Sunity-cursors`) | `home/.config/gtk-3.0/`, `home/.config/gtk-4.0/`, `home/.gtkrc-2.0`, `home/.icons/` |
+| File dialogs and bookmarks | GTK file dialogs show a path bar and a size column, sort by name and open on Recent; the side pane of the dialogs and Thunar lists Downloads, Documents, Pictures, Videos, Music and Projects | `home/.config/gtk-2.0/gtkfilechooser.ini` (GTK 2), `gsettings` in `setup-desktop.sh` (GTK 3), `home/.config/gtk-3.0/bookmarks` |
 | Qt theme | Kvantum `rose-pine-foam` + qt5ct/qt6ct | `home/.config/Kvantum/`, `home/.config/qt5ct/`, `home/.config/qt6ct/` |
 | Portals | xdg-desktop-portal (file pickers through GTK, screencasting through GNOME) | `home/.config/xdg-desktop-portal/niri-portals.conf` |
 | Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled); the generic `monospace` font set to JetBrainsMono Nerd Font | `home/.local/share/fonts/`, `home/.config/fontconfig/fonts.conf` |
@@ -509,7 +510,7 @@ It only links and copies; it downloads nothing and doesn't need sudo. It:
 ~/dotfiles/setup-desktop.sh
 ```
 `sudo` and `chsh` ask for your password. It:
-1. downloads and installs the GTK, Qt, icon and cursor themes, then applies them with `gsettings`;
+1. downloads and installs the GTK, Qt, icon and cursor themes, then applies them with `gsettings`, along with the GTK 3 file dialog settings;
 2. creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
 3. makes Loupe open pictures, VLC videos and File Roller archives, so double-clicking one in Thunar or Double Commander opens it there;
 4. enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
@@ -565,7 +566,7 @@ This installs TrustSight. From then on, run `trustsight` before `paru -Syu` to r
 mv ~/.config/niri ~/.config/niri.bak
 ln -s ~/dotfiles/home/.config/niri ~/.config/niri
 ```
-Copy the fonts, create the folders the configs expect, enable the two services CachyOS doesn't, and switch to zsh:
+Copy, don't link, `.config/gtk-2.0/gtkfilechooser.ini`: GTK 2 rewrites it whenever a file dialog closes, which would replace a link with a plain file. Then copy the fonts, create the folders the configs expect, enable the two services CachyOS doesn't, and switch to zsh:
 ```sh
 mkdir -p ~/.local/share/fonts && cp ~/dotfiles/home/.local/share/fonts/* ~/.local/share/fonts/ && fc-cache -f
 xdg-user-dirs-update && mkdir -p ~/Pictures/Screenshots ~/Projects ~/org
@@ -606,6 +607,16 @@ gsettings set org.gnome.desktop.interface icon-theme 'Rose-Pine-Moon'
 gsettings set org.gnome.desktop.interface cursor-theme 'Sunity-cursors'
 gsettings set org.gnome.desktop.interface cursor-size 24
 gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+```
+And GTK 3's file dialog settings, which match `~/.config/gtk-2.0/gtkfilechooser.ini` for GTK 2:
+```sh
+gsettings set org.gtk.Settings.FileChooser location-mode 'path-bar'
+gsettings set org.gtk.Settings.FileChooser show-hidden false
+gsettings set org.gtk.Settings.FileChooser show-size-column true
+gsettings set org.gtk.Settings.FileChooser sort-column 'name'
+gsettings set org.gtk.Settings.FileChooser sort-order 'ascending'
+gsettings set org.gtk.Settings.FileChooser startup-mode 'recent'
+gsettings set org.gtk.Settings.FileChooser window-size '(-1, -1)'
 ```
 
 **5. Install Doom Emacs:**
@@ -777,12 +788,13 @@ It never removes packages.
 ### setup-dotfiles.sh
 Links and copies, nothing else: no downloads, no sudo, no services.
 1. Links every path from `home/` into `~`. Existing files are moved to `~/.dotfiles-backup/<date>/` first, and paths already linked are left alone. `.config/gtk-2.0`, `gtk-3.0`, `gtk-4.0`, `Kvantum` and `xdg-desktop-portal` are linked file by file, because themes and apps add their own files there.
-2. Copies the bundled fonts, keeping fonts already there, and refreshes the font cache.
+2. Copies `~/.config/gtk-2.0/gtkfilechooser.ini` (GTK 2's file dialog settings) instead of linking it, because GTK 2 rewrites it whenever a file dialog closes. An existing copy is kept; a link to it from an older version of the script becomes a copy.
+3. Copies the bundled fonts, keeping fonts already there, and refreshes the font cache.
 
 ### setup-desktop.sh
 1. Stops before changing anything if `git` or `sassc` is missing (run `install-packages.sh` first).
 2. Downloads and installs the Rose Pine GTK theme and icons, the Sunity cursors (only if the AUR package isn't installed), and the Rose Pine Kvantum theme. Each failure is a warning; run the script again later.
-3. Creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`, and applies the theme with `gsettings`.
+3. Creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`, and applies the theme with `gsettings`, plus GTK 3's file dialog settings (`org.gtk.Settings.FileChooser`; GTK 3 doesn't read an ini file for them): path bar, no hidden files, size column, sorted by name, opening on Recent.
 4. Makes `org.gnome.Loupe.desktop` the default for every `image/` type Loupe lists, `vlc.desktop` for every `video/` type VLC lists, and `org.gnome.FileRoller.desktop` for the archive types File Roller lists (not `.exe` and `.jar`, so those still run), with `xdg-mime default`. They're saved in `~/.config/mimeapps.list`; other defaults there stay as they are.
 5. Enables `power-profiles-daemon` (with sudo) and the GNOME keyring socket, and switches your login shell to zsh if `/usr/bin/zsh` is in `/etc/shells`.
 6. Runs `niri validate` and `noctalia config validate`.

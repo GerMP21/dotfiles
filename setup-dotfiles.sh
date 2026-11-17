@@ -25,6 +25,8 @@ put() {
   local how="$1" rel="$2" src="$SRC/$2" dst="$HOME/$2"
   mkdir -p "$(dirname "$dst")"
   if [ "$how" = copy ]; then
+    # A link to the repo from an older version of this script becomes a copy
+    if [ -L "$dst" ] && [ "$(readlink "$dst")" = "$src" ]; then rm "$dst"; fi
     if [ ! -e "$dst" ]; then cp "$src" "$dst"; echo "copied ~/$rel"; fi
     return
   fi
@@ -47,7 +49,14 @@ for d in "$SRC"/.config/*/; do
   case "$name" in
     gtk-2.0|gtk-3.0|gtk-4.0|Kvantum|xdg-desktop-portal)
       # Linked per file: theme installers and apps add their own files here
-      for f in "$d"*; do put link ".config/$name/$(basename "$f")"; done ;;
+      for f in "$d"*; do
+        case "$name/$(basename "$f")" in
+          # GTK 2 rewrites this file whenever a file dialog closes, which would
+          # replace a link with a plain file, so it's copied (kept if present)
+          gtk-2.0/gtkfilechooser.ini) put copy ".config/$name/$(basename "$f")" ;;
+          *) put link ".config/$name/$(basename "$f")" ;;
+        esac
+      done ;;
     *) put link ".config/$name" ;;
   esac
 done

@@ -75,7 +75,10 @@ for d in "$SRC"/.config/*/; do
   name="$(basename "$d")"
   case "$name" in
     gtk-2.0|gtk-3.0|gtk-4.0|Kvantum|xdg-desktop-portal)
-      for f in "$d"*; do paths+=(".config/$name/$(basename "$f")"); done ;;
+      for f in "$d"*; do
+        # copied, not linked (setup-dotfiles.sh says why)
+        [ "$name/$(basename "$f")" = gtk-2.0/gtkfilechooser.ini ] || paths+=(".config/$name/$(basename "$f")")
+      done ;;
     *) paths+=(".config/$name") ;;
   esac
 done
