@@ -739,7 +739,17 @@ Or replace `system/sddm/tokyo-night/background.jpg` and `system/sddm/avatar.jpg`
 - [ ] After a reboot without the USB stick, the passphrase prompt and SDDM appear.
 
 #### 3.6 Windows plugins with yabridge (optional)
-[yabridge](https://github.com/robbert-vdh/yabridge) lets Ardour (and other Linux DAWs) load Windows VST3, VST2 and CLAP plugins: Wine runs the plugin, and yabridge connects it to the DAW as if it were a Linux plugin. Set it up with:
+[yabridge](https://github.com/robbert-vdh/yabridge) lets Ardour (and other Linux DAWs) load Windows VST3, VST2 and CLAP plugins.
+
+**How it fits together:**
+- **Wine** runs Windows programs. It keeps a fake Windows drive, the *prefix*, in `~/.wine`: `C:\` is the folder `~/.wine/drive_c`.
+- **Windows plugins** are installed into that drive as on Windows. VST3 plugins go to `C:\Program Files\Common Files\VST3`, which is `~/.wine/drive_c/Program Files/Common Files/VST3`.
+- **yabridge** connects them to Ardour. `yabridgectl sync` looks in the plugin folders and, for each Windows plugin, puts a small Linux stand-in plugin in `~/.vst3/yabridge/` (`~/.vst/yabridge/` for VST2, `~/.clap/yabridge/` for CLAP).
+- **Ardour** scans `~/.vst3`, finds the stand-ins and loads them like Linux plugins. Each stand-in starts the real plugin in Wine and passes audio, MIDI and its window back and forth.
+
+So adding a plugin is always: **install it into Wine → `yabridgectl sync` → rescan in Ardour.**
+
+##### Set it up (once)
 ```sh
 ~/dotfiles/setup-yabridge.sh
 ```
@@ -748,23 +758,82 @@ It asks for sudo, then:
 2. installs yabridge's newest **development build** in `~/.local/share/yabridge` and links `yabridgectl` into `~/.local/bin`. The latest release, 5.1.1, doesn't work with Wine 9.22 or newer (clicks in plugin windows don't register); the fix is only in development builds so far. Arch's `yabridge` package, which comes with the `pro-audio` group, is that release, so the script removes it and `packages.txt` leaves it out (`!yabridge`);
 3. creates the Wine prefix `~/.wine` with the folders Windows installers use for plugins (`C:\Program Files\Common Files\VST3`, `…\CLAP` and `C:\Program Files\Steinberg\VstPlugins`), registers them with `yabridgectl` and runs `yabridgectl sync`.
 
-Reboot afterwards if it added you to the `realtime` group. That also fixes Ardour's warning about the locked memory limit.
+**Then reboot if the script asked you to.** Its last line says so when it added you to the `realtime` group, which lets audio programs run with high priority and lock memory (fewer crackles and dropouts). It takes effect after you log in again, and also fixes Ardour's warning about the locked memory limit.
 
-**Adding a plugin:** download the Windows installer, run it with Wine and keep the default install folders, then let yabridge pick it up:
+To check: `yabridgectl status` shows where yabridge is, the three folders it watches and the plugins it found (none yet). `./verify.sh` checks it too.
+
+##### Add a plugin
+**1. Get the installer** from the plugin maker's website. If it's a `.zip`, extract it (double-click it in Thunar, or right-click → *Extract Here*). Keep the `.exe` or `.msi` wherever you like, for example `~/Music/Plugin installers/`.
+
+**2. Run the installer with Wine** in a terminal (`Mod+Return`):
 ```sh
-wine ~/Downloads/PluginSetup.exe        # an .msi installer: wine msiexec /i ~/Downloads/Plugin.msi
+wine "$HOME/Music/Plugin installers/PluginSetup.exe"
+```
+For an `.msi` installer:
+```sh
+wine msiexec /i "$HOME/Music/Plugin installers/Plugin.msi"
+```
+Quote paths with spaces. To type a path quickly, write `wine ` and drag the file from Thunar into the terminal. The first time, Wine may show an "updating Wine configuration" window for a few seconds.
+
+In the installer:
+- **Install location:** keep the default (`C:\Program Files\...`). Those are the folders yabridge watches.
+- **Formats**, if it asks:
+  - **VST3:** yes.
+  - **CLAP:** optional; yabridge supports it, but Ardour may not load CLAP.
+  - **VST2** ("VST", "64-bit VST"): optional; it works too, but one copy of each plugin is enough.
+  - **AAX:** no; that's Pro Tools only.
+  - **Standalone app:** optional; it runs with Wine on its own, outside Ardour.
+- **64-bit:** skip 32-bit versions if offered.
+
+Afterwards the plugin is in `~/.wine/drive_c/Program Files/Common Files/VST3/`. In Thunar, `Ctrl+H` shows hidden folders such as `.wine`.
+
+A plugin without an installer (just a `.vst3` file or folder) only needs copying into that folder. If an installer used another folder (some VST2 plugins go to `C:\Program Files\VSTPlugins` or a folder named after the maker), add it once:
+```sh
+yabridgectl add "$HOME/.wine/drive_c/Program Files/<that folder>"
+```
+
+**3. Let yabridge set it up:**
+```sh
 yabridgectl sync
 ```
-Then rescan plugins in Ardour (*Window → Plugin Manager*); they show up as VST3 (or VST2/CLAP) plugins. `yabridgectl status` lists every plugin yabridge found and whether it's set up. Installers that put plugins in another folder need it added: `yabridgectl add "<folder>"`, then `yabridgectl sync`.
+It ends with something like `Finished setting up 1 plugin (1 new)`, and `yabridgectl status` lists the plugin as set up. If it found 0 plugins, the plugin isn't in a watched folder (see step 2).
 
-**Removing a plugin:** uninstall it with its uninstaller (`wine uninstaller` lists them) or delete its files, then run `yabridgectl sync --prune` to remove what yabridge set up for it.
+**4. Rescan in Ardour.** Open Ardour with `Mod+Shift+D`, then *Window → Plugin Manager* and use its rescan button for new plugins. Or restart Ardour, if it scans for new plugins at startup (*Edit → Preferences → Plugins*). The first scan of a Windows plugin takes a few seconds, because Ardour has to start Wine to read it. While you're in the Plugin Manager, you can hide plugins you never use, so the lists stay short.
 
-**After Wine or yabridge updates,** run `yabridgectl sync` again; it warns if the versions don't match. To update yabridge itself to the newest development build, run `setup-yabridge.sh` again.
+##### Use it in Ardour
+**An effect** (EQ, compressor, reverb…):
+1. Open the mixer: *Window → Mixer → Show*, or `Alt+M`.
+2. In a track's strip, find the black box above the fader, which lists the track's plugins.
+3. Right-click it → *New Plugin → Plugin Selector…*.
+4. Search for the plugin; filtering by type shows only VST3.
+5. Select it, click *Add*, then *Insert Plugin(s)*.
 
-**If a plugin misbehaves:**
-- Missing or garbled text: install the Microsoft fonts into the prefix, `winetricks corefonts`.
-- It crashes or doesn't load: start Ardour from a terminal (`ardour-x`) and read yabridge's messages there. yabridge's [known issues](https://github.com/robbert-vdh/yabridge#known-issues-and-fixes) list fixes for specific plugins.
-- Copy-protected plugins (iLok, some online activations) often don't work under Wine at all.
+Plugins above the fader process the sound before it; plugins below it, after.
+
+**An instrument** (synth, sampler, drums): add a track (`Ctrl+Shift+N`, or *Track → Add Track, Bus or VCA…*), choose **MIDI Tracks**, pick the plugin in the **Instrument** list, then *Add and Close*.
+
+**The plugin's window:** double-click the plugin in the strip. The first time in a session it can take a few seconds, while Wine starts.
+
+**Good to know:**
+- **Licenses:** serial numbers and online activation inside the plugin usually work. Plugins that need **iLok** or similar copy protection usually don't work under Wine at all, so check before buying.
+- **Presets and the plugin's own files** are saved in the Wine drive, usually under `~/.wine/drive_c/users/<you>/Documents/` or `AppData/`.
+- **Loading:** each plugin runs in its own Wine process, so opening one takes a little longer than a Linux plugin.
+- **CPU:** the processing costs about the same as on Windows, plus a small bridge overhead. If you hear crackles, raise the buffer size in *Window → Audio/MIDI Setup*.
+
+##### Update, remove, and after system updates
+- **New version of a plugin:** run its new installer the same way, then `yabridgectl sync`.
+- **Remove a plugin:** `wine uninstaller` opens Wine's *Add/Remove Programs*; or delete its files from the plugin folder. Then `yabridgectl sync --prune` removes its stand-in from `~/.vst3/yabridge/`.
+- **After a system update that updated Wine** (`paru -Syu`): run `yabridgectl sync`; it warns if Wine and yabridge don't match.
+- **Newer yabridge build:** run `~/dotfiles/setup-yabridge.sh` again.
+
+##### When something goes wrong
+| What happens | What to do |
+|---|---|
+| `yabridgectl sync` finds 0 plugins | The plugin isn't in a watched folder: find it under `~/.wine/drive_c` and `yabridgectl add` that folder |
+| Ardour doesn't list the plugin | Check `yabridgectl status`, then rescan in *Window → Plugin Manager*, where Ardour also lists the plugins that failed |
+| Text in the plugin's window is missing or shows boxes | Install the Microsoft fonts into Wine: `winetricks corefonts` |
+| The plugin crashes, or Ardour hangs while loading it | Quit Ardour and start it from a terminal with `ardour-x`; yabridge's and Wine's messages appear there |
+| It works on Windows but not here | Check yabridge's [known issues](https://github.com/robbert-vdh/yabridge#known-issues-and-fixes); many plugins have a listed fix |
 
 ### Part 4 — Keeping it up to date
 - **System and AUR packages:** check pending AUR updates with TrustSight first, then update everything:
