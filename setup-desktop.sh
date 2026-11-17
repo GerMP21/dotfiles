@@ -81,18 +81,6 @@ if grep -qx org.gnome.desktop.interface <<<"$schemas"; then
 else
   warn "gsettings schema missing; set the theme later in nwg-look"
 fi
-# GTK 3's file dialogs keep their settings here, not in an ini file; the same
-# as ~/.config/gtk-2.0/gtkfilechooser.ini for GTK 2: path bar, no hidden
-# files, size column, sorted by name, opening on Recent, default size
-if grep -qx org.gtk.Settings.FileChooser <<<"$schemas"; then
-  gsettings set org.gtk.Settings.FileChooser location-mode 'path-bar'
-  gsettings set org.gtk.Settings.FileChooser show-hidden false
-  gsettings set org.gtk.Settings.FileChooser show-size-column true
-  gsettings set org.gtk.Settings.FileChooser sort-column 'name'
-  gsettings set org.gtk.Settings.FileChooser sort-order 'ascending'
-  gsettings set org.gtk.Settings.FileChooser startup-mode 'recent'
-  gsettings set org.gtk.Settings.FileChooser window-size '(-1, -1)'
-fi
 
 step "Default apps for pictures, videos and archives"
 # set_default APP.desktop TYPE [SKIP...]: makes APP open every TYPE/* file
