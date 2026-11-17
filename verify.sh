@@ -122,7 +122,7 @@ else
   bad "systemctl not found"
 fi
 
-section "Themes and fonts"
+section "Themes, fonts and default apps"
 check "GTK theme Rosepine-Dark"     test -d "$HOME/.themes/Rosepine-Dark"
 check "icon theme Rose-Pine-Moon"   test -d "$HOME/.local/share/icons/Rose-Pine-Moon"
 check "Qt theme rose-pine-foam"     test -d "$HOME/.config/Kvantum/rose-pine-foam"
@@ -131,6 +131,15 @@ if has gsettings && theme="$(gsettings get org.gnome.desktop.interface gtk-theme
   if [ "$theme" = "'Rosepine-Dark'" ]; then ok "gsettings applies Rosepine-Dark"; else bad "gsettings theme is $theme (run setup-desktop.sh)"; fi
 else
   skip "gsettings not readable here (run this inside the niri session)"
+fi
+if has xdg-mime; then
+  for pair in image/png:org.gnome.Loupe.desktop image/jpeg:org.gnome.Loupe.desktop video/mp4:vlc.desktop video/x-matroska:vlc.desktop; do
+    type="${pair%%:*}" app="${pair#*:}"
+    current="$(xdg-mime query default "$type" 2>/dev/null)"
+    if [ "$current" = "$app" ]; then ok "$type opens with $app"; else bad "$type opens with ${current:-nothing}, not $app (run setup-desktop.sh)"; fi
+  done
+else
+  bad "xdg-mime not found (xdg-utils)"
 fi
 if has fc-list; then
   families="$(fc-list : family 2>/dev/null)"

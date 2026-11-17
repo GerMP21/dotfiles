@@ -84,6 +84,12 @@ doublecmd-qt5
 thunar
 gvfs
 tumbler
+# Image viewer (GNOME's Loupe) and video player, the defaults for opening
+# pictures and videos (setup-desktop.sh). vlc alone is only the player window;
+# vlc-plugins-all has the codecs and streaming support.
+loupe
+vlc
+vlc-plugins-all
 
 # --- Development ---
 docker

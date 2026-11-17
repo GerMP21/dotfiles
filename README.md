@@ -365,7 +365,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Audio production | groups `pro-audio`, `lv2-plugins`, `vst-plugins` (about 290 packages, ~6 GB); `zam-plugins-*` in every format; `x42-plugins`, `lsp-plugins`, `cardinal`, `distrho-ports`, `dragonfly-reverb`, `wolf-shaper`, `sfizz`, `geonkick`, `drumgizmo`, `helm`, `stochas`, `yoshimi`, `soundfont-fluid`; `ardour` with `pipewire-jack`; AUR: `vcvrack-bin`, `airwindows-lv2`, `neural-amp-modeler-lv2`, `sooperlooper`, `paulxstretch`. Vitalium, Vital's open-source build, comes with `distrho-ports`. `audacity` is left out (`!audacity`) for `audacity3-git` | DAWs (Ardour, LMMS, Reaper…), synths (Surge XT, Dexed, ZynAddSubFX…), effects (Calf, LSP, x42, ZAM, Guitarix…), patchbay (`qpwgraph`), plugin host (`carla`), Windows plugins (`yabridge`) |
 | Media and writing | `discord`, `calibre`; AUR: `audacity3-git`, `tuxguitar`, `trelby` | Audio editing and recording, chat, e-books, guitar tabs, screenwriting |
 | Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+S` |
-| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails); AUR: `goodvibes`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
+| Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails), `loupe` (image viewer), `vlc` with `vlc-plugins-all` (video player and its codecs); AUR: `goodvibes`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
 
 Not packaged, so `setup-desktop.sh` (themes) and `setup-editors.sh` (Doom) download them, or see the [manual install](#23-manual-install):
 - **GTK theme `Rosepine-Dark`** and **icon theme `Rose-Pine-Moon`**, from [Fausto-Korpsvart/Rose-Pine-GTK-Theme](https://github.com/Fausto-Korpsvart/Rose-Pine-GTK-Theme).
@@ -510,9 +510,10 @@ It only links and copies; it downloads nothing and doesn't need sudo. It:
 `sudo` and `chsh` ask for your password. It:
 1. downloads and installs the GTK, Qt, icon and cursor themes, then applies them with `gsettings`;
 2. creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`;
-3. enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
-4. makes zsh your login shell instead of CachyOS's default, fish;
-5. checks the niri and Noctalia configs with `niri validate` and `noctalia config validate`.
+3. makes Loupe open pictures and VLC open videos, so double-clicking one in Thunar or Double Commander opens it there;
+4. enables power profiles and the GNOME keyring socket (CachyOS already enabled NetworkManager, Bluetooth and PipeWire, and SDDM unlocks the keyring with your login password);
+5. makes zsh your login shell instead of CachyOS's default, fish;
+6. checks the niri and Noctalia configs with `niri validate` and `noctalia config validate`.
 
 **6. Install the editors:**
 ```sh
@@ -657,7 +658,7 @@ What each section checks, and what to do when a line shows ✗:
 | Dotfiles linked | Every path from `home/` is linked into `~`, no links into the repo are broken, the bundled fonts are copied | Run `setup-dotfiles.sh` again. A broken link usually means a file was renamed or removed in the repo |
 | Configs | `niri validate` and `noctalia config validate` | The error from the tool is printed under the ✗ line, with the file and line number |
 | Login shell and services | zsh is your login shell; `sddm`, `NetworkManager`, `bluetooth`, `power-profiles-daemon` are enabled, plus `pipewire.socket`, `wireplumber` and `gnome-keyring-daemon.socket` for your user | For the shell: `chsh -s /usr/bin/zsh`, then log out and in. For a service: `sudo systemctl enable --now <name>` (add `--user` and drop `sudo` for user services) |
-| Themes and fonts | GTK, icon, Qt and cursor themes are installed; `gsettings` applies `Rosepine-Dark`; JetBrains Mono and Iosevka Nerd Fonts are present | Run `setup-desktop.sh` again for the themes, or `setup-dotfiles.sh` for the bundled fonts; for the Nerd Fonts, `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are there |
+| Themes, fonts and default apps | GTK, icon, Qt and cursor themes are installed; `gsettings` applies `Rosepine-Dark`; PNG and JPEG open in Loupe, MP4 and MKV in VLC; JetBrains Mono and Iosevka Nerd Fonts are present | Run `setup-desktop.sh` again for the themes and default apps, or `setup-dotfiles.sh` for the bundled fonts; for the Nerd Fonts, `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are there |
 | Editors and tools | `trustsight` runs; Doom Emacs and its packages, the Neovim plugins, Telescope's fzf extension and the Mason language servers are installed | Run `setup-editors.sh` again, or the commands in [Troubleshooting](#troubleshooting) |
 | Boot and encryption | Booted in UEFI mode; which firmware entry this boot came from; a LUKS-encrypted partition; the bootloader's config in `/boot`; at least two passphrases on the encrypted partition | See [3.2](#32-the-boot-setup) and [1.6](#16-protect-the-encryption) |
 
@@ -781,8 +782,9 @@ Links and copies, nothing else: no downloads, no sudo, no services.
 1. Stops before changing anything if `git` or `sassc` is missing (run `install-packages.sh` first).
 2. Downloads and installs the Rose Pine GTK theme and icons, the Sunity cursors (only if the AUR package isn't installed), and the Rose Pine Kvantum theme. Each failure is a warning; run the script again later.
 3. Creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`, and applies the theme with `gsettings`.
-4. Enables `power-profiles-daemon` (with sudo) and the GNOME keyring socket, and switches your login shell to zsh if `/usr/bin/zsh` is in `/etc/shells`.
-5. Runs `niri validate` and `noctalia config validate`.
+4. Makes `org.gnome.Loupe.desktop` the default for every `image/` type Loupe lists, and `vlc.desktop` for every `video/` type VLC lists, with `xdg-mime default`. They're saved in `~/.config/mimeapps.list`; other defaults there stay as they are.
+5. Enables `power-profiles-daemon` (with sudo) and the GNOME keyring socket, and switches your login shell to zsh if `/usr/bin/zsh` is in `/etc/shells`.
+6. Runs `niri validate` and `noctalia config validate`.
 
 ### setup-editors.sh
 1. Stops before changing anything if `git`, `emacs`, `nvim` or `make` is missing, or if `~/.config/doom` or `~/.config/nvim` isn't there yet (run `setup-dotfiles.sh` first).
