@@ -42,9 +42,10 @@ dotfiles/
 │   ├── .zshenv .zprofile .zshrc .gtkrc-2.0
 │   ├── .icons/default/     default cursor theme
 │   ├── .config/            niri, noctalia, nvim, doom, gtk-*, Kvantum, qt5ct, qt6ct,
-│   │                       xdg-desktop-portal, starship.toml
+│   │                       xdg-desktop-portal, ardour-x (Openbox for Ardour), starship.toml
 │   └── .local/            share/: fonts (copied), wallpaper, goodvibes radio stations
 │                           bin/keybinds: the Mod+Shift+H cheat sheet
+│                           bin/ardour-x: starts Ardour in its own X server (Mod+Shift+D)
 ├── packages.txt            packages from the CachyOS/Arch repos (pacman)
 ├── packages-aur.txt        packages from the AUR (paru)
 ├── packages-pipx.txt       Python tools (pipx)
@@ -140,7 +141,7 @@ dotfiles/
 | `Mod+Shift+T` | TuxGuitar |
 | `Mod+Shift+S` | Discord |
 | `Mod+Shift+I` | Audacity |
-| `Mod+Shift+D` | Ardour |
+| `Mod+Shift+D` | Ardour, in its own X server so its menus work ([why](#ardour-in-its-own-x-server)) |
 | `Mod+S` | Steam |
 | `Mod+Y` | YGO Omega (from `~/Documents/Games/YGO Omega`) |
 
@@ -362,7 +363,7 @@ The lists are in [`packages.txt`](packages.txt) (CachyOS and Arch repos), [`pack
 | Doom Emacs | `emacs-wayland`, `aspell`, `aspell-en`, `aspell-es`, `languagetool`, `shellcheck` | Doom, `spell`, `grammar`, `sh` modules |
 | Development | `docker`, `docker-buildx`, `docker-compose`, `geany`, `vscodium` (CachyOS repo), `mysql-workbench`, `mariadb-libs`, `rustup`, `uv`; AUR: `postman-bin`, `pyenv-virtualenv` | Containers, editor, MySQL/MariaDB client, Rust and Python toolchains, API client |
 | Network | `wireguard-tools`, `qbittorrent`; AUR: `wireguird` | WireGuard VPN (and its GUI), torrents |
-| Audio production | groups `pro-audio`, `lv2-plugins`, `vst-plugins` (about 290 packages, ~6 GB); `zam-plugins-*` in every format; `x42-plugins`, `lsp-plugins`, `cardinal`, `distrho-ports`, `dragonfly-reverb`, `wolf-shaper`, `sfizz`, `geonkick`, `drumgizmo`, `helm`, `stochas`, `yoshimi`, `soundfont-fluid`; `ardour` with `pipewire-jack`; AUR: `vcvrack-bin`, `airwindows-lv2`, `neural-amp-modeler-lv2`, `sooperlooper`, `paulxstretch`. Vitalium, Vital's open-source build, comes with `distrho-ports`. `audacity` is left out (`!audacity`) for `audacity3-git` | DAWs (Ardour, LMMS, Reaper…), synths (Surge XT, Dexed, ZynAddSubFX…), effects (Calf, LSP, x42, ZAM, Guitarix…), patchbay (`qpwgraph`), plugin host (`carla`), Windows plugins (`yabridge`) |
+| Audio production | groups `pro-audio`, `lv2-plugins`, `vst-plugins` (about 290 packages, ~6 GB); `zam-plugins-*` in every format; `x42-plugins`, `lsp-plugins`, `cardinal`, `distrho-ports`, `dragonfly-reverb`, `wolf-shaper`, `sfizz`, `geonkick`, `drumgizmo`, `helm`, `stochas`, `yoshimi`, `soundfont-fluid`; `ardour` with `pipewire-jack`, `xorg-xwayland` and `openbox` (for `ardour-x`); AUR: `vcvrack-bin`, `airwindows-lv2`, `neural-amp-modeler-lv2`, `sooperlooper`, `paulxstretch`. Vitalium, Vital's open-source build, comes with `distrho-ports`. `audacity` is left out (`!audacity`) for `audacity3-git` | DAWs (Ardour, LMMS, Reaper…), synths (Surge XT, Dexed, ZynAddSubFX…), effects (Calf, LSP, x42, ZAM, Guitarix…), patchbay (`qpwgraph`), plugin host (`carla`), Windows plugins (`yabridge`) |
 | Media and writing | `discord`, `calibre`; AUR: `audacity3-git`, `tuxguitar`, `trelby` | Audio editing and recording, chat, e-books, guitar tabs, screenwriting |
 | Games | `steam`, `0ad`, `cataclysm-dda-tiles`; AUR: `airshipper` (Veloren launcher) | Open them from the launcher (`Mod+D`); Steam also has `Mod+S` |
 | Apps | `thunderbird`, `libreoffice-fresh`, `gimp`, `inkscape`, `keepassxc`, `obsidian`, `doublecmd-qt5`, `thunar` (with `gvfs` for trash and USB drives, `tumbler` for thumbnails), `loupe` (image viewer), `vlc` with `vlc-plugins-all` (video player and its codecs), `thunar-archive-plugin` with `file-roller` and `zip` (extract and create archives from Thunar's right-click menu); AUR: `goodvibes`, `claude-desktop` | `Mod+` app shortcuts and the launcher |
@@ -846,6 +847,15 @@ VirtualBox quirks:
   sudo pacman -S pipewire-jack
   systemctl --user restart pipewire pipewire-pulse wireplumber
   ```
+
+### Ardour in its own X server
+Ardour is an X11 app, and niri runs X11 apps through [xwayland-satellite](https://github.com/Supreeeme/xwayland-satellite). With it, Ardour's dropdown menus (track type, instrument, record mode…) open where Ardour doesn't expect them: you have to hold the button down, and the item picked is several rows away from the pointer. So `Mod+Shift+D` runs `~/.local/bin/ardour-x` instead, which starts Ardour in its own X server: a full-screen Xwayland window with Openbox inside. There the menus work.
+
+- **Windows:** the main window fills the screen. Plugin windows, the detached mixer and dialogs open inside it with a title bar: drag it to move a window (or Alt+drag anywhere on the window), drag an edge or Alt+right-drag to resize, double-click it to maximize. `Alt+Tab` switches between Ardour's windows. Openbox's settings are in `~/.config/ardour-x/rc.xml`.
+- **Leaving it:** quit Ardour (`Ctrl+Q`) and the X server closes too. While Ardour is open, niri's keys still work, so you can switch workspaces as usual.
+- **Limits:** you can't drag files from Thunar into Ardour, because they're in different display servers; use *Session → Import* instead. Copying and pasting text between Ardour and other apps may not work either. Audio is unaffected: Ardour still goes through PipeWire.
+- **Ardour from the launcher (`Mod+D`)** starts it the normal way, with the broken menus. Use `Mod+Shift+D`, or run `ardour-x` in a terminal; it takes the same options as Ardour, for example a session folder.
+- **To try without it** (for example after an xwayland-satellite update that might fix the menus), run `ardour9` in a terminal. If the menus work, change the `Mod+Shift+D` line in `config.kdl` back to start Ardour directly.
 
 ### Themes and fonts
 - **Thunar has no "Extract Here" in the right-click menu:** Thunar loads plugins when it starts, so quit every Thunar window (or run `thunar -q`) and open it again. If it's still missing, check `pacman -Q thunar-archive-plugin file-roller`. In File Roller, a format that won't open usually needs its tool from the optional list in `pacman -Qi file-roller`.

@@ -1,0 +1,53 @@
+#!/usr/bin/env bash
+# Starts Ardour in its own X server: a full-screen Xwayland window with
+# Openbox inside to manage Ardour's windows (~/.config/ardour-x/rc.xml).
+# Normally niri runs X11 apps through xwayland-satellite, which places
+# Ardour's dropdown menus away from where Ardour thinks they are, so clicks
+# pick an item several rows off. In its own X server the menus work.
+# Mod+Shift+D runs this; quitting Ardour closes the X server too.
+#
+# Usage: ardour-x [Ardour's own options, or a session folder]
+set -u
+
+fail() {
+  notify-send -a Ardour "Ardour didn't start" "$1" 2>/dev/null || true
+  echo "ardour-x: $1" >&2
+  exit 1
+}
+
+# The command has Ardour's major version in it (ardour9); take the newest
+ardour="$(printf '%s\n' /usr/bin/ardour[0-9]* | grep -E '/ardour[0-9]+$' | sort -V | tail -n 1)"
+[ -x "$ardour" ] || fail "Ardour isn't installed (pacman -S ardour)"
+command -v Xwayland >/dev/null || fail "Xwayland isn't installed (pacman -S xorg-xwayland)"
+
+# The first free X display number from :12 on
+d=12
+while [ -e "/tmp/.X11-unix/X$d" ] || [ -e "/tmp/.X$d-lock" ]; do d=$((d + 1)); done
+
+Xwayland ":$d" -fullscreen -noreset &
+xserver=$!
+wm="" ready=""
+trap 'kill $wm $xserver 2>/dev/null; rm -f "$ready"' EXIT
+for _ in $(seq 50); do
+  [ -S "/tmp/.X11-unix/X$d" ] && break
+  kill -0 "$xserver" 2>/dev/null || fail "Xwayland exited; run ardour-x in a terminal to see why"
+  sleep 0.1
+done
+[ -S "/tmp/.X11-unix/X$d" ] || fail "Xwayland didn't start within 5 seconds"
+
+# Everything from here on, plugin windows included, uses this X server
+export DISPLAY=":$d" GDK_BACKEND=x11 QT_QPA_PLATFORM=xcb
+unset WAYLAND_DISPLAY
+
+ready="$(mktemp -u "${XDG_RUNTIME_DIR:-/tmp}/ardour-x.XXXXXX")"
+if command -v openbox >/dev/null; then
+  # Openbox applies its rules (maximize the main window) only to windows
+  # opened after it's ready, so wait for its --startup command
+  openbox --config-file "$HOME/.config/ardour-x/rc.xml" --startup "touch $ready" &
+  wm=$!
+  for _ in $(seq 50); do [ -e "$ready" ] && break; sleep 0.1; done
+else
+  echo "ardour-x: openbox isn't installed (pacman -S openbox); windows can't be moved" >&2
+fi
+
+"$ardour" "$@"

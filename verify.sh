@@ -70,7 +70,7 @@ section "Dotfiles linked from $SRC"
 # The same paths setup-dotfiles.sh links
 paths=(.zshenv .zshrc .zprofile .gtkrc-2.0 .icons/default/index.theme
        .config/starship.toml .local/share/goodvibes/stations.xml .local/share/backgrounds/wallpaper.jpg
-       .local/bin/keybinds)
+       .local/bin/keybinds .local/bin/ardour-x)
 for d in "$SRC"/.config/*/; do
   name="$(basename "$d")"
   case "$name" in
