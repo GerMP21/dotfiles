@@ -159,6 +159,11 @@ elif [ -n "$(find "$HOME/.config/emacs/.local" -maxdepth 5 -type d -name straigh
 else
   bad "Doom Emacs packages aren't installed (run: ~/.config/emacs/bin/doom sync)"
 fi
+# yabridge is optional (setup-yabridge.sh); only checked once it's set up
+if [ -x "$HOME/.local/share/yabridge/yabridgectl" ]; then
+  check "yabridge set up (yabridgectl status)"  "$HOME/.local/share/yabridge/yabridgectl" status
+  if [[ " $(id -nG) " == *" realtime "* ]]; then ok "in the realtime group (for audio)"; else bad "not in the realtime group: sudo gpasswd -a $(id -un) realtime, then reboot"; fi
+fi
 check "Neovim plugins installed"         test -d "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/telescope.nvim"
 check "Telescope fzf extension built"    test -f "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/lazy/telescope-fzf-native.nvim/build/libfzf.so"
 if compgen -G "${XDG_DATA_HOME:-$HOME/.local/share}/nvim/mason/bin/*" >/dev/null; then ok "Mason language servers installed"; else bad "Mason language servers installed (:Mason in nvim)"; fi

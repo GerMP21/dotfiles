@@ -54,6 +54,7 @@ dotfiles/
 ├── setup-desktop.sh        themes, folders, services, zsh as login shell
 ├── setup-editors.sh        Doom Emacs, Neovim plugins, parsers and language servers
 ├── setup-login-screen.sh   optional: SDDM login theme, background and profile picture
+├── setup-yabridge.sh       optional: Windows VST3/VST2/CLAP plugins through Wine (yabridge)
 ├── system/sddm/            the login theme (tokyo-night/), background and avatar.jpg
 └── verify.sh               checks all of the above, plus the boot setup; changes nothing
 ```
@@ -660,7 +661,7 @@ What each section checks, and what to do when a line shows ✗:
 | Configs | `niri validate` and `noctalia config validate` | The error from the tool is printed under the ✗ line, with the file and line number |
 | Login shell and services | zsh is your login shell; `sddm`, `NetworkManager`, `bluetooth`, `power-profiles-daemon` are enabled, plus `pipewire.socket`, `wireplumber` and `gnome-keyring-daemon.socket` for your user | For the shell: `chsh -s /usr/bin/zsh`, then log out and in. For a service: `sudo systemctl enable --now <name>` (add `--user` and drop `sudo` for user services) |
 | Themes, fonts and default apps | GTK, icon, Qt and cursor themes are installed; `gsettings` applies `Rosepine-Dark`; PNG and JPEG open in Loupe, MP4 and MKV in VLC, ZIP in File Roller; JetBrains Mono and Iosevka Nerd Fonts are present | Run `setup-desktop.sh` again for the themes and default apps, or `setup-dotfiles.sh` for the bundled fonts; for the Nerd Fonts, `pacman -Q ttf-jetbrains-mono-nerd ttf-iosevka-nerd` shows whether the packages are there |
-| Editors and tools | `trustsight` runs; Doom Emacs and its packages, the Neovim plugins, Telescope's fzf extension and the Mason language servers are installed | Run `setup-editors.sh` again, or the commands in [Troubleshooting](#troubleshooting) |
+| Editors and tools | `trustsight` runs; Doom Emacs and its packages, the Neovim plugins, Telescope's fzf extension and the Mason language servers are installed; once yabridge is set up, `yabridgectl status` runs and you're in the `realtime` group | Run `setup-editors.sh` again, or the commands in [Troubleshooting](#troubleshooting); for yabridge, `setup-yabridge.sh` ([3.6](#36-windows-plugins-with-yabridge-optional)) |
 | Boot and encryption | Booted in UEFI mode; which firmware entry this boot came from; a LUKS-encrypted partition; the bootloader's config in `/boot`; at least two passphrases on the encrypted partition | See [3.2](#32-the-boot-setup) and [1.6](#16-protect-the-encryption) |
 
 #### 3.2 The boot setup
@@ -737,6 +738,34 @@ Or replace `system/sddm/tokyo-night/background.jpg` and `system/sddm/avatar.jpg`
 - [ ] `Mod+E` opens Emacs.
 - [ ] After a reboot without the USB stick, the passphrase prompt and SDDM appear.
 
+#### 3.6 Windows plugins with yabridge (optional)
+[yabridge](https://github.com/robbert-vdh/yabridge) lets Ardour (and other Linux DAWs) load Windows VST3, VST2 and CLAP plugins: Wine runs the plugin, and yabridge connects it to the DAW as if it were a Linux plugin. Set it up with:
+```sh
+~/dotfiles/setup-yabridge.sh
+```
+It asks for sudo, then:
+1. installs `wine-staging` (with `wine-mono` and `wine-gecko`, so Wine doesn't ask to download them), `winetricks` and `realtime-privileges`, and adds you to the `realtime` group. If plain `wine` is installed, pacman asks to replace it: answer `y`;
+2. installs yabridge's newest **development build** in `~/.local/share/yabridge` and links `yabridgectl` into `~/.local/bin`. The latest release, 5.1.1, doesn't work with Wine 9.22 or newer (clicks in plugin windows don't register); the fix is only in development builds so far. Arch's `yabridge` package, which comes with the `pro-audio` group, is that release, so the script removes it and `packages.txt` leaves it out (`!yabridge`);
+3. creates the Wine prefix `~/.wine` with the folders Windows installers use for plugins (`C:\Program Files\Common Files\VST3`, `…\CLAP` and `C:\Program Files\Steinberg\VstPlugins`), registers them with `yabridgectl` and runs `yabridgectl sync`.
+
+Reboot afterwards if it added you to the `realtime` group. That also fixes Ardour's warning about the locked memory limit.
+
+**Adding a plugin:** download the Windows installer, run it with Wine and keep the default install folders, then let yabridge pick it up:
+```sh
+wine ~/Downloads/PluginSetup.exe        # an .msi installer: wine msiexec /i ~/Downloads/Plugin.msi
+yabridgectl sync
+```
+Then rescan plugins in Ardour (*Window → Plugin Manager*); they show up as VST3 (or VST2/CLAP) plugins. `yabridgectl status` lists every plugin yabridge found and whether it's set up. Installers that put plugins in another folder need it added: `yabridgectl add "<folder>"`, then `yabridgectl sync`.
+
+**Removing a plugin:** uninstall it with its uninstaller (`wine uninstaller` lists them) or delete its files, then run `yabridgectl sync --prune` to remove what yabridge set up for it.
+
+**After Wine or yabridge updates,** run `yabridgectl sync` again; it warns if the versions don't match. To update yabridge itself to the newest development build, run `setup-yabridge.sh` again.
+
+**If a plugin misbehaves:**
+- Missing or garbled text: install the Microsoft fonts into the prefix, `winetricks corefonts`.
+- It crashes or doesn't load: start Ardour from a terminal (`ardour-x`) and read yabridge's messages there. yabridge's [known issues](https://github.com/robbert-vdh/yabridge#known-issues-and-fixes) list fixes for specific plugins.
+- Copy-protected plugins (iLok, some online activations) often don't work under Wine at all.
+
 ### Part 4 — Keeping it up to date
 - **System and AUR packages:** check pending AUR updates with TrustSight first, then update everything:
   ```sh
@@ -745,6 +774,7 @@ Or replace `system/sddm/tokyo-night/background.jpg` and `system/sddm/avatar.jpg`
   ```sh
   paru -Syu
   ```
+- **yabridge (if you set it up):** run `~/dotfiles/setup-yabridge.sh` again for the newest development build, and `yabridgectl sync` after Wine updates.
 - **pipx tools (TrustSight):**
   ```sh
   pipx upgrade-all
@@ -795,14 +825,18 @@ Links and copies, nothing else: no downloads, no sudo, no services.
 ### setup-login-screen.sh
 Optional; see [3.4](#34-login-screen-optional). Installs the theme from `system/sddm/tokyo-night/`, the background (`--background FILE` to use another) and the profile picture (`--avatar FILE`), then selects the theme with a drop-in in `/etc/sddm.conf.d/`. It warns if `/etc/sddm.conf` sets its own theme, since that file wins over drop-ins.
 
+### setup-yabridge.sh
+Optional; see [3.6](#36-windows-plugins-with-yabridge-optional). Installs Wine Staging, winetricks and realtime privileges, removes Arch's `yabridge`/`yabridgectl` packages if present, downloads yabridge's newest development build from its automated builds (via nightly.link) into `~/.local/share/yabridge` (skipped when that build is already installed), creates `~/.wine` and its plugin folders, and runs `yabridgectl add` and `sync`. Safe to run again.
+
 ### verify.sh
 See [3.1](#31-run-verifysh). Options: `--no-sudo` skips the checks that need sudo; `--help` shows the usage.
 
 ### What the scripts change outside your home folder
-- **Packages:** installed or upgraded, never removed.
+- **Packages:** installed or upgraded, never removed, except by `setup-yabridge.sh`: it removes Arch's `yabridge` and `yabridgectl` (replaced by yabridge's development build) and lets pacman replace `wine` with `wine-staging`.
+- **Groups:** `setup-yabridge.sh` adds you to the `realtime` group.
 - **Services:** `power-profiles-daemon` is enabled (`setup-desktop.sh`).
 - **Login shell:** set to zsh with `chsh` (`setup-desktop.sh`).
-- **Login screen (optional):** `setup-login-screen.sh` adds the SDDM theme and your picture under `/usr/share/sddm/` and one file in `/etc/sddm.conf.d/`, which is the only thing any script writes in `/etc`.
+- **Login screen (optional):** `setup-login-screen.sh` adds the SDDM theme and your picture under `/usr/share/sddm/` and one file in `/etc/sddm.conf.d/`. Apart from that and the group change, no script writes in `/etc`.
 
 Nothing touches the bootloader, the boot image or the PAM login settings, so the scripts can't stop the computer from booting or block the passphrase prompt. If the login theme ever fails to load, SDDM falls back to its built-in theme; deleting the `/etc/sddm.conf.d` file undoes it.
 
