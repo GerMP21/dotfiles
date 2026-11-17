@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Sets up the desktop around the linked dotfiles: downloads and applies the
 # GTK, icon, Qt and cursor themes, creates the folders the configs expect,
-# enables the two services CachyOS doesn't, makes zsh your login shell, and
-# checks the niri and Noctalia configs.
+# makes Loupe and VLC the default apps for pictures and videos, enables the
+# two services CachyOS doesn't, makes zsh your login shell, and checks the
+# niri and Noctalia configs.
 #
 # Run install-packages.sh first; setup-dotfiles.sh can run before or after.
 # Safe to run again.
@@ -79,6 +80,30 @@ if grep -qx org.gnome.desktop.interface <<<"$schemas"; then
   gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
 else
   warn "gsettings schema missing; set the theme later in nwg-look"
+fi
+
+step "Default apps for pictures and videos"
+# set_default APP.desktop TYPE: makes APP open every TYPE/* file type it
+# lists in its desktop file (e.g. image/png). Other defaults in
+# ~/.config/mimeapps.list stay as they are.
+set_default() {
+  local file="/usr/share/applications/$1" types
+  if [ ! -f "$file" ]; then
+    warn "$1 isn't installed (install-packages.sh); skipped its file types"
+    return
+  fi
+  mapfile -t types < <(sed -n 's/^MimeType=//p' "$file" | tr ';' '\n' | grep "^$2/" || true)
+  if [ "${#types[@]}" -gt 0 ] && xdg-mime default "$1" "${types[@]}"; then
+    echo "$1 opens ${#types[@]} $2 types"
+  else
+    warn "couldn't make $1 the default for $2 files"
+  fi
+}
+if command -v xdg-mime >/dev/null; then
+  set_default org.gnome.Loupe.desktop image
+  set_default vlc.desktop video
+else
+  warn "xdg-mime not found (xdg-utils); default apps not set"
 fi
 
 step "Services and login shell"
