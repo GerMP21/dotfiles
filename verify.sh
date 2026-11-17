@@ -70,7 +70,7 @@ section "Dotfiles linked from $SRC"
 # The same paths setup-dotfiles.sh links
 paths=(.zshenv .zshrc .zprofile .gtkrc-2.0 .icons/default/index.theme
        .config/starship.toml .local/share/goodvibes/stations.xml .local/share/backgrounds/wallpaper.jpg
-       .local/bin/keybinds)
+       .local/bin/keybinds .local/bin/ardour-x)
 for d in "$SRC"/.config/*/; do
   name="$(basename "$d")"
   case "$name" in
@@ -133,7 +133,7 @@ else
   skip "gsettings not readable here (run this inside the niri session)"
 fi
 if has xdg-mime; then
-  for pair in image/png:org.gnome.Loupe.desktop image/jpeg:org.gnome.Loupe.desktop video/mp4:vlc.desktop video/x-matroska:vlc.desktop; do
+  for pair in image/png:org.gnome.Loupe.desktop image/jpeg:org.gnome.Loupe.desktop video/mp4:vlc.desktop video/x-matroska:vlc.desktop application/zip:org.gnome.FileRoller.desktop; do
     type="${pair%%:*}" app="${pair#*:}"
     current="$(xdg-mime query default "$type" 2>/dev/null)"
     if [ "$current" = "$app" ]; then ok "$type opens with $app"; else bad "$type opens with ${current:-nothing}, not $app (run setup-desktop.sh)"; fi

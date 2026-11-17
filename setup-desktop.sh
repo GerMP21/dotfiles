@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # Sets up the desktop around the linked dotfiles: downloads and applies the
 # GTK, icon, Qt and cursor themes, creates the folders the configs expect,
-# makes Loupe and VLC the default apps for pictures and videos, enables the
-# two services CachyOS doesn't, makes zsh your login shell, and checks the
+# makes Loupe, VLC and File Roller the default apps for pictures, videos and
+# archives, enables the two services CachyOS doesn't, makes zsh your login shell, and checks the
 # niri and Noctalia configs.
 #
 # Run install-packages.sh first; setup-dotfiles.sh can run before or after.
@@ -82,17 +82,18 @@ else
   warn "gsettings schema missing; set the theme later in nwg-look"
 fi
 
-step "Default apps for pictures and videos"
-# set_default APP.desktop TYPE: makes APP open every TYPE/* file type it
-# lists in its desktop file (e.g. image/png). Other defaults in
-# ~/.config/mimeapps.list stay as they are.
+step "Default apps for pictures, videos and archives"
+# set_default APP.desktop TYPE [SKIP...]: makes APP open every TYPE/* file
+# type it lists in its desktop file (e.g. image/png), except the SKIP types.
+# Other defaults in ~/.config/mimeapps.list stay as they are.
 set_default() {
-  local file="/usr/share/applications/$1" types
+  local file="/usr/share/applications/$1" types skip
   if [ ! -f "$file" ]; then
     warn "$1 isn't installed (install-packages.sh); skipped its file types"
     return
   fi
-  mapfile -t types < <(sed -n 's/^MimeType=//p' "$file" | tr ';' '\n' | grep "^$2/" || true)
+  skip="$(printf '%s\n' "${@:3}")"
+  mapfile -t types < <(sed -n 's/^MimeType=//p' "$file" | tr ';' '\n' | grep "^$2/" | grep -vxF -- "$skip" || true)
   if [ "${#types[@]}" -gt 0 ] && xdg-mime default "$1" "${types[@]}"; then
     echo "$1 opens ${#types[@]} $2 types"
   else
@@ -102,6 +103,10 @@ set_default() {
 if command -v xdg-mime >/dev/null; then
   set_default org.gnome.Loupe.desktop image
   set_default vlc.desktop video
+  # File Roller lists only application/ types: archives (zip, tar, 7z, rar...)
+  # plus .exe and .jar, which are left to run with Wine or Java instead
+  set_default org.gnome.FileRoller.desktop application \
+    application/x-ms-dos-executable application/x-java-archive
 else
   warn "xdg-mime not found (xdg-utils); default apps not set"
 fi

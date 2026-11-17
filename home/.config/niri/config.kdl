@@ -105,8 +105,9 @@ binds {
     Mod+Shift+T hotkey-overlay-title="TuxGuitar" { spawn "tuxguitar"; }
     Mod+Shift+S hotkey-overlay-title="Discord" { spawn "discord"; }
     Mod+Shift+I hotkey-overlay-title="Audacity" { spawn "audacity"; }
-    // Ardour's command has its major version in it (ardour9), so start whichever is installed
-    Mod+Shift+D hotkey-overlay-title="Ardour" { spawn-sh r#"exec "$(ls /usr/bin/ardour[0-9]* 2>/dev/null | grep -E '/ardour[0-9]+$' | sort -V | tail -n 1)""#; }
+    // Ardour in its own full-screen X server, where its dropdown menus work
+    // (through xwayland-satellite they pick the wrong item); see ardour-x
+    Mod+Shift+D hotkey-overlay-title="Ardour" { spawn-sh "~/.local/bin/ardour-x"; }
     Mod+S hotkey-overlay-title="Steam" { spawn "steam"; }
     Mod+Y hotkey-overlay-title="YGO Omega" { spawn-sh r#"cd "$HOME/Documents/Games/YGO Omega" && exec "./YGO Omega.x86_64""#; }
 
