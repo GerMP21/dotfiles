@@ -169,3 +169,6 @@ yoshimi
 soundfont-fluid
 # pro-audio includes audacity, which conflicts with audacity3-git (AUR list)
 !audacity
+# and yabridge 5.1.1, which doesn't work with Wine 9.22+; setup-yabridge.sh
+# installs a development build instead
+!yabridge
