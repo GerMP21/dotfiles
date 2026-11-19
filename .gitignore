@@ -1,2 +1,6 @@
 # Python bytecode from running home/.local/bin/keybinds
 __pycache__/
+
+# LUKS header backup (cryptsetup luksHeaderBackup). It holds the encryption
+# header, so it must never be pushed to a repo. Keep it on an offline drive.
+luks-header.img

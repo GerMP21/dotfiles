@@ -1,10 +1,10 @@
 # dotfiles
 
-[CachyOS](https://cachyos.org) + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo Night theme, made for a CachyOS install with the niri desktop, tested on a ThinkPad T480.
+[CachyOS](https://cachyos.org) + [niri](https://github.com/YaLTeR/niri) (Wayland) setup with a Tokyo Night theme, made for a CachyOS install with the niri desktop, tested on a ThinkPad T480. The niri and login-screen themes are Tokyo Night; the Noctalia shell uses the Oxocarbon community palette.
 
 On top of what CachyOS installs, it adds:
 - a niri config with Spanish/English keyboard layouts and vim-style keys;
-- Noctalia (the shell CachyOS ships) set up to match: bar, launcher, notifications, lock screen and idle;
+- Noctalia (the shell CachyOS ships) set up to match: bar, launcher, notifications and lock screen;
 - zsh with starship, Neovim, Doom Emacs, and Rose Pine GTK/Qt themes;
 - scripts that install the packages, link the files, set up the desktop and the editors, and check the result.
 
@@ -39,10 +39,11 @@ git clone https://github.com/GerMP21/dotfiles.git ~/dotfiles
 ```
 dotfiles/
 ├── home/                   everything that goes into ~, laid out as in ~
-│   ├── .zshenv .zprofile .zshrc .gtkrc-2.0
+│   ├── .zshenv .zprofile .zshrc .gtkrc-2.0 .gitconfig
 │   ├── .icons/default/     default cursor theme
 │   ├── .config/            niri, noctalia, nvim, doom, gtk-*, Kvantum, qt5ct, qt6ct,
-│   │                       xdg-desktop-portal, ardour-x (Openbox for Ardour), starship.toml
+│   │                       xdg-desktop-portal, alacritty, ardour-x (Openbox for Ardour),
+│   │                       starship.toml, mimeapps.list (default apps)
 │   └── .local/            share/: fonts (copied), wallpaper, goodvibes radio stations
 │                           bin/keybinds: the Mod+Shift+H cheat sheet
 │                           bin/ardour-x: starts Ardour in its own X server (Mod+Shift+D)
@@ -67,16 +68,18 @@ dotfiles/
 | Role | Tool | Config |
 |---|---|---|
 | Window manager | niri (scrollable tiling) | `home/.config/niri/config.kdl` |
-| Shell | [Noctalia](https://docs.noctalia.dev) (installed by CachyOS): bar, launcher, clipboard history, notifications, volume/brightness popups, control center, lock screen, idle, wallpaper, password prompts | `home/.config/noctalia/config.toml` |
+| Shell | [Noctalia](https://docs.noctalia.dev) (installed by CachyOS): bar, launcher, clipboard history, notifications, volume/brightness popups, control center, lock screen, wallpaper, password prompts | `home/.config/noctalia/config.toml` |
 | Login screen | SDDM (installed by CachyOS) with a Tokyo Night theme: background, square profile picture, clock | `system/sddm/`, installed by `setup-login-screen.sh` (optional) |
 | Wallpaper | Raphael's *The School of Athens* (public domain), shown by Noctalia | `home/.local/share/backgrounds/wallpaper.jpg` |
-| Terminal | Alacritty (installed by CachyOS, with CachyOS's config) | `~/.config/alacritty/alacritty.toml`, not in this repo |
+| Terminal | Alacritty (installed by CachyOS) | `home/.config/alacritty/alacritty.toml` |
 | Shell | zsh + starship | `home/.zshenv` (environment, PATH), `home/.zprofile` (login), `home/.zshrc` (interactive), `home/.config/starship.toml` |
 | Editors | Neovim (lazy.nvim), Doom Emacs | `home/.config/nvim/`, `home/.config/doom/` |
 | GTK theme | Rose Pine (`Rosepine-Dark`, `Rose-Pine-Moon` icons, `Sunity-cursors`) | `home/.config/gtk-3.0/`, `home/.config/gtk-4.0/`, `home/.gtkrc-2.0`, `home/.icons/` |
 | Qt theme | Kvantum `rose-pine-foam` + qt5ct/qt6ct | `home/.config/Kvantum/`, `home/.config/qt5ct/`, `home/.config/qt6ct/` |
 | Portals | xdg-desktop-portal (file pickers through GTK, screencasting through GNOME) | `home/.config/xdg-desktop-portal/niri-portals.conf` |
 | Fonts | JetBrains Mono / Iosevka Nerd Font (packages); CatV, Feather, Grape Nuts (bundled); the generic `monospace` font set to JetBrainsMono Nerd Font | `home/.local/share/fonts/`, `home/.config/fontconfig/fonts.conf` |
+| Default apps | Loupe for pictures, VLC for videos, File Roller for archives | `home/.config/mimeapps.list` |
+| Git | git, with GPG signing and `gh` as the credential helper | `home/.gitconfig` |
 
 ### Features
 - **niri**
@@ -88,7 +91,7 @@ dotfiles/
   - A flat Tokyo Night background in the overview (`Mod+Tab`).
   - Starts Noctalia and the Emacs daemon at login.
   - `Mod+Shift+H` shows a compact cheat sheet of every binding in columns, read live from the config; niri's own overlay doesn't pop up at login.
-- **Noctalia** (Tokyo Night palette, JetBrains Mono font):
+- **Noctalia** (Oxocarbon community palette, JetBrains Mono font):
   - Bar left: launcher, battery, CPU, RAM, disk.
   - Bar center: niri workspaces.
   - Bar right: keyboard layout (`es` / `us`), network, Bluetooth, volume, power profile, clock, tray, notifications, control center, session menu.
@@ -96,9 +99,9 @@ dotfiles/
   - Launcher (`Mod+D`) with a calculator (`/calc`) and emoji (`/emo`), and clipboard history (`Mod+V`).
   - Popups for volume and brightness changes, and password prompts when an app needs admin rights.
   - Changes made in its Settings window (`Mod+Shift+A`) are saved to `~/.local/state/noctalia/settings.toml` and override `config.toml`.
-- **Idle:** Noctalia locks after 10 minutes, turns monitors off after 15, and suspends after 5 hours (`[idle.behavior.*]` in `config.toml`). It locks before any suspend, including closing the lid, which suspends right away (systemd's default). The lock screen takes your login password.
+- **Idle:** the idle behaviors are off, so the session never locks, turns the monitors off or suspends on its own. The timeouts are kept in `config.toml` (lock after 10 minutes, monitors off after 15, suspend after 5 hours), so turning one back on only needs `enabled = true` in its `[idle.behavior.*]` block. When they are on, Noctalia locks before any suspend, including closing the lid, which suspends right away (systemd's default). The lock screen takes your login password.
 - **Login:** the SDDM login screen starts the niri session. Your login password unlocks the GNOME keyring, so apps can save passwords. `.zprofile` also unblocks Wi-Fi.
-- **Terminal:** Alacritty with CachyOS's config (translucent, Nord colors), which the CachyOS install put in `~/.config/alacritty/alacritty.toml`.
+- **Terminal:** Alacritty with CachyOS's config (translucent, Nord colors), kept in the repo at `home/.config/alacritty/alacritty.toml`.
 - **Screenshots:** built into niri, saved to `~/Pictures/Screenshots`.
 - **File pickers:** "Open file" dialogs from portal-using apps (Flatpaks, Firefox-based browsers) use the GTK file chooser, because GNOME's portal would need Nautilus.
 - **Wayland-native apps:** Electron and Qt apps run natively on Wayland. Qt apps without the Wayland plugin fall back to X11 through xwayland-satellite.
@@ -219,7 +222,7 @@ Leader is `Space`.
 | `<` / `>` (visual) | Indent and keep selection |
 
 ### Alacritty
-Alacritty's keys with CachyOS's config:
+Alacritty's keys with the config in this repo:
 
 | Key | Action |
 |---|---|
@@ -279,7 +282,7 @@ binds {
   It opens in a floating Alacritty window (the `keybinds` window rule in `config.kdl`). Run `keybinds` in any terminal to see it there. niri's own overlay is no longer bound, and `hotkey-overlay { skip-at-startup }` in `config.kdl` stops it appearing at login; `niri msg action show-hotkey-overlay` still opens it.
 
 ### Noctalia
-- **Settings:** `~/.config/noctalia/config.toml` sets the theme, wallpaper, idle timeouts and bar layout. Its comments say what each part does; every option is documented at [docs.noctalia.dev](https://docs.noctalia.dev). Check it with `noctalia config validate`.
+- **Settings:** `~/.config/noctalia/config.toml` sets the theme (Oxocarbon), wallpaper, idle timeouts (the idle behaviors are off in it) and bar layout. Its comments say what each part does; every option is documented at [docs.noctalia.dev](https://docs.noctalia.dev). Check it with `noctalia config validate`.
 - **Settings window:** changes made in Noctalia's Settings window (`Mod+Shift+A`) go to `~/.local/state/noctalia/settings.toml`, not the repo, and win over `config.toml`. If an edit to `config.toml` seems ignored, look there.
 - **Bar widgets:** the `start`, `center` and `end` lists in `[bar.default]` pick and order them. Bar clicks are set per widget; see the [bar actions docs](https://docs.noctalia.dev/noctalia/bar/actions/).
 - **Keys:** Noctalia's panels use fixed keys (arrows, Enter, Escape), set in the `[keybinds]` section. Anything Noctalia can do from a key is a `noctalia msg` command, which you bind in niri; `noctalia msg --help` lists them:
@@ -321,7 +324,7 @@ Doom keys: Doom uses Evil (vim keys), and `SPC` is the leader. Add bindings with
 - **Language servers:** `setup-editors.sh` installs bash, Python, TypeScript, Rust and Lua servers through Mason. Add more with `:Mason`.
 
 ### Alacritty
-Alacritty reads `~/.config/alacritty/alacritty.toml`, which CachyOS created; it isn't in this repo. That file already has a `[keyboard]` section, so add your keys to its `bindings` list rather than writing a second `[keyboard]` (that would be an error):
+Alacritty reads `~/.config/alacritty/alacritty.toml`, which is linked into the repo as `home/.config/alacritty/alacritty.toml`. It's CachyOS's own config: translucent, Nord colors, and a `[keyboard]` section with the vi-style and search bindings already in it. Add your keys to that `bindings` list rather than writing a second `[keyboard]` (that would be an error):
 ```toml
 [keyboard]
 bindings = [
@@ -338,6 +341,18 @@ bindkey '^R' history-incremental-search-backward   # Ctrl+R
 bindkey -M viins '^E' autosuggest-accept          # Ctrl+E accepts the suggestion
 ```
 Run `bindkey` with no arguments to list the current ones. To find a key's code, run `cat`, press the key, then `Ctrl+C`. Open a new terminal or run `source ~/.zshrc` to apply. Environment variables and `PATH` go in `~/.zshenv`, so apps started from niri see them too.
+
+### Git
+`~/.gitconfig` is linked into the repo, so the identity, the GPG signing key and the `gh` credential helper travel with the dotfiles. Change them there, not in `~/.gitconfig` directly (it's the same file):
+
+```ini
+[user]
+	signingkey = 2CEF07CF3799668B   # your GPG key id
+	email = you@example.com
+	name = Your Name
+```
+
+Git signs every commit and tag (`gpgsign = true`). The `gh` helper handles GitHub logins, so `git push` asks for the token once and then reuses the keyring. On a new machine, run `gh auth login` after installing `gh`.
 
 ## Dependencies
 
@@ -502,7 +517,7 @@ It asks for your sudo password once, then pacman and paru ask you to confirm. Ac
 ~/dotfiles/setup-dotfiles.sh
 ```
 It only links and copies; it downloads nothing and doesn't need sudo. It:
-1. symlinks every config from `~/dotfiles/home/` into `~`. Anything already there, such as CachyOS's niri and Noctalia configs and `.zshrc`, is moved to `~/.dotfiles-backup/<date>/` first;
+1. symlinks every config from `~/dotfiles/home/` into `~`. Anything already there, such as CachyOS's niri, Noctalia and Alacritty configs, `.zshrc` and `.gitconfig`, is moved to `~/.dotfiles-backup/<date>/` first;
 2. copies the bundled fonts and refreshes the font cache.
 
 **5. Set up the desktop:**
@@ -721,7 +736,7 @@ Or replace `system/sddm/tokyo-night/background.jpg` and `system/sddm/avatar.jpg`
 
 #### 3.5 Check by hand what a script can't
 - [ ] `Mod+Return` opens Alacritty with the starship prompt, and `Mod+D` opens Noctalia's launcher.
-- [ ] The bar shows the launcher, battery, CPU, RAM, disk, workspaces, keyboard layout, network, Bluetooth, volume, power profile and clock, in Tokyo Night colors.
+- [ ] The bar shows the launcher, battery, CPU, RAM, disk, workspaces, keyboard layout, network, Bluetooth, volume, power profile and clock, in Oxocarbon colors.
 - [ ] `Mod+Ctrl+Space` switches between Spanish and English, and the bar shows the layout.
 - [ ] The volume, mic-mute, brightness and media keys work and show a popup.
 - [ ] `notify-send hi` shows a notification.
@@ -875,14 +890,14 @@ It never removes packages.
 
 ### setup-dotfiles.sh
 Links and copies, nothing else: no downloads, no sudo, no services.
-1. Links every path from `home/` into `~`. Existing files are moved to `~/.dotfiles-backup/<date>/` first, and paths already linked are left alone. `.config/gtk-2.0`, `gtk-3.0`, `gtk-4.0`, `Kvantum` and `xdg-desktop-portal` are linked file by file, because themes and apps add their own files there.
+1. Links every path from `home/` into `~`. Existing files are moved to `~/.dotfiles-backup/<date>/` first, and paths already linked are left alone. `.config/gtk-2.0`, `gtk-3.0`, `gtk-4.0`, `Kvantum`, `xdg-desktop-portal` and `alacritty` are linked file by file, because themes and apps add their own files there. `.gitconfig` and `.config/mimeapps.list` are linked too, so the git identity and the default apps are part of the dotfiles.
 2. Copies the bundled fonts, keeping fonts already there, and refreshes the font cache.
 
 ### setup-desktop.sh
 1. Stops before changing anything if `git` or `sassc` is missing (run `install-packages.sh` first).
 2. Downloads and installs the Rose Pine GTK theme and icons, the Sunity cursors (only if the AUR package isn't installed), and the Rose Pine Kvantum theme. Each failure is a warning; run the script again later.
 3. Creates `~/Pictures/Screenshots`, `~/Projects` and `~/org`, and applies the theme with `gsettings`.
-4. Makes `org.gnome.Loupe.desktop` the default for every `image/` type Loupe lists, `vlc.desktop` for every `video/` type VLC lists, and `org.gnome.FileRoller.desktop` for the archive types File Roller lists (not `.exe` and `.jar`, so those still run), with `xdg-mime default`. They're saved in `~/.config/mimeapps.list`; other defaults there stay as they are.
+4. Makes `org.gnome.Loupe.desktop` the default for every `image/` type Loupe lists, `vlc.desktop` for every `video/` type VLC lists, and `org.gnome.FileRoller.desktop` for the archive types File Roller lists (not `.exe` and `.jar`, so those still run), with `xdg-mime default`. They're saved in `~/.config/mimeapps.list`, which is linked into the repo, so the defaults travel with the dotfiles; the other defaults there stay as they are.
 5. Enables `power-profiles-daemon` (with sudo) and the GNOME keyring socket, and switches your login shell to zsh if `/usr/bin/zsh` is in `/etc/shells`.
 6. Runs `niri validate` and `noctalia config validate`.
 
@@ -965,7 +980,7 @@ Ardour is an X11 app, and niri runs X11 apps through [xwayland-satellite](https:
 - **GTK theme isn't applied:** check that `ls ~/.themes` lists `Rosepine-Dark`, then run the `gsettings` commands from step 4 of the manual install again, or pick the theme in `nwg-look`.
 - **Qt apps look unthemed:** check `echo $QT_QPA_PLATFORMTHEME` shows `qt5ct:qt6ct` inside niri, and that `ls ~/.config/Kvantum` lists `rose-pine-foam`. Open `qt6ct` (or `qt5ct` for Double Commander) and check that Style is `kvantum`.
 - **Cursor is the default one:** check that `ls ~/.icons /usr/share/icons | grep Sunity` finds the theme, then log out and back in.
-- **Boxes instead of icons in the prompt:** the terminal's font has no Nerd Font icons. `fc-match monospace` should print `JetBrainsMono Nerd Font` (from `~/.config/fontconfig/fonts.conf`); terminals set to `monospace`, like CachyOS's Alacritty config, then show them. Apps with their own font setting need it set there. For VSCodium's built-in terminal, add this to its settings (`Ctrl+Shift+P` → "Preferences: Open User Settings (JSON)"):
+- **Boxes instead of icons in the prompt:** the terminal's font has no Nerd Font icons. `fc-match monospace` should print `JetBrainsMono Nerd Font` (from `~/.config/fontconfig/fonts.conf`); terminals set to `monospace`, like the Alacritty config in this repo, then show them. Apps with their own font setting need it set there. For VSCodium's built-in terminal, add this to its settings (`Ctrl+Shift+P` → "Preferences: Open User Settings (JSON)"):
   ```json
   "terminal.integrated.fontFamily": "JetBrainsMono Nerd Font"
   ```

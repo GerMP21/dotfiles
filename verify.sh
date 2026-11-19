@@ -68,13 +68,13 @@ fi
 
 section "Dotfiles linked from $SRC"
 # The same paths setup-dotfiles.sh links
-paths=(.zshenv .zshrc .zprofile .gtkrc-2.0 .icons/default/index.theme
-       .config/starship.toml .local/share/goodvibes/stations.xml .local/share/backgrounds/wallpaper.jpg
+paths=(.zshenv .zshrc .zprofile .gtkrc-2.0 .gitconfig .icons/default/index.theme
+       .config/starship.toml .config/mimeapps.list .local/share/goodvibes/stations.xml .local/share/backgrounds/wallpaper.jpg
        .local/bin/keybinds .local/bin/ardour-x)
 for d in "$SRC"/.config/*/; do
   name="$(basename "$d")"
   case "$name" in
-    gtk-2.0|gtk-3.0|gtk-4.0|Kvantum|xdg-desktop-portal)
+    gtk-2.0|gtk-3.0|gtk-4.0|Kvantum|xdg-desktop-portal|alacritty)
       for f in "$d"*; do paths+=(".config/$name/$(basename "$f")"); done ;;
     *) paths+=(".config/$name") ;;
   esac

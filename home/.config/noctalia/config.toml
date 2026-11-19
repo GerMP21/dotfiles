@@ -5,16 +5,25 @@
 # Options are documented at https://docs.noctalia.dev. Check this file with:
 #   noctalia config validate
 # Changes made in Noctalia's Settings window go to
-# ~/.local/state/noctalia/settings.toml and override this file.
+# ~/.local/state/noctalia/settings.toml and override this file. This file
+# holds the same choices, so a fresh install looks like the running one.
+#
+# The active config (this file merged with the Settings window's) can be
+# printed with:
+#   noctalia config export
 
 [shell]
 font_family  = "JetBrainsMono Nerd Font"
 polkit_agent = true   # password prompts for apps that ask for admin rights
 
+# Oxocarbon, a community palette (the builtin Tokyo-Night is kept as the
+# fallback for source = "builtin").
 [theme]
-mode    = "dark"
-source  = "builtin"
-builtin = "Tokyo-Night"
+mode              = "dark"
+source            = "community"
+community_palette = "Oxocarbon"
+builtin           = "Tokyo-Night"
+wallpaper_scheme  = "m3-content"
 
 # Raphael's The School of Athens (public domain), linked by install.sh
 [wallpaper]
@@ -24,23 +33,31 @@ directory = "~/.local/share/backgrounds"
 [wallpaper.default]
 path = "~/.local/share/backgrounds/wallpaper.jpg"
 
-# Lock after 10 minutes, monitors off after 15, suspend after 5 hours.
-# Noctalia also locks before suspend (lid close, systemctl suspend) by default.
+# The idle behaviors are off: the session never locks, turns the monitors
+# off or suspends on its own. The timeouts are kept, so turning them back
+# on only needs enabled = true.
+[idle]
+behavior_order = ["lock", "screen-off", "suspend"]
+
 [idle.behavior.lock]
 timeout = 600
 action  = "lock"
-enabled = true
+enabled = false
 
 [idle.behavior.screen-off]
 timeout = 900
 action  = "screen_off"
-enabled = true
+enabled = false
 
-# 5 hours = 18000 seconds. "suspend" locks the session first.
+# 5 hours = 18000 seconds. "lock_and_suspend" locks the session first.
 [idle.behavior.suspend]
 timeout = 18000
-action  = "suspend"
-enabled = true
+action  = "lock_and_suspend"
+enabled = false
+
+# The lock screen shows the plain login box, without the extra widgets.
+[lockscreen_widgets]
+enabled = false
 
 # Same layout as the old waybar: system stats left, workspaces center,
 # keyboard layout, network, volume, power profile, clock and tray right

@@ -41,17 +41,18 @@ put() {
 }
 
 step "Configs"
-for f in .zshenv .zshrc .zprofile .gtkrc-2.0 .icons/default/index.theme; do put link "$f"; done
+for f in .zshenv .zshrc .zprofile .gtkrc-2.0 .gitconfig .icons/default/index.theme; do put link "$f"; done
 for d in "$SRC"/.config/*/; do
   name="$(basename "$d")"
   case "$name" in
-    gtk-2.0|gtk-3.0|gtk-4.0|Kvantum|xdg-desktop-portal)
+    gtk-2.0|gtk-3.0|gtk-4.0|Kvantum|xdg-desktop-portal|alacritty)
       # Linked per file: theme installers and apps add their own files here
       for f in "$d"*; do put link ".config/$name/$(basename "$f")"; done ;;
     *) put link ".config/$name" ;;
   esac
 done
 put link .config/starship.toml
+put link .config/mimeapps.list
 put link .local/share/goodvibes/stations.xml
 put link .local/share/backgrounds/wallpaper.jpg
 put link .local/bin/keybinds

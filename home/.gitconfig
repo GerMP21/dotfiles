@@ -1,0 +1,14 @@
+[user]
+	signingkey = 2CEF07CF3799668B
+	email = german.martinez.pascale@gmail.com
+	name = German Martinez
+[commit]
+	gpgsign = true
+[tag]
+	gpgsign = true
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/bin/gh auth git-credential

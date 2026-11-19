@@ -1,3 +1,10 @@
+# OPENSPEC:START
+# OpenSpec shell completions configuration
+fpath=('/home/german/.zsh/completions' $fpath)
+autoload -Uz compinit
+compinit
+# OPENSPEC:END
+
 # Interactive shells only. Environment variables live in ~/.zshenv.
 [[ $- != *i* ]] && return
 
